@@ -10,8 +10,6 @@ import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 
 contract DeployMultisigIsm is Script {
     function run() public {
-        // Read all the config we need first so that we ensure valid
-        // config before sending any transactions.
         address owner = vm.envAddress("OWNER");
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         string[] memory remotes = vm.envString("REMOTES", ",");

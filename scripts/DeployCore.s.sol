@@ -16,12 +16,11 @@ contract DeployCore is Script {
     using DeployLib for DeployLib.HyperlaneDeployment;
 
     function run() public {
-        // Read all the config we need first so that we ensure valid
-        // config before sending any transactions.
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         string memory local = vm.envString("LOCAL");
         string[] memory remotes = vm.envString("REMOTES", ",");
-        DeployLib.HyperlaneDeployment memory deployment = DeployLib.getHyperlaneDeployment(vm, local);
+        DeployLib.HyperlaneDeployment memory deployment = DeployLib
+            .getHyperlaneDeployment(vm, local);
         DeployLib.MultisigIsmConfig[] memory configs = DeployLib
             .getMultisigIsmConfigs(vm, remotes);
 
@@ -34,9 +33,12 @@ contract DeployCore is Script {
         deployment.deployIgp();
         deployment.deployMailbox(address(ism));
 
-
         // Write the output to disk
         deployment.write(vm);
-        deployment.writeAgentConfig(vm, startBlock, "./config/agent_config.json");
+        deployment.writeAgentConfig(
+            vm,
+            startBlock,
+            "./config/agent_config.json"
+        );
     }
 }

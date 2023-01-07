@@ -7,7 +7,12 @@
   "author": "asa@hyperlane.xyz",
   "license": "Apache 2.0",
   "private": false,
+  "scripts": {
+    "prettier": "prettier --write ./scripts ./lib"
+  },
   "dependencies": {
-    "@hyperlane-xyz/core": "1.0.0-beta6"
+    "@hyperlane-xyz/core": "1.0.0-beta6",
+    "prettier": "^2.8.2",
+    "prettier-plugin-solidity": "^1.1.1"
   }
 }
