@@ -15,9 +15,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: remove submodule locks
-        run: git submodule foreach rm yarn.lock
-
       - uses: actions/cache@v3
         with:
           path: '**/node_modules'
