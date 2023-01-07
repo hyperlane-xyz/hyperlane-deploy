@@ -34,7 +34,9 @@ library DeployLib {
         string memory json = vm.readFile("config/networks.json");
         string memory prefix = ".contracts.";
         try
-            vm.parseJson(json, string.concat(chainName, string.concat(prefix, contractName))
+            vm.parseJson(
+                json,
+                string.concat(chainName, string.concat(prefix, contractName))
             )
         returns (bytes memory result) {
             address parsedAddr = abi.decode(result, (address));
