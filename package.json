@@ -1,0 +1,13 @@
+{
+  "name": "@hyperlane-xyz/deploy",
+  "version": "0.0.0",
+  "description": "Utilities for deploying Hyperlane",
+  "main": "index.js",
+  "repository": "git@github.com:hyperlane-xyz/hyperlane-deploy.git",
+  "author": "asa@hyperlane.xyz",
+  "license": "Apache 2.0",
+  "private": false,
+  "dependencies": {
+    "@hyperlane-xyz/core": "1.0.0-beta6"
+  }
+}
