@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
-import "forge-std/Script.sol";
-import {Vm} from "forge-std/Components.sol";
+import "../lib/forge-std/src/Script.sol";
+import {Vm} from "../lib/forge-std/src/Vm.sol";
 
-import {BytesLib} from "../../contracts/libs/BytesLib.sol";
-import {MultisigIsm} from "../../contracts/isms/MultisigIsm.sol";
+import {BytesLib} from "../lib/BytesLib.sol";
+import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 
 library DeployLib {
     using stdJson for string;
@@ -21,7 +21,7 @@ library DeployLib {
         view
         returns (uint32)
     {
-        string memory json = vm.readFile("network_config.json");
+        string memory json = vm.readFile("config/networks.json");
         uint32 domainId = abi.decode(
             vm.parseJson(json, string.concat(chainName, ".id")),
             (uint32)
@@ -34,7 +34,7 @@ library DeployLib {
         view
         returns (MultisigIsmConfig memory)
     {
-        string memory json = vm.readFile("multisig_ism_config.json");
+        string memory json = vm.readFile("config/multisig_ism.json");
         uint8 threshold = abi.decode(
             vm.parseJson(json, string.concat(chainName, ".threshold")),
             (uint8)

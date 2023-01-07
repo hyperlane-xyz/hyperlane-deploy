@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import "forge-std/console.sol";
-import "forge-std/Script.sol";
-import "forge-std/StdJson.sol";
+import "../lib/forge-std/src/console.sol";
+import "../lib/forge-std/src/Script.sol";
+import "../lib/forge-std/src/StdJson.sol";
 
-import {Mailbox} from "../contracts/Mailbox.sol";
-import {InterchainGasPaymaster} from "../contracts/InterchainGasPaymaster.sol";
-import {ProxyAdmin} from "../contracts/upgrade/ProxyAdmin.sol";
-import {TransparentUpgradeableProxy} from "../contracts/upgrade/TransparentUpgradeableProxy.sol";
-import {MultisigIsm} from "../contracts/isms/MultisigIsm.sol";
-import {DeployLib} from "./lib/DeployLib.sol";
+import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
+import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/InterchainGasPaymaster.sol";
+import {ProxyAdmin} from "@hyperlane-xyz/core/contracts/upgrade/ProxyAdmin.sol";
+import {TransparentUpgradeableProxy} from "@hyperlane-xyz/core/contracts/upgrade/TransparentUpgradeableProxy.sol";
+import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
+import {DeployLib} from "../lib/DeployLib.sol";
 
 contract DeployCore is Script {
     function deployIgp(address proxyAdmin)

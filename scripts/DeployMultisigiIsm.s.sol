@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import "forge-std/console.sol";
-import "forge-std/Script.sol";
-import "forge-std/StdJson.sol";
+import "../lib/forge-std/src/console.sol";
+import "../lib/forge-std/src/Script.sol";
+import "../lib/forge-std/src/StdJson.sol";
 
-import {DeployLib} from "./lib/DeployLib.sol";
-import {MultisigIsm} from "../contracts/isms/MultisigIsm.sol";
+import {DeployLib} from "../lib/DeployLib.sol";
+import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 
 contract DeployMultisigIsm is Script {
     function run() public {
