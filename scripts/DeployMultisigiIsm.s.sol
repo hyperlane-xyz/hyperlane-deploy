@@ -21,6 +21,7 @@ contract DeployMultisigIsm is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         MultisigIsm ism = DeployLib.deployMultisigIsm(configs);
+        console.log("MultisigIsm deployed at address %s", address(ism));
         ism.transferOwnership(owner);
     }
 }

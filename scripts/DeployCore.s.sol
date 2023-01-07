@@ -27,6 +27,7 @@ contract DeployCore is Script {
             proxyAdmin,
             initData
         );
+        console.log("InterchainGasPaymaster deployed at address %s", address(proxy));
         return InterchainGasPaymaster(address(proxy));
     }
 
@@ -46,7 +47,28 @@ contract DeployCore is Script {
             proxyAdmin,
             initData
         );
+        console.log("Mailbox deployed at address %s", address(proxy));
         return Mailbox(address(proxy));
+    }
+
+    function writeAgentConfig(string memory network, uint32 localDomain, address mailbox, address igp, uint256 startBlock) internal {
+        string memory baseConfig = "config";
+        vm.serializeString(baseConfig, "domain", vm.toString(uint256(localDomain)));
+        vm.serializeString(baseConfig, "rpcStyle", "ethereum");
+        vm.serializeString(baseConfig, "finalityBlocks", "POPULATE_ME");
+
+        string memory addresses = "addresses";
+        vm.serializeAddress(addresses, "mailbox", mailbox);
+        vm.serializeString(baseConfig, "addresses", vm.serializeAddress(addresses, "interchainGasPaymaster", igp));
+
+        string memory connection = "connection";
+        vm.serializeString(connection, "type", "http");
+        vm.serializeString(baseConfig, "connection", vm.serializeString(connection, "url", ""));
+
+        string memory index = "index";
+        vm.serializeString(baseConfig, "index", vm.serializeString(index, "from", vm.toString(startBlock)));
+
+        vm.writeJson(vm.serializeString(baseConfig, "name", network), "./config/agent_config.json");
     }
 
     function run() public {
@@ -61,6 +83,7 @@ contract DeployCore is Script {
             .getMultisigIsmConfigs(vm, remotes);
 
         vm.startBroadcast(deployerPrivateKey);
+        uint256 startBlock = block.number;
 
         MultisigIsm ism = DeployLib.deployMultisigIsm(configs);
         ProxyAdmin proxyAdmin = new ProxyAdmin();
@@ -78,5 +101,8 @@ contract DeployCore is Script {
         igp.transferOwnership(owner);
         mailbox.transferOwnership(owner);
         ism.transferOwnership(owner);
+
+        // Write the partial agent config to disk.
+        writeAgentConfig(local, localDomain, address(mailbox), address(igp), startBlock);
     }
 }
