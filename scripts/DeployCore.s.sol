@@ -1,44 +1,37 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import "../lib/forge-std/src/console.sol";
 import "../lib/forge-std/src/Script.sol";
-import "../lib/forge-std/src/StdJson.sol";
 
-import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
-import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/InterchainGasPaymaster.sol";
-import {ProxyAdmin} from "@hyperlane-xyz/core/contracts/upgrade/ProxyAdmin.sol";
-import {TransparentUpgradeableProxy} from "@hyperlane-xyz/core/contracts/upgrade/TransparentUpgradeableProxy.sol";
-import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
+import {ConfigLib} from "../lib/ConfigLib.sol";
+import {CheckLib} from "../lib/CheckLib.sol";
 import {DeployLib} from "../lib/DeployLib.sol";
 
+// TODO: Verification
 contract DeployCore is Script {
-    using DeployLib for DeployLib.HyperlaneDeployment;
+    using ConfigLib for ConfigLib.HyperlaneDomainConfig;
+    using CheckLib for ConfigLib.HyperlaneDomainConfig;
+    using DeployLib for ConfigLib.HyperlaneDomainConfig;
 
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         string memory local = vm.envString("LOCAL");
         string[] memory remotes = vm.envString("REMOTES", ",");
-        DeployLib.HyperlaneDeployment memory deployment = DeployLib
-            .getHyperlaneDeployment(vm, local);
-        DeployLib.MultisigIsmConfig[] memory configs = DeployLib
-            .getMultisigIsmConfigs(vm, remotes);
+        ConfigLib.HyperlaneDomainConfig memory config = ConfigLib
+            .readHyperlaneDomainConfig(vm, local);
+        ConfigLib.MultisigIsmConfig memory ismConfig = ConfigLib
+            .readMultisigIsmConfig(vm, remotes);
 
         vm.startBroadcast(deployerPrivateKey);
         uint256 startBlock = block.number;
 
-        MultisigIsm ism = DeployLib.deployMultisigIsm(configs);
-
-        deployment.deployProxyAdmin();
-        deployment.deployIgp();
-        deployment.deployMailbox(address(ism));
+        config.deploy(ismConfig);
+        config.check(ismConfig);
 
         // Write the output to disk
-        deployment.write(vm);
-        deployment.writeAgentConfig(
-            vm,
-            startBlock,
-            "./config/agent_config.json"
-        );
+        // TODO: Only write if broadcast is on...
+        config.write(vm);
+        // TODO: Shouldn't overwrite startblock...
+        config.writeAgentConfig(vm, startBlock);
     }
 }

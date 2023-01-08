@@ -3,4 +3,4 @@ broadcast/
 out/
 forge-cache/
 cache/
-config/agent_config.json
+config/*_agent_config.json

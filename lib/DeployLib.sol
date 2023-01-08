@@ -1,103 +1,51 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
-import "../lib/forge-std/src/Script.sol";
 import "../lib/forge-std/src/console.sol";
-import {Vm} from "../lib/forge-std/src/Vm.sol";
 
-import {BytesLib} from "../lib/BytesLib.sol";
+import {ConfigLib} from "../lib/ConfigLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
 import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/InterchainGasPaymaster.sol";
 import {ProxyAdmin} from "@hyperlane-xyz/core/contracts/upgrade/ProxyAdmin.sol";
 import {TransparentUpgradeableProxy} from "@hyperlane-xyz/core/contracts/upgrade/TransparentUpgradeableProxy.sol";
 import {Create2Factory} from "@hyperlane-xyz/core/contracts/Create2Factory.sol";
+import {TestRecipient} from "@hyperlane-xyz/core/contracts/test/TestRecipient.sol";
 
 library DeployLib {
-    using stdJson for string;
-    using BytesLib for bytes;
-
-    struct HyperlaneDeployment {
-        string chainName;
-        uint32 domainId;
-        address owner;
-        Mailbox mailbox;
-        InterchainGasPaymaster igp;
-        ProxyAdmin admin;
-        Create2Factory create2;
+    function deploy(
+        ConfigLib.HyperlaneDomainConfig memory config,
+        ConfigLib.MultisigIsmConfig memory ismConfig
+    ) internal {
+        deployProxyAdmin(config);
+        deployIgp(config);
+        deployMailbox(config, ismConfig);
+        deployTestRecipient(config);
     }
 
-    function getContractAddress(
-        Vm vm,
-        string memory chainName,
-        string memory contractName
-    ) internal view returns (address) {
-        string memory json = vm.readFile("config/networks.json");
-        string memory prefix = ".contracts.";
-        try
-            vm.parseJson(
-                json,
-                string.concat(chainName, string.concat(prefix, contractName))
-            )
-        returns (bytes memory result) {
-            address parsedAddr = abi.decode(result, (address));
-            return parsedAddr == address(0x20) ? address(0) : parsedAddr;
-        } catch {
-            return address(0);
-        }
-    }
-
-    function getHyperlaneDeployment(
-        Vm vm,
-        string memory chainName
-    ) internal view returns (HyperlaneDeployment memory) {
-        string memory json = vm.readFile("config/networks.json");
-        uint32 domainId = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".id")),
-            (uint32)
-        );
-        address owner = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".owner")),
-            (address)
-        );
-        Mailbox mailbox = Mailbox(getContractAddress(vm, chainName, "mailbox"));
-        InterchainGasPaymaster igp = InterchainGasPaymaster(
-            getContractAddress(vm, chainName, "interchainGasPaymaster")
-        );
-        ProxyAdmin admin = ProxyAdmin(
-            getContractAddress(vm, chainName, "proxyAdmin")
-        );
-        Create2Factory create2 = Create2Factory(
-            getContractAddress(vm, chainName, "create2Factory")
-        );
-        return
-            HyperlaneDeployment(
-                chainName,
-                domainId,
-                owner,
-                mailbox,
-                igp,
-                admin,
-                create2
+    function deployProxyAdmin(
+        ConfigLib.HyperlaneDomainConfig memory config
+    ) private {
+        if (address(config.admin) == address(0)) {
+            config.admin = new ProxyAdmin();
+            console.log(
+                "ProxyAdmin deployed at address %s",
+                address(config.admin)
             );
-    }
-
-    function deployProxyAdmin(HyperlaneDeployment memory deployment) internal {
-        if (address(deployment.admin) == address(0)) {
-            deployment.admin = new ProxyAdmin();
-            deployment.admin.transferOwnership(deployment.owner);
+            config.admin.transferOwnership(config.owner);
+        } else {
+            console.log(
+                "Found ProxyAdmin at address %s, skipping deployment",
+                address(config.admin)
+            );
         }
-        require(
-            deployment.admin.owner() == deployment.owner,
-            "!ProxyAdmin owner"
-        );
     }
 
-    function deployIgp(HyperlaneDeployment memory deployment) internal {
+    function deployIgp(ConfigLib.HyperlaneDomainConfig memory config) private {
         require(
-            address(deployment.admin) != address(0),
-            "must deploy ProxyAdmin before IGP"
+            address(config.admin) != address(0),
+            "Must deploy ProxyAdmin before InterchainGasPaymaster"
         );
-        if (address(deployment.igp) == address(0)) {
+        if (address(config.igp) == address(0)) {
             InterchainGasPaymaster impl = new InterchainGasPaymaster();
             bytes memory initData = abi.encodeCall(
                 InterchainGasPaymaster.initialize,
@@ -105,175 +53,92 @@ library DeployLib {
             );
             TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
                 address(impl),
-                address(deployment.admin),
+                address(config.admin),
                 initData
             );
-            deployment.igp = InterchainGasPaymaster(address(proxy));
-            deployment.igp.transferOwnership(deployment.owner);
+            console.log(
+                "InterchainGasPaymaster deployed at address %s",
+                address(proxy)
+            );
+            config.igp = InterchainGasPaymaster(address(proxy));
+            config.igp.transferOwnership(config.owner);
+        } else {
+            console.log(
+                "Found InterchainGasPaymaster at address %s, skipping deployment",
+                address(config.igp)
+            );
         }
-        require(deployment.igp.owner() == deployment.owner, "!IGP owner");
     }
 
     function deployMailbox(
-        HyperlaneDeployment memory deployment,
-        address defaultIsm
-    ) internal {
+        ConfigLib.HyperlaneDomainConfig memory config,
+        ConfigLib.MultisigIsmConfig memory ismConfig
+    ) private {
         require(
-            address(deployment.admin) != address(0),
-            "must deploy ProxyAdmin before Mailbox"
+            address(config.admin) != address(0),
+            "Must deploy ProxyAdmin before Mailbox"
         );
-        if (address(deployment.mailbox) == address(0)) {
-            Mailbox mailbox = new Mailbox(deployment.domainId);
+        if (address(config.mailbox) == address(0)) {
+            MultisigIsm ism = deploy(ismConfig, config.owner);
+
+            Mailbox mailbox = new Mailbox(config.domainId);
             bytes memory initData = abi.encodeCall(
                 Mailbox.initialize,
-                (deployment.owner, defaultIsm)
+                (config.owner, address(ism))
             );
             TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
                 address(mailbox),
-                address(deployment.admin),
+                address(config.admin),
                 initData
             );
-            deployment.mailbox = Mailbox(address(proxy));
-        }
-        require(
-            deployment.mailbox.owner() == deployment.owner,
-            "!Mailbox owner"
-        );
-    }
-
-    function writeAgentConfig(
-        HyperlaneDeployment memory deployment,
-        Vm vm,
-        uint256 startBlock,
-        string memory filepath
-    ) internal {
-        string memory baseConfig = "config";
-        vm.serializeString(
-            baseConfig,
-            "domain",
-            vm.toString(uint256(deployment.domainId))
-        );
-        vm.serializeString(baseConfig, "rpcStyle", "ethereum");
-        vm.serializeString(baseConfig, "finalityBlocks", "POPULATE_ME");
-
-        string memory addresses = "addresses";
-        vm.serializeAddress(addresses, "mailbox", address(deployment.mailbox));
-        vm.serializeString(
-            baseConfig,
-            "addresses",
-            vm.serializeAddress(
-                addresses,
-                "interchainGasPaymaster",
-                address(deployment.igp)
-            )
-        );
-
-        string memory connection = "connection";
-        vm.serializeString(connection, "type", "http");
-        vm.serializeString(
-            baseConfig,
-            "connection",
-            vm.serializeString(connection, "url", "")
-        );
-
-        string memory index = "index";
-        vm.serializeString(
-            baseConfig,
-            "index",
-            vm.serializeString(index, "from", vm.toString(startBlock))
-        );
-
-        vm.serializeString(baseConfig, "name", deployment.chainName).write(
-            filepath
-        );
-    }
-
-    function write(HyperlaneDeployment memory deployment, Vm vm) internal {
-        string memory contracts = "contracts";
-        vm.serializeAddress(contracts, "mailbox", address(deployment.mailbox));
-        vm.serializeAddress(
-            contracts,
-            "interchainGasPaymaster",
-            address(deployment.igp)
-        );
-        vm.serializeAddress(contracts, "proxyAdmin", address(deployment.admin));
-        vm
-            .serializeAddress(
-                contracts,
-                "create2Factory",
-                address(deployment.create2)
-            )
-            .write(
-                "./config/networks.json",
-                string.concat(".", deployment.chainName, ".contracts")
-            );
-    }
-
-    struct MultisigIsmConfig {
-        uint32 domainId;
-        uint8 threshold;
-        address[] validators;
-    }
-
-    function getMultisigIsmConfig(
-        Vm vm,
-        string memory chainName
-    ) internal view returns (MultisigIsmConfig memory) {
-        string memory json = vm.readFile("config/multisig_ism.json");
-        uint8 threshold = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".threshold")),
-            (uint8)
-        );
-        bytes memory validatorBytes = json.parseRaw(
-            string.concat(chainName, ".validators[*].address")
-        );
-        uint256 numValidators = validatorBytes.length / 32;
-        address[] memory validators = new address[](numValidators);
-        for (uint256 i = 0; i < validators.length; i++) {
-            validators[i] = abi.decode(
-                validatorBytes.slice(i * 32, 32),
-                (address)
+            console.log("Mailbox deployed at address %s", address(proxy));
+            config.mailbox = Mailbox(address(proxy));
+        } else {
+            console.log(
+                "Found Mailbox at address %s, skipping deployment",
+                address(config.igp)
             );
         }
-
-        json = vm.readFile("config/networks.json");
-        uint32 domainId = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".id")),
-            (uint32)
-        );
-        return MultisigIsmConfig(domainId, threshold, validators);
     }
 
-    function getMultisigIsmConfigs(
-        Vm vm,
-        string[] memory chainNames
-    ) internal view returns (MultisigIsmConfig[] memory) {
-        MultisigIsmConfig[] memory configs = new MultisigIsmConfig[](
-            chainNames.length
-        );
-        for (uint256 i = 0; i < chainNames.length; i++) {
-            string memory chainName = chainNames[i];
-            configs[i] = getMultisigIsmConfig(vm, chainName);
+    function deployTestRecipient(
+        ConfigLib.HyperlaneDomainConfig memory config
+    ) private {
+        if (address(config.testRecipient) == address(0)) {
+            config.testRecipient = new TestRecipient();
+            console.log(
+                "TestRecipient deployed at address %s",
+                address(config.testRecipient)
+            );
+        } else {
+            console.log(
+                "Found TestRecipient at address %s, skipping deployment",
+                address(config.igp)
+            );
         }
-        return configs;
     }
 
-    function deployMultisigIsm(
-        MultisigIsmConfig[] memory remotes
+    function deploy(
+        ConfigLib.MultisigIsmConfig memory config,
+        address owner
     ) internal returns (MultisigIsm) {
         // Deploy a default MultisigIsm and enroll validators for remote
         // networks.
         MultisigIsm ism = new MultisigIsm();
-        uint32[] memory remoteDomainIds = new uint32[](remotes.length);
-        uint8[] memory remoteThresholds = new uint8[](remotes.length);
-        address[][] memory remoteValidators = new address[][](remotes.length);
-        for (uint256 i = 0; i < remotes.length; i++) {
-            remoteDomainIds[i] = remotes[i].domainId;
-            remoteThresholds[i] = remotes[i].threshold;
-            remoteValidators[i] = remotes[i].validators;
+        console.log("MultisigIsm deployed at address %s", address(ism));
+        uint32[] memory remoteDomainIds = new uint32[](config.domains.length);
+        uint8[] memory remoteThresholds = new uint8[](config.domains.length);
+        address[][] memory remoteValidators = new address[][](
+            config.domains.length
+        );
+        for (uint256 i = 0; i < config.domains.length; i++) {
+            remoteDomainIds[i] = config.domains[i].domainId;
+            remoteThresholds[i] = config.domains[i].threshold;
+            remoteValidators[i] = config.domains[i].validators;
         }
         ism.enrollValidators(remoteDomainIds, remoteValidators);
         ism.setThresholds(remoteDomainIds, remoteThresholds);
+        ism.transferOwnership(owner);
         return ism;
     }
 }
