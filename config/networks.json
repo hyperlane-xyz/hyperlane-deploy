@@ -1,85 +1,94 @@
 {
   "alfajores": {
     "id": 44787,
+    "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
       "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
-      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a"
+      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
+      "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
     }
   },
   "fuji": {
     "id": 43113,
+    "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
       "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
-      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a"
+      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
+      "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
     }
   },
   "mumbai": {
     "id": 80001,
+    "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
       "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
-      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a"
+      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
+      "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
     }
   },
   "bsctestnet": {
     "id": 97,
+    "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
       "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
-      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a"
+      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
+      "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
     }
   },
   "goerli": {
     "id": 5,
+    "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
       "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
-      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a"
+      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
+      "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
     }
   },
   "moonbasealpha": {
     "id": 1287,
+    "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
       "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
-      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a"
+      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
+      "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
     }
   },
   "optimismgoerli": {
     "id": 420,
+    "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
       "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
-      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a"
+      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
+      "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
     }
   },
   "arbitrumgoerli": {
     "id": 421613,
+    "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
       "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
-      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a"
+      "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
+      "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
     }
   },
   "test1": {
-    "id": 13371,
-    "owner": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
-    "contracts": {
-      "mailbox": "0x82B642D9deDb3Ad19b8E99FF3792A49d4d9d85Bf",
-      "interchainGasPaymaster": "0x7798A400cBe0Ca14a7D614ECa1CD15adE5055413",
-      "create2Factory": "0x0000000000000000000000000000000000000000",
-      "proxyAdmin": "0x199c27B10a195ee79e02d50846e59A4aFB82CAD1"
-    }
+    "id": 13371
   },
   "test2": {
     "id": 13372
