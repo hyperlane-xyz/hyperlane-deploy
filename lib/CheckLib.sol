@@ -96,7 +96,7 @@ library CheckLib {
                 require(
                     contains(domain.validators, validators[j]),
                     string.concat(
-                        "Default MultisigIsm validator set misconfigured for",
+                        "Default MultisigIsm validator set misconfigured for ",
                         domain.chainName
                     )
                 );

@@ -1,4 +1,13 @@
 {
+  "foochain": {
+    "threshold": 1,
+    "validators": [
+      {
+        "address": "0xb17861defd784d13c257f2430c4724ffa7ffc554",
+        "name": "asa test validator"
+      }
+    ]
+  },
   "alfajores": {
     "threshold": 2,
     "validators": [
