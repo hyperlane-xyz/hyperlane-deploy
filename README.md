@@ -25,19 +25,21 @@ For more detailed instructions on how to deploy Hyperlane to the EVM chain of yo
 
 ### Deploying core contracts
 
-This script is used to deploy the core Hyperlane smart contracts to a new chain.
+This script is used to incrementally deploy the core Hyperlane smart contracts to a new chain.
+
+If a contract address for `$LOCAL` is set to `0x0` in `./config/networks.json`, that contract will be deployed. If not, the script will assert that the contract is configured according to the config in `./config`.
+
+If you're deploying to a new chain, ensure there is a corresponding entry for `$LOCAL` in `./config/networks.json` with all contract addresses set to `0x0`.
 
 The script deploys:
 
+- A `ProxyAdmin`, used to administer `TransparentUpgradableProxies` for `Mailbox` and `InterchainGasPaymaster`
 - A `Mailbox`, which applications can use to send and receive messages
 - A `MultisigIsm`. Applications can optionally use this ISM to verify interchain messages sent to the local chain.
 - An `InterchainGasPaymaster`. Applications can optionally use this contract to pay a relayer to deliver their interchain messages to remote chains.
-
-Ensure the local network you're deploying to has an entry in `config/networks.json`, and the remote networks you'd like to support have entries in `config/networks.json` and `config/multisig_ism.json`.
+- A `TestRecipient`. Users can send messages to this contract to verify that everything is working properly.
 
 ```bash
-# This address will wind up owning the core contracts after they're deployed.
-export OWNER=0x1234
 # The private key that will be used to deploy the contracts. Does not have any
 # permissions post-deployment, any key with a balance will do.
 export PRIVATE_KEY=0x1234
@@ -55,21 +57,22 @@ forge script scripts/DeployCore.s.sol --broadcast --rpc-url $RPC_URL
 
 ### Deploying a MultisigIsm
 
-This script is used to deploy a `MultigsigIsm` to the chain of your choice.
+This script is used to deploy a `MultigsigIsm` to the chain of your choice. It will be initialized to verify messages from `$REMOTES` using the config for each remote chain specified in `./config/multisig_ism.json`.
 
 Applications can optionally use this ISM to verify interchain messages.
 
+The script will also deploy a `TestRecipient`, configured to use the deployed ISM.
+
 ```bash
-# This address will wind up owning the ISM after it's deployed.
+# This address will wind up owning the MultisigIsm after it's deployed.
 export OWNER=0x1234
 # The private key that will be used to deploy the contracts. Does not have any
 # permissions post-deployment, any key with a balance will do.
 export PRIVATE_KEY=0x1234
 # An RPC url for the chain to deploy to.
 export RPC_URL=YOUR_CHAIN_RPC_URL
-# The comma separated name(s) of the remote chains the MultisigIsm will verify
-# messages from.
-export REMOTES=ethereum,polygon,avalanche,celo,arbitrum,optimism,bsc,moonbeam
+# The comma separated name(s) of the chain(s) to receive messages from.
+export REMOTES=YOUR_CHAIN_NAME
 
 forge script scripts/DeployMultisigIsm.s.sol --broadcast --rpc-url $RPC_URL
 ```
