@@ -4,6 +4,7 @@ import "../lib/forge-std/src/Script.sol";
 import {Vm} from "../lib/forge-std/src/Vm.sol";
 
 import {BytesLib} from "../lib/BytesLib.sol";
+import {DeployLib} from "../lib/DeployLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
 import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/InterchainGasPaymaster.sol";
@@ -11,206 +12,100 @@ import {ProxyAdmin} from "@hyperlane-xyz/core/contracts/upgrade/ProxyAdmin.sol";
 import {TransparentUpgradeableProxy} from "@hyperlane-xyz/core/contracts/upgrade/TransparentUpgradeableProxy.sol";
 import {Create2Factory} from "@hyperlane-xyz/core/contracts/Create2Factory.sol";
 import {TestRecipient} from "@hyperlane-xyz/core/contracts/test/TestRecipient.sol";
+import {IInterchainSecurityModule} from "@hyperlane-xyz/core/interfaces/IInterchainSecurityModule.sol";
 
 library ConfigLib {
     using stdJson for string;
     using BytesLib for bytes;
 
-    struct HyperlaneDomainConfig {
-        string chainName;
-        uint32 domainId;
+    struct Core {
+        uint32 domain;
+        IInterchainSecurityModule ism;
         address owner;
-        Mailbox mailbox;
-        InterchainGasPaymaster igp;
-        ProxyAdmin admin;
-        Create2Factory create2;
-        TestRecipient testRecipient;
     }
 
-    struct MultisigIsmDomainConfig {
-        string chainName;
-        uint32 domainId;
-        uint8 threshold;
-        address[] validators;
+    struct Multisig {
+        MultisigIsm.DomainConfig[] domains;
+        address owner;
     }
 
-    struct MultisigIsmConfig {
-        MultisigIsmDomainConfig[] domains;
+    struct Agent {
+        DeployLib.Core addresses;
+        uint32 domain;
+        string finalityBlocks;
+        string rpcStyle;
+        string url;
     }
 
-    function readContractAddress(
-        Vm vm,
-        string memory chainName,
-        string memory contractName
-    ) private view returns (address) {
-        string memory json = vm.readFile("config/networks.json");
-        string memory prefix = ".contracts.";
-        try
-            vm.parseJson(
-                json,
-                string.concat(chainName, string.concat(prefix, contractName))
-            )
-        returns (bytes memory result) {
-            address parsedAddr = abi.decode(result, (address));
-            return parsedAddr == address(0x20) ? address(0) : parsedAddr;
-        } catch {
-            return address(0);
-        }
+    function readCore(Vm vm, string memory chainName) internal view returns (Core memory) {
+        string memory file = vm.readFile("config/networks.json");
+        bytes memory chain = vm.parseJson(file, chainName);
+        return abi.decode(chain, (Core));
     }
 
-    function readHyperlaneDomainConfig(
-        Vm vm,
-        string memory chainName
-    ) internal view returns (HyperlaneDomainConfig memory) {
-        string memory json = vm.readFile("config/networks.json");
-        uint32 domainId = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".id")),
-            (uint32)
-        );
-        address owner = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".owner")),
-            (address)
-        );
-        Mailbox mailbox = Mailbox(
-            readContractAddress(vm, chainName, "mailbox")
-        );
-        InterchainGasPaymaster igp = InterchainGasPaymaster(
-            readContractAddress(vm, chainName, "interchainGasPaymaster")
-        );
-        ProxyAdmin admin = ProxyAdmin(
-            readContractAddress(vm, chainName, "proxyAdmin")
-        );
-        Create2Factory create2 = Create2Factory(
-            readContractAddress(vm, chainName, "create2Factory")
-        );
-        TestRecipient recipient = TestRecipient(
-            readContractAddress(vm, chainName, "testRecipient")
-        );
-        return
-            HyperlaneDomainConfig(
-                chainName,
-                domainId,
-                owner,
-                mailbox,
-                igp,
-                admin,
-                create2,
-                recipient
-            );
-    }
-
-    function readMultisigIsmDomainConfig(
-        Vm vm,
-        string memory chainName
-    ) private view returns (MultisigIsmDomainConfig memory) {
-        string memory json = vm.readFile("config/multisig_ism.json");
-        uint8 threshold = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".threshold")),
-            (uint8)
-        );
-        bytes memory validatorBytes = json.parseRaw(
-            string.concat(chainName, ".validators[*].address")
-        );
-        uint256 numValidators = validatorBytes.length / 32;
-        address[] memory validators = new address[](numValidators);
-        for (uint256 i = 0; i < validators.length; i++) {
-            validators[i] = abi.decode(
-                validatorBytes.slice(i * 32, 32),
-                (address)
-            );
-        }
-
-        json = vm.readFile("config/networks.json");
-        uint32 domainId = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".id")),
-            (uint32)
-        );
-        return
-            MultisigIsmDomainConfig(chainName, domainId, threshold, validators);
+    function readMultisigIsmDomainConfig(Vm vm, string memory chainName) private view returns (MultisigIsm.DomainConfig memory) {
+        string memory file = vm.readFile("config/multisig_ism.json");
+        bytes memory chain = vm.parseJson(file, chainName);
+        return abi.decode(chain, (MultisigIsm.DomainConfig));
     }
 
     function readMultisigIsmConfig(
         Vm vm,
-        string[] memory chainNames
-    ) internal view returns (MultisigIsmConfig memory) {
-        MultisigIsmDomainConfig[]
-            memory domains = new MultisigIsmDomainConfig[](chainNames.length);
+        string[] memory chainNames,
+        address owner
+    ) internal view returns (Multisig memory) {
+        MultisigIsm.DomainConfig[] memory domains = new MultisigIsm.DomainConfig[](chainNames.length);
         for (uint256 i = 0; i < chainNames.length; i++) {
             string memory chainName = chainNames[i];
             domains[i] = readMultisigIsmDomainConfig(vm, chainName);
         }
-        return MultisigIsmConfig(domains);
+        return Multisig(domains, owner);
     }
 
-    function writeAgentConfig(
-        HyperlaneDomainConfig memory config,
-        Vm vm,
-        uint256 startBlock
-    ) internal {
-        string memory baseConfig = "config";
-        vm.serializeString(
-            baseConfig,
-            "domain",
-            vm.toString(uint256(config.domainId))
-        );
-        vm.serializeString(baseConfig, "rpcStyle", "ethereum");
-        vm.serializeString(baseConfig, "finalityBlocks", "POPULATE_ME");
+    // function writeAgentConfig(
+    //     HyperlaneDomainConfig memory config,
+    //     Vm vm,
+    //     string memory chainName,
+    //     uint256 startBlock
+    // ) internal {
+    //     string memory baseConfig = "config";
+    //     vm.serializeString(
+    //         baseConfig,
+    //         "domain",
+    //         vm.toString(uint256(config.domainId))
+    //     );
+    //     vm.serializeString(baseConfig, "rpcStyle", "ethereum");
+    //     vm.serializeString(baseConfig, "finalityBlocks", "POPULATE_ME");
 
-        string memory addresses = "addresses";
-        vm.serializeAddress(addresses, "mailbox", address(config.mailbox));
-        vm.serializeString(
-            baseConfig,
-            "addresses",
-            vm.serializeAddress(
-                addresses,
-                "interchainGasPaymaster",
-                address(config.igp)
-            )
-        );
+    //     string memory addresses = "addresses";
+    //     vm.serializeAddress(addresses, "mailbox", address(config.mailbox));
+    //     vm.serializeString(
+    //         baseConfig,
+    //         "addresses",
+    //         vm.serializeAddress(
+    //             addresses,
+    //             "interchainGasPaymaster",
+    //             address(config.igp)
+    //         )
+    //     );
 
-        string memory connection = "connection";
-        vm.serializeString(connection, "type", "http");
-        vm.serializeString(
-            baseConfig,
-            "connection",
-            vm.serializeString(connection, "url", "")
-        );
+    //     string memory connection = "connection";
+    //     vm.serializeString(connection, "type", "http");
+    //     vm.serializeString(
+    //         baseConfig,
+    //         "connection",
+    //         vm.serializeString(connection, "url", "")
+    //     );
 
-        string memory index = "index";
-        vm.serializeString(
-            baseConfig,
-            "index",
-            vm.serializeString(index, "from", vm.toString(startBlock))
-        );
+    //     string memory index = "index";
+    //     vm.serializeString(
+    //         baseConfig,
+    //         "index",
+    //         vm.serializeString(index, "from", vm.toString(startBlock))
+    //     );
 
-        vm.serializeString(baseConfig, "name", config.chainName).write(
-            string.concat("./config/", config.chainName, "_agent_config.json")
-        );
-    }
-
-    function write(HyperlaneDomainConfig memory config, Vm vm) internal {
-        string memory contracts = "contracts";
-        vm.serializeAddress(contracts, "mailbox", address(config.mailbox));
-        vm.serializeAddress(
-            contracts,
-            "interchainGasPaymaster",
-            address(config.igp)
-        );
-        vm.serializeAddress(contracts, "proxyAdmin", address(config.admin));
-        vm.serializeAddress(
-            contracts,
-            "testRecipient",
-            address(config.testRecipient)
-        );
-        vm
-            .serializeAddress(
-                contracts,
-                "create2Factory",
-                address(config.create2)
-            )
-            .write(
-                "./config/networks.json",
-                string.concat(".", config.chainName, ".contracts")
-            );
-    }
+    //     vm.serializeString(baseConfig, "name", chainName).write(
+    //         string.concat("./config/", chainName, "_agent_config.json")
+    //     );
+    // }
 }

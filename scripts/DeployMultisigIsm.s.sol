@@ -12,22 +12,24 @@ import {TestRecipient} from "@hyperlane-xyz/core/contracts/test/TestRecipient.so
 
 // TODO: Deploy test recipient, maybe write to networks.
 contract DeployMultisigIsm is Script {
-    using CheckLib for ConfigLib.MultisigIsmConfig;
-    using DeployLib for ConfigLib.MultisigIsmConfig;
+    using DeployLib for ConfigLib.Multisig;
+    using CheckLib for MultisigIsm;
 
-    function run() public {
-        address owner = vm.envAddress("OWNER");
+    function run() public returns (MultisigIsm) {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         string[] memory remotes = vm.envString("REMOTES", ",");
-        ConfigLib.MultisigIsmConfig memory config = ConfigLib
-            .readMultisigIsmConfig(vm, remotes);
+        address owner = vm.envAddress("OWNER");
+
+        ConfigLib.Multisig memory config = ConfigLib.readMultisigIsmConfig(vm, remotes, owner);
 
         vm.startBroadcast(deployerPrivateKey);
 
-        MultisigIsm ism = config.deploy(owner);
-        TestRecipient recipient = new TestRecipient();
-        recipient.setInterchainSecurityModule(address(ism));
-        console.log("TestRecipient deployed at address %s", address(recipient));
-        config.check(ism, owner);
+        MultisigIsm ism = config.deploy();
+
+        vm.stopBroadcast();
+
+        ism.check(config);
+
+        return ism;
     }
 }
