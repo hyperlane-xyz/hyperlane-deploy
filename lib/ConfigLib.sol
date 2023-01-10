@@ -69,8 +69,7 @@ library ConfigLib {
         MultisigIsm.DomainConfig[]
             memory domains = new MultisigIsm.DomainConfig[](chainNames.length);
         for (uint256 i = 0; i < chainNames.length; i++) {
-            string memory chainName = chainNames[i];
-            domains[i] = readMultisigIsmDomainConfig(vm, chainName);
+            domains[i] = readMultisigIsmDomainConfig(vm, chainNames[i]);
         }
         return Multisig(domains, owner);
     }

@@ -21,108 +21,98 @@ library CheckLib {
         uint256 expected;
     }
 
-    // generic
     error Owner(Ownable ownable, AddressAssertion assertion);
-    error Admin(TransparentUpgradeableProxy admin, AddressAssertion assertion);
+    function checkOwner(
+        Ownable ownable,
+        address expected
+    ) internal view {
+        address owner = ownable.owner();
+        if (owner != expected) {
+            revert Owner(ownable, AddressAssertion(owner, expected));
+        }
+    }
 
-    // mailbox
+    error Admin(TransparentUpgradeableProxy proxy, AddressAssertion assertion);
+    function checkAdmin(
+        TransparentUpgradeableProxy proxy,
+        ProxyAdmin admin
+    ) internal view {
+        address actual = admin.getProxyAdmin(proxy);
+        if (actual != address(admin)) {
+            revert Admin(proxy, AddressAssertion(actual, address(admin)));
+        }
+    }
+
     error DefaultIsm(Mailbox mailbox, AddressAssertion assertion);
+    function checkIsm(
+        Mailbox mailbox,
+        IInterchainSecurityModule expected
+    ) internal view {
+        IInterchainSecurityModule ism = mailbox.defaultIsm();
+        if (ism != expected) {
+            revert DefaultIsm(mailbox, AddressAssertion(address(ism), address(expected)));
+        }
+    }
 
     function check(
         DeployLib.Core memory core,
         ConfigLib.Core memory config
     ) internal view {
-        address adminOwner = core.admin.owner();
-        if (adminOwner != config.owner) {
-            revert Owner(
-                core.admin,
-                AddressAssertion(adminOwner, config.owner)
-            );
-        }
-        address igpOwner = core.igp.owner();
-        if (igpOwner != config.owner) {
-            revert Owner(
-                Ownable(address(core.igp)),
-                AddressAssertion(igpOwner, config.owner)
-            );
-        }
-        address mailboxOwner = core.mailbox.owner();
-        if (mailboxOwner != config.owner) {
-            revert Owner(
-                Ownable(address(core.mailbox)),
-                AddressAssertion(mailboxOwner, config.owner)
-            );
-        }
+        checkOwner(Ownable(address(core.igp)), config.owner);
+        checkOwner(Ownable(address(core.mailbox)), config.owner);
+        checkOwner(Ownable(address(core.admin)), config.owner);
 
-        TransparentUpgradeableProxy igpProxy = TransparentUpgradeableProxy(
-            payable(address(core.igp))
-        );
-        address igpAdmin = core.admin.getProxyAdmin(igpProxy);
-        if (igpAdmin != address(core.admin)) {
-            revert Admin(
-                igpProxy,
-                AddressAssertion(igpAdmin, address(core.admin))
-            );
-        }
-        TransparentUpgradeableProxy mailboxProxy = TransparentUpgradeableProxy(
-            payable(address(core.mailbox))
-        );
-        address mailboxAdmin = core.admin.getProxyAdmin(mailboxProxy);
-        if (mailboxAdmin != address(core.admin)) {
-            revert Admin(
-                mailboxProxy,
-                AddressAssertion(mailboxAdmin, address(core.admin))
-            );
-        }
+        checkAdmin(TransparentUpgradeableProxy(payable(address(core.igp))), core.admin);
+        checkAdmin(TransparentUpgradeableProxy(payable(address(core.mailbox))), core.admin);
 
-        IInterchainSecurityModule defaultIsm = core.mailbox.defaultIsm();
-        if (defaultIsm != config.defaultIsm) {
-            revert DefaultIsm(
-                core.mailbox,
-                AddressAssertion(
-                    address(defaultIsm),
-                    address(config.defaultIsm)
-                )
-            );
-        }
+        checkIsm(core.mailbox, config.defaultIsm);
     }
 
     error Threshold(MultisigIsm ism, uint32 domain, Uint256Assertion assertion);
+    function checkThreshold(
+        MultisigIsm ism,
+        uint32 domain,
+        uint256 expected
+    ) internal view {
+        uint256 threshold = ism.threshold(domain);
+        if (threshold != expected) {
+            revert Threshold(ism, domain, Uint256Assertion(threshold, expected));
+        }
+    }
+
     struct AddressSetAssertion {
         address[] actual;
         address[] expected;
     }
     error ValidatorSet(MultisigIsm ism, uint32 domain, AddressSetAssertion);
+    function checkValidators(
+        MultisigIsm ism,
+        uint32 domain,
+        address[] memory expected
+    ) internal view {
+        address[] memory validators = ism.validators(domain);
+        if (
+            keccak256(abi.encodePacked(validators)) !=
+            keccak256(abi.encodePacked(expected))
+        ) {
+            revert ValidatorSet(
+                ism,
+                domain,
+                AddressSetAssertion(validators, expected)
+            );
+        }
+    }
 
     function check(
         MultisigIsm ism,
         ConfigLib.Multisig memory config
     ) internal view {
-        address ismOwner = ism.owner();
-        if (ismOwner != config.owner) {
-            revert Owner(ism, AddressAssertion(ismOwner, config.owner));
-        }
+        checkOwner(ism, config.owner);
+
         for (uint256 i = 0; i < config.domains.length; i++) {
             MultisigIsm.DomainConfig memory domainConfig = config.domains[i];
-            uint256 threshold = ism.threshold(domainConfig.domain);
-            if (threshold != domainConfig.threshold) {
-                revert Threshold(
-                    ism,
-                    domainConfig.domain,
-                    Uint256Assertion(threshold, domainConfig.threshold)
-                );
-            }
-            address[] memory validators = ism.validators(domainConfig.domain);
-            if (
-                keccak256(abi.encodePacked(validators)) !=
-                keccak256(abi.encodePacked(domainConfig.validators))
-            ) {
-                revert ValidatorSet(
-                    ism,
-                    domainConfig.domain,
-                    AddressSetAssertion(validators, domainConfig.validators)
-                );
-            }
+            checkThreshold(ism, domainConfig.domain, domainConfig.threshold);
+            checkValidators(ism, domainConfig.domain, domainConfig.validators);
         }
     }
 }

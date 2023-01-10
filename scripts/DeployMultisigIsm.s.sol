@@ -10,7 +10,6 @@ import {DeployLib} from "../lib/DeployLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {TestRecipient} from "@hyperlane-xyz/core/contracts/test/TestRecipient.sol";
 
-// TODO: Deploy test recipient, maybe write to networks.
 contract DeployMultisigIsm is Script {
     using DeployLib for ConfigLib.Multisig;
     using CheckLib for MultisigIsm;
