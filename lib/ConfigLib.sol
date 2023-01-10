@@ -19,8 +19,8 @@ library ConfigLib {
     using BytesLib for bytes;
 
     struct Core {
+        IInterchainSecurityModule defaultIsm;
         uint32 domain;
-        IInterchainSecurityModule ism;
         address owner;
     }
 
@@ -29,21 +29,33 @@ library ConfigLib {
         address owner;
     }
 
+    struct Index {
+        uint256 from;
+    }
+
+    // mirrors RustChainSetup in monorepo/typescript/infra/src/config/agent.ts:257
     struct Agent {
         DeployLib.Core addresses;
         uint32 domain;
-        string finalityBlocks;
+        uint256 finalityBlocks;
+        Index index;
         string rpcStyle;
         string url;
     }
 
-    function readCore(Vm vm, string memory chainName) internal view returns (Core memory) {
+    function readCore(
+        Vm vm,
+        string memory chainName
+    ) internal view returns (Core memory) {
         string memory file = vm.readFile("config/networks.json");
         bytes memory chain = vm.parseJson(file, chainName);
         return abi.decode(chain, (Core));
     }
 
-    function readMultisigIsmDomainConfig(Vm vm, string memory chainName) private view returns (MultisigIsm.DomainConfig memory) {
+    function readMultisigIsmDomainConfig(
+        Vm vm,
+        string memory chainName
+    ) private view returns (MultisigIsm.DomainConfig memory) {
         string memory file = vm.readFile("config/multisig_ism.json");
         bytes memory chain = vm.parseJson(file, chainName);
         return abi.decode(chain, (MultisigIsm.DomainConfig));
@@ -54,7 +66,8 @@ library ConfigLib {
         string[] memory chainNames,
         address owner
     ) internal view returns (Multisig memory) {
-        MultisigIsm.DomainConfig[] memory domains = new MultisigIsm.DomainConfig[](chainNames.length);
+        MultisigIsm.DomainConfig[]
+            memory domains = new MultisigIsm.DomainConfig[](chainNames.length);
         for (uint256 i = 0; i < chainNames.length; i++) {
             string memory chainName = chainNames[i];
             domains[i] = readMultisigIsmDomainConfig(vm, chainName);
@@ -62,50 +75,18 @@ library ConfigLib {
         return Multisig(domains, owner);
     }
 
-    // function writeAgentConfig(
-    //     HyperlaneDomainConfig memory config,
-    //     Vm vm,
-    //     string memory chainName,
-    //     uint256 startBlock
-    // ) internal {
-    //     string memory baseConfig = "config";
-    //     vm.serializeString(
-    //         baseConfig,
-    //         "domain",
-    //         vm.toString(uint256(config.domainId))
-    //     );
-    //     vm.serializeString(baseConfig, "rpcStyle", "ethereum");
-    //     vm.serializeString(baseConfig, "finalityBlocks", "POPULATE_ME");
-
-    //     string memory addresses = "addresses";
-    //     vm.serializeAddress(addresses, "mailbox", address(config.mailbox));
-    //     vm.serializeString(
-    //         baseConfig,
-    //         "addresses",
-    //         vm.serializeAddress(
-    //             addresses,
-    //             "interchainGasPaymaster",
-    //             address(config.igp)
-    //         )
-    //     );
-
-    //     string memory connection = "connection";
-    //     vm.serializeString(connection, "type", "http");
-    //     vm.serializeString(
-    //         baseConfig,
-    //         "connection",
-    //         vm.serializeString(connection, "url", "")
-    //     );
-
-    //     string memory index = "index";
-    //     vm.serializeString(
-    //         baseConfig,
-    //         "index",
-    //         vm.serializeString(index, "from", vm.toString(startBlock))
-    //     );
-
-    //     vm.serializeString(baseConfig, "name", chainName).write(
-    //         string.concat("./config/", chainName, "_agent_config.json")
-    //     );
-    // }
+    function buildAgentConfig(
+        DeployLib.Core memory core,
+        uint32 domain
+    ) internal view returns (Agent memory) {
+        return
+            Agent({
+                addresses: core,
+                domain: domain,
+                finalityBlocks: 1,
+                index: Index({from: block.number}),
+                rpcStyle: "ethereum",
+                url: "" // TODO: vm.rpcUrl(chainName)
+            });
+    }
 }

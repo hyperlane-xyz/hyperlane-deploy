@@ -24,7 +24,9 @@ library DeployLib {
         TestRecipient testRecipient;
     }
 
-    function deploy(ConfigLib.Core memory config) internal returns (Core memory) {
+    function deploy(
+        ConfigLib.Core memory config
+    ) internal returns (Core memory) {
         ProxyAdmin admin = new ProxyAdmin();
         admin.transferOwnership(config.owner);
 
@@ -39,10 +41,13 @@ library DeployLib {
 
         Mailbox mailboxImplementation = new Mailbox(config.domain);
         TransparentUpgradeableProxy mailboxProxy = new TransparentUpgradeableProxy(
-            address(mailboxImplementation),
-            address(admin),
-            abi.encodeCall(Mailbox.initialize, (config.owner, address(config.ism)))
-        );
+                address(mailboxImplementation),
+                address(admin),
+                abi.encodeCall(
+                    Mailbox.initialize,
+                    (config.owner, address(config.defaultIsm))
+                )
+            );
         Mailbox mailbox = Mailbox(address(mailboxProxy));
 
         TestRecipient recipient = new TestRecipient();
@@ -51,7 +56,9 @@ library DeployLib {
         return Core(admin, Create2Factory(address(0)), igp, mailbox, recipient);
     }
 
-    function deploy(ConfigLib.Multisig memory config) internal returns (MultisigIsm) {
+    function deploy(
+        ConfigLib.Multisig memory config
+    ) internal returns (MultisigIsm) {
         return new MultisigIsm(config.domains, config.owner);
     }
 }

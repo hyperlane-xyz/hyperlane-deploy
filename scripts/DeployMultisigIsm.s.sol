@@ -20,7 +20,11 @@ contract DeployMultisigIsm is Script {
         string[] memory remotes = vm.envString("REMOTES", ",");
         address owner = vm.envAddress("OWNER");
 
-        ConfigLib.Multisig memory config = ConfigLib.readMultisigIsmConfig(vm, remotes, owner);
+        ConfigLib.Multisig memory config = ConfigLib.readMultisigIsmConfig(
+            vm,
+            remotes,
+            owner
+        );
 
         vm.startBroadcast(deployerPrivateKey);
 
