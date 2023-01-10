@@ -3,11 +3,11 @@
     "id": 1174786466,
     "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
     "contracts": {
-      "create2Factory": "0x0000000000000000000000000000000000000000",
-      "testRecipient": "0xAE791405766B9c3ed253517463196BEF5e4833d7",
-      "mailbox": "0xF939e1c22fc562A7a3fB28b94e90CD6d52d385bB",
       "proxyAdmin": "0xBAaF28F2EFfc4349CFf9901ccdCA007aBAF9Ec83",
-      "interchainGasPaymaster": "0x592294235892007A608548e8Cbb823FeF6a6bddb"
+      "create2Factory": "0x0000000000000000000000000000000000000000",
+      "mailbox": "0xF939e1c22fc562A7a3fB28b94e90CD6d52d385bB",
+      "interchainGasPaymaster": "0x592294235892007A608548e8Cbb823FeF6a6bddb",
+      "testRecipient": "0xAE791405766B9c3ed253517463196BEF5e4833d7"
     }
   },
   "alfajores": {

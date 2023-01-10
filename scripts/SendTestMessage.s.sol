@@ -9,13 +9,11 @@ import {ConfigLib} from "../lib/ConfigLib.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
 import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
 
-// TODO: Maybe take recipient as an arg..
 contract SendTestMessage is Script {
     using TypeCasts for address;
     using BytesLib for bytes;
 
     function run() public {
-        uint256 senderPrivateKey = vm.envUint("PRIVATE_KEY");
         string memory origin = vm.envString("ORIGIN");
         string memory destination = vm.envString("DESTINATION");
         address recipient = vm.envAddress("RECIPIENT");
@@ -26,7 +24,7 @@ contract SendTestMessage is Script {
         ConfigLib.HyperlaneDomainConfig memory config = ConfigLib
             .readHyperlaneDomainConfig(vm, destination);
 
-        vm.startBroadcast(senderPrivateKey);
+        vm.startBroadcast();
         bytes32 messageId = mailbox.dispatch(
             config.domainId,
             address(recipient).addressToBytes32(),

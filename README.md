@@ -52,7 +52,7 @@ export RPC_URL=YOUR_CHAIN_RPC_URL
 # Used to configure the default MultisigIsm.
 export REMOTES=ethereum,polygon,avalanche,celo,arbitrum,optimism,bsc,moonbeam
 
-forge script scripts/DeployCore.s.sol --broadcast --rpc-url $RPC_URL
+forge script scripts/DeployCore.s.sol --broadcast --rpc-url $RPC_URL --private-key $PRIVATE_KEY
 ```
 
 ### Deploying a MultisigIsm
@@ -74,5 +74,5 @@ export RPC_URL=YOUR_CHAIN_RPC_URL
 # The comma separated name(s) of the chain(s) to receive messages from.
 export REMOTES=YOUR_CHAIN_NAME
 
-forge script scripts/DeployMultisigIsm.s.sol --broadcast --rpc-url $RPC_URL
+forge script scripts/DeployMultisigIsm.s.sol --broadcast --rpc-url $RPC_URL --private-key $PRIVATE_KEY
 ```

@@ -17,12 +17,11 @@ contract DeployMultisigIsm is Script {
 
     function run() public {
         address owner = vm.envAddress("OWNER");
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         string[] memory remotes = vm.envString("REMOTES", ",");
         ConfigLib.MultisigIsmConfig memory config = ConfigLib
             .readMultisigIsmConfig(vm, remotes);
 
-        vm.startBroadcast(deployerPrivateKey);
+        vm.startBroadcast();
 
         MultisigIsm ism = config.deploy(owner);
         TestRecipient recipient = new TestRecipient();

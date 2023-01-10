@@ -11,7 +11,6 @@ library CheckLib {
         ConfigLib.HyperlaneDomainConfig memory config,
         ConfigLib.MultisigIsmConfig memory ismConfig
     ) internal view {
-        // checkBytecode(config);
         checkOwners(config);
         checkAdmins(config);
         checkMailboxIsm(config, ismConfig);
