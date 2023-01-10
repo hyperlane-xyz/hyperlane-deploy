@@ -33,7 +33,7 @@ contract SendTestMessage is Script {
             abi.encode(body)
         );
         console.log(
-            "Sent message with ID from %s to %s",
+            "Sent message with ID %s from %s to %s",
             vm.toString(messageId),
             origin,
             destination
