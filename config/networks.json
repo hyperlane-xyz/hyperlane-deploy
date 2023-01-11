@@ -37,15 +37,17 @@
   },
   "test1": {
     "domain": 13371,
-    "ism": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+    "defaultIsm": "0x34A1D3fff3958843C43aD80F30b94c510645C316",
     "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
   },
   "test2": {
     "domain": 13372,
+    "defaultIsm": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
     "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
   },
   "test3": {
     "domain": 13373,
+    "defaultIsm": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
     "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
   }
 }

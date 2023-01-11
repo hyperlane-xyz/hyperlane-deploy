@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
-import "../lib/forge-std/src/console.sol";
-
-import {Vm} from "../lib/forge-std/src/Vm.sol";
 
 import {ConfigLib} from "../lib/ConfigLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
@@ -24,9 +21,7 @@ library DeployLib {
         TestRecipient testRecipient;
     }
 
-    function deploy(
-        ConfigLib.Core memory config
-    ) internal returns (Core memory) {
+    function deploy(ConfigLib.Core memory config) internal returns (Core memory) {
         ProxyAdmin admin = new ProxyAdmin();
         admin.transferOwnership(config.owner);
 
@@ -52,7 +47,7 @@ library DeployLib {
 
         TestRecipient recipient = new TestRecipient();
 
-        // TODO: CREATE2 factory
+        // TODO: CREATE2Factory
         return Core(admin, Create2Factory(address(0)), igp, mailbox, recipient);
     }
 

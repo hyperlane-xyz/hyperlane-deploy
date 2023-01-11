@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 import "../lib/forge-std/src/Script.sol";
 import {Vm} from "../lib/forge-std/src/Vm.sol";
 
-import {BytesLib} from "../lib/BytesLib.sol";
 import {DeployLib} from "../lib/DeployLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
@@ -16,7 +15,6 @@ import {IInterchainSecurityModule} from "@hyperlane-xyz/core/interfaces/IInterch
 
 library ConfigLib {
     using stdJson for string;
-    using BytesLib for bytes;
 
     struct Core {
         IInterchainSecurityModule defaultIsm;
@@ -52,6 +50,10 @@ library ConfigLib {
         return abi.decode(chain, (Core));
     }
 
+    function digest(Core memory core) internal pure returns (bytes32) {
+        return keccak256(abi.encode(core));
+    }
+
     function readMultisigIsmDomainConfig(
         Vm vm,
         string memory chainName
@@ -74,18 +76,22 @@ library ConfigLib {
         return Multisig(domains, owner);
     }
 
-    function buildAgentConfig(
-        DeployLib.Core memory core,
-        uint32 domain
-    ) internal view returns (Agent memory) {
-        return
-            Agent({
-                addresses: core,
-                domain: domain,
-                finalityBlocks: 1,
-                index: Index({from: block.number}),
-                rpcStyle: "ethereum",
-                url: "" // TODO: vm.rpcUrl(chainName)
-            });
+    function digest(Multisig memory multisig) internal pure returns (bytes32) {
+        return keccak256(abi.encode(multisig));
     }
+
+    // function buildAgentConfig(
+    //     DeployLib.Core memory core,
+    //     uint32 domain
+    // ) internal view returns (Agent memory) {
+    //     return
+    //         Agent({
+    //             addresses: core,
+    //             domain: domain,
+    //             finalityBlocks: 1,
+    //             index: Index({from: block.number}),
+    //             rpcStyle: "ethereum",
+    //             url: "" // TODO: vm.rpcUrl(chainName)
+    //         });
+    // }
 }
