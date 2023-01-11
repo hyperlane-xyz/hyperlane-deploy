@@ -1,5 +1,6 @@
 {
   "foochain": {
+    "domain": 1174786466,
     "threshold": 1,
     "validators": [
       {
@@ -9,6 +10,7 @@
     ]
   },
   "alfajores": {
+    "domain": 44787,
     "threshold": 2,
     "validators": [
       {
@@ -26,6 +28,7 @@
     ]
   },
   "fuji": {
+    "domain": 43113,
     "threshold": 2,
     "validators": [
       {
@@ -43,6 +46,7 @@
     ]
   },
   "mumbai": {
+    "domain": 80001,
     "threshold": 2,
     "validators": [
       {
@@ -60,6 +64,7 @@
     ]
   },
   "bsctestnet": {
+    "domain": 97,
     "threshold": 2,
     "validators": [
       {
@@ -77,6 +82,7 @@
     ]
   },
   "goerli": {
+    "domain": 5,
     "threshold": 2,
     "validators": [
       {
@@ -94,6 +100,7 @@
     ]
   },
   "moonbasealpha": {
+    "domain": 1287,
     "threshold": 2,
     "validators": [
       {
@@ -111,6 +118,7 @@
     ]
   },
   "optimismgoerli": {
+    "domain": 420,
     "threshold": 2,
     "validators": [
       {
@@ -128,6 +136,7 @@
     ]
   },
   "arbitrumgoerli": {
+    "domain": 421613,
     "threshold": 2,
     "validators": [
       {
@@ -145,6 +154,7 @@
     ]
   },
   "test1": {
+    "domain": 13371,
     "threshold": 2,
     "validators": [
       {
@@ -162,6 +172,7 @@
     ]
   },
   "test2": {
+    "domain": 13372,
     "threshold": 2,
     "validators": [
       {
@@ -179,6 +190,7 @@
     ]
   },
   "test3": {
+    "domain": 13373,
     "threshold": 2,
     "validators": [
       {

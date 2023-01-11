@@ -3,31 +3,35 @@ pragma solidity ^0.8.17;
 
 import "../lib/forge-std/src/Script.sol";
 
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+
 import {ConfigLib} from "../lib/ConfigLib.sol";
 import {CheckLib} from "../lib/CheckLib.sol";
 import {DeployLib} from "../lib/DeployLib.sol";
 
 contract DeployCore is Script {
-    using ConfigLib for ConfigLib.HyperlaneDomainConfig;
-    using CheckLib for ConfigLib.HyperlaneDomainConfig;
-    using DeployLib for ConfigLib.HyperlaneDomainConfig;
+    using Strings for uint256;
 
-    function run() public {
+    using DeployLib for ConfigLib.Core;
+    using ConfigLib for ConfigLib.Core;
+    using CheckLib for DeployLib.Core;
+
+    function run() public returns (DeployLib.Core memory core) {
         string memory local = vm.envString("LOCAL");
-        string[] memory remotes = vm.envString("REMOTES", ",");
-        ConfigLib.HyperlaneDomainConfig memory config = ConfigLib
-            .readHyperlaneDomainConfig(vm, local);
-        ConfigLib.MultisigIsmConfig memory ismConfig = ConfigLib
-            .readMultisigIsmConfig(vm, remotes);
 
-        vm.startBroadcast();
-        uint256 startBlock = block.number;
+        ConfigLib.Core memory coreConfig = ConfigLib.readCore(vm, local);
+        
+        string memory key = uint256(coreConfig.digest()).toString();
+        string memory out = string.concat("deployments/core/", key);
+        try vm.readFileBinary(out) returns (bytes memory data) {
+            core = abi.decode(data, (DeployLib.Core));
+        } catch {
+            vm.startBroadcast();
+            core = coreConfig.deploy();
+            vm.stopBroadcast();
+            vm.writeFileBinary(out, abi.encode(core));
+        }
 
-        config.deploy(ismConfig);
-        config.check(ismConfig);
-
-        // Write the output to disk
-        config.write(vm);
-        config.writeAgentConfig(vm, startBlock);
+        core.check(coreConfig);
     }
 }
