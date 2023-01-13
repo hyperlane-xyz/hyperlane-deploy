@@ -183,9 +183,25 @@ library ConfigLib {
             vm.serializeString(index, "from", vm.toString(startBlock))
         );
 
-        vm.serializeString(baseConfig, "name", config.chainName).write(
-            string.concat("./config/", config.chainName, "_agent_config.json")
-        );
+        vm.serializeString(baseConfig, "name", config.chainName);
+
+        vm
+            .serializeString(
+                "topLevel",
+                "chains",
+                vm.serializeString(
+                    "chainLevel",
+                    config.chainName,
+                    vm.serializeString(baseConfig, "protocol", "ethereum")
+                )
+            )
+            .write(
+                string.concat(
+                    "./config/",
+                    config.chainName,
+                    "_agent_config.json"
+                )
+            );
     }
 
     function write(HyperlaneDomainConfig memory config, Vm vm) internal {
