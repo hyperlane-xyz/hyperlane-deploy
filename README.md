@@ -40,9 +40,6 @@ The script deploys:
 - A `TestRecipient`. Users can send messages to this contract to verify that everything is working properly.
 
 ```bash
-# The private key that will be used to deploy the contracts. Does not have any
-# permissions post-deployment, any key with a balance will do.
-export PRIVATE_KEY=0x1234
 # The name of the chain to deploy to. Used to configure the localDomain for the
 # Mailbox contract.
 export LOCAL=YOUR_CHAIN_NAME
@@ -52,7 +49,8 @@ export RPC_URL=YOUR_CHAIN_RPC_URL
 # Used to configure the default MultisigIsm.
 export REMOTES=ethereum,polygon,avalanche,celo,arbitrum,optimism,bsc,moonbeam
 
-forge script scripts/DeployCore.s.sol --broadcast --rpc-url $RPC_URL --private-key $PRIVATE_KEY
+# Pass whatever wallet option you would like to use https://book.getfoundry.sh/reference/forge/forge-script#wallet-options---raw
+forge script scripts/DeployCore.s.sol --broadcast --rpc-url $RPC_URL
 ```
 
 ### Deploying a MultisigIsm
@@ -66,9 +64,6 @@ The script will also deploy a `TestRecipient`, configured to use the deployed IS
 ```bash
 # This address will wind up owning the MultisigIsm after it's deployed.
 export OWNER=0x1234
-# The private key that will be used to deploy the contracts. Does not have any
-# permissions post-deployment, any key with a balance will do.
-export PRIVATE_KEY=0x1234
 # An RPC url for the chain to deploy to.
 export RPC_URL=YOUR_CHAIN_RPC_URL
 # The comma separated name(s) of the chain(s) to receive messages from.

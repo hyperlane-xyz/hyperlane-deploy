@@ -58,10 +58,11 @@ library ConfigLib {
         }
     }
 
-    function readHyperlaneDomainConfig(
-        Vm vm,
-        string memory chainName
-    ) internal view returns (HyperlaneDomainConfig memory) {
+    function readHyperlaneDomainConfig(Vm vm, string memory chainName)
+        internal
+        view
+        returns (HyperlaneDomainConfig memory)
+    {
         string memory json = vm.readFile("config/networks.json");
         uint32 domainId = abi.decode(
             vm.parseJson(json, string.concat(chainName, ".id")),
@@ -99,10 +100,11 @@ library ConfigLib {
             );
     }
 
-    function readMultisigIsmDomainConfig(
-        Vm vm,
-        string memory chainName
-    ) private view returns (MultisigIsmDomainConfig memory) {
+    function readMultisigIsmDomainConfig(Vm vm, string memory chainName)
+        private
+        view
+        returns (MultisigIsmDomainConfig memory)
+    {
         string memory json = vm.readFile("config/multisig_ism.json");
         uint8 threshold = abi.decode(
             vm.parseJson(json, string.concat(chainName, ".threshold")),
@@ -129,10 +131,11 @@ library ConfigLib {
             MultisigIsmDomainConfig(chainName, domainId, threshold, validators);
     }
 
-    function readMultisigIsmConfig(
-        Vm vm,
-        string[] memory chainNames
-    ) internal view returns (MultisigIsmConfig memory) {
+    function readMultisigIsmConfig(Vm vm, string[] memory chainNames)
+        internal
+        view
+        returns (MultisigIsmConfig memory)
+    {
         MultisigIsmDomainConfig[]
             memory domains = new MultisigIsmDomainConfig[](chainNames.length);
         for (uint256 i = 0; i < chainNames.length; i++) {
@@ -183,9 +186,25 @@ library ConfigLib {
             vm.serializeString(index, "from", vm.toString(startBlock))
         );
 
-        vm.serializeString(baseConfig, "name", config.chainName).write(
-            string.concat("./config/", config.chainName, "_agent_config.json")
-        );
+        vm.serializeString(baseConfig, "name", config.chainName);
+
+        vm
+            .serializeString(
+                "topLevel",
+                "chains",
+                vm.serializeString(
+                    "chainLevel",
+                    config.chainName,
+                    vm.serializeString(baseConfig, "protocol", "ethereum")
+                )
+            )
+            .write(
+                string.concat(
+                    "./config/",
+                    config.chainName,
+                    "_agent_config.json"
+                )
+            );
     }
 
     function write(HyperlaneDomainConfig memory config, Vm vm) internal {
