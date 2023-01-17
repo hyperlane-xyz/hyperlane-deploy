@@ -21,6 +21,7 @@ For more detailed instructions on how to deploy Hyperlane to the EVM chain of yo
 
   ```bash
   yarn install
+  git submodule init && git submodule update --remote
   ```
 
 ### Deploying core contracts
