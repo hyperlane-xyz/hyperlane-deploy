@@ -23,13 +23,13 @@ contract CheckMessage is Script {
         bool delivered = mailbox.delivered(messageId);
         if (delivered) {
             console.log(
-                "Message ID '%s' was delivered to %s",
+                "Message ID '%s' HAS been delivered to %s",
                 vm.toString(messageId),
                 destination
             );
         } else {
             console.log(
-                "Message ID '%s' was delivered to %s",
+                "Message ID '%s' HAS NOT been delivered to %s",
                 vm.toString(messageId),
                 destination
             );
