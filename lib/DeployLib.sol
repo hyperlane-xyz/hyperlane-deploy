@@ -5,7 +5,8 @@ import "../lib/forge-std/src/console.sol";
 import {ConfigLib} from "../lib/ConfigLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
-import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/InterchainGasPaymaster.sol";
+import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/igps/InterchainGasPaymaster.sol";
+import {ValidatorAnnounce} from "@hyperlane-xyz/core/contracts/ValidatorAnnounce.sol";
 import {ProxyAdmin} from "@hyperlane-xyz/core/contracts/upgrade/ProxyAdmin.sol";
 import {TransparentUpgradeableProxy} from "@hyperlane-xyz/core/contracts/upgrade/TransparentUpgradeableProxy.sol";
 import {Create2Factory} from "@hyperlane-xyz/core/contracts/Create2Factory.sol";
@@ -20,6 +21,26 @@ library DeployLib {
         deployIgp(config);
         deployMailbox(config, ismConfig);
         deployTestRecipient(config);
+        deployValidatorAnnounce(config);
+    }
+
+    function deployValidatorAnnounce(
+        ConfigLib.HyperlaneDomainConfig memory config
+    ) private {
+        if (address(config.validatorAnnounce) == address(0)) {
+            config.validatorAnnounce = new ValidatorAnnounce(
+                address(config.mailbox)
+            );
+            console.log(
+                "ValidatorAnnounce deployed at address %s",
+                address(config.validatorAnnounce)
+            );
+        } else {
+            console.log(
+                "Found ValidatorAnnounce at address %s, skipping deployment",
+                address(config.validatorAnnounce)
+            );
+        }
     }
 
     function deployProxyAdmin(

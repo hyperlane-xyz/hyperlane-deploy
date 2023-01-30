@@ -6,7 +6,8 @@ import {Vm} from "../lib/forge-std/src/Vm.sol";
 import {BytesLib} from "../lib/BytesLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
-import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/InterchainGasPaymaster.sol";
+import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/igps/InterchainGasPaymaster.sol";
+import {ValidatorAnnounce} from "@hyperlane-xyz/core/contracts/ValidatorAnnounce.sol";
 import {ProxyAdmin} from "@hyperlane-xyz/core/contracts/upgrade/ProxyAdmin.sol";
 import {TransparentUpgradeableProxy} from "@hyperlane-xyz/core/contracts/upgrade/TransparentUpgradeableProxy.sol";
 import {Create2Factory} from "@hyperlane-xyz/core/contracts/Create2Factory.sol";
@@ -24,6 +25,7 @@ library ConfigLib {
         InterchainGasPaymaster igp;
         ProxyAdmin admin;
         Create2Factory create2;
+        ValidatorAnnounce validatorAnnounce;
         TestRecipient testRecipient;
     }
 
@@ -86,6 +88,9 @@ library ConfigLib {
         TestRecipient recipient = TestRecipient(
             readContractAddress(vm, chainName, "testRecipient")
         );
+        ValidatorAnnounce validatorAnnounce = ValidatorAnnounce(
+            readContractAddress(vm, chainName, "validatorAnnounce")
+        );
         return
             HyperlaneDomainConfig(
                 chainName,
@@ -95,6 +100,7 @@ library ConfigLib {
                 igp,
                 admin,
                 create2,
+                validatorAnnounce,
                 recipient
             );
     }
