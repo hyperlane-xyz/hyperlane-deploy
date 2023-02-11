@@ -3,31 +3,48 @@ pragma solidity ^0.8.17;
 
 import "../lib/forge-std/src/Script.sol";
 
-import {ConfigLib} from "../lib/ConfigLib.sol";
+import {CoreConfigLib} from "../lib/CoreConfigLib.sol";
+import {NetworkConfigLib} from "../lib/NetworkConfigLib.sol";
+import {MultisigIsmConfigLib} from "../lib/MultisigIsmConfigLib.sol";
 import {CheckLib} from "../lib/CheckLib.sol";
-import {DeployLib} from "../lib/DeployLib.sol";
+import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
+import {IInterchainSecurityModule} from "@hyperlane-xyz/core/interfaces/IInterchainSecurityModule.sol";
 
 contract DeployCore is Script {
-    using ConfigLib for ConfigLib.HyperlaneDomainConfig;
-    using CheckLib for ConfigLib.HyperlaneDomainConfig;
-    using DeployLib for ConfigLib.HyperlaneDomainConfig;
+    using CheckLib for CoreConfigLib.CoreDeployment;
+    using MultisigIsmConfigLib for MultisigIsmConfigLib.MultisigIsmConfig;
 
-    function run() public {
+    function run() public returns (CoreConfigLib.CoreDeployment memory core) {
         string memory local = vm.envString("LOCAL");
         string[] memory remotes = vm.envString("REMOTES", ",");
-        ConfigLib.HyperlaneDomainConfig memory config = ConfigLib
-            .readHyperlaneDomainConfig(vm, local);
-        ConfigLib.MultisigIsmConfig memory ismConfig = ConfigLib
-            .readMultisigIsmConfig(vm, remotes);
 
-        vm.startBroadcast();
-        uint256 startBlock = block.number;
+        NetworkConfigLib.NetworkConfig memory network = NetworkConfigLib
+            .readConfig(vm, local);
+        MultisigIsmConfigLib.MultisigIsmConfig
+            memory multisig = MultisigIsmConfigLib.readConfig(
+                vm,
+                local,
+                remotes
+            );
 
-        config.deploy(ismConfig);
-        config.check(ismConfig);
+        if (CoreConfigLib.hasDeployment(vm, local)) {
+            console.log("Hyperlane already deployed on %s, skipping...", local);
+            core = CoreConfigLib.readDeployment(vm, local);
+        } else {
+            vm.startBroadcast();
+            console.log("Deploying Hyperlane to %s...", local);
+            MultisigIsm ism = multisig.deploy();
+            core = CoreConfigLib.deploy(
+                network,
+                IInterchainSecurityModule(ism)
+            );
+            vm.stopBroadcast();
+            CoreConfigLib.writeDeployment(vm, local, core);
+        }
 
-        // Write the output to disk
-        config.write(vm);
-        config.writeAgentConfig(vm, startBlock);
+        console.log("Checking Hyperlane deployment...");
+        core.check(network);
+        console.log("Everything looks good!");
+        return core;
     }
 }

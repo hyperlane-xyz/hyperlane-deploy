@@ -5,11 +5,11 @@ import "../lib/forge-std/src/Script.sol";
 import "../lib/forge-std/src/console.sol";
 
 import {BytesLib} from "../lib/BytesLib.sol";
-import {ConfigLib} from "../lib/ConfigLib.sol";
+import {CoreConfigLib} from "../lib/CoreConfigLib.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
 import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
 
-// TODO: Maybe take recipient as an arg..
+// TODO: For this to work, need to populate deployments...
 contract CheckMessage is Script {
     using TypeCasts for address;
     using BytesLib for bytes;
@@ -17,10 +17,11 @@ contract CheckMessage is Script {
     function run() public view {
         string memory destination = vm.envString("DESTINATION");
         bytes32 messageId = vm.envBytes32("MESSAGE_ID");
-        Mailbox mailbox = ConfigLib
-            .readHyperlaneDomainConfig(vm, destination)
-            .mailbox;
-        bool delivered = mailbox.delivered(messageId);
+        CoreConfigLib.CoreDeployment memory core = CoreConfigLib.readDeployment(
+            vm,
+            destination
+        );
+        bool delivered = core.mailbox.delivered(messageId);
         if (delivered) {
             console.log(
                 "Message ID '%s' HAS been delivered to %s",
