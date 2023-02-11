@@ -5,7 +5,8 @@ import "../lib/forge-std/src/Script.sol";
 import "../lib/forge-std/src/console.sol";
 
 import {BytesLib} from "../lib/BytesLib.sol";
-import {ConfigLib} from "../lib/ConfigLib.sol";
+import {NetworkConfigLib} from "../lib/NetworkConfigLib.sol";
+import {CoreConfigLib} from "../lib/CoreConfigLib.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
 import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
 
@@ -18,15 +19,18 @@ contract SendTestMessage is Script {
         string memory destination = vm.envString("DESTINATION");
         address recipient = vm.envAddress("RECIPIENT");
         string memory body = vm.envString("BODY");
-        Mailbox mailbox = ConfigLib
-            .readHyperlaneDomainConfig(vm, origin)
-            .mailbox;
-        ConfigLib.HyperlaneDomainConfig memory config = ConfigLib
-            .readHyperlaneDomainConfig(vm, destination);
+
+        NetworkConfigLib.NetworkConfig memory network = NetworkConfigLib
+            .readConfig(vm, origin);
+
+        CoreConfigLib.CoreDeployment memory core = CoreConfigLib.readDeployment(
+            vm,
+            origin
+        );
 
         vm.startBroadcast();
-        bytes32 messageId = mailbox.dispatch(
-            config.domainId,
+        bytes32 messageId = core.mailbox.dispatch(
+            network.domain,
             address(recipient).addressToBytes32(),
             abi.encode(body)
         );
