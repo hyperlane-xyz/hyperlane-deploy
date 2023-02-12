@@ -164,6 +164,11 @@ library ConfigLib {
 
         string memory addresses = "addresses";
         vm.serializeAddress(addresses, "mailbox", address(config.mailbox));
+        vm.serializeAddress(
+            addresses,
+            "validatorAnnounce",
+            address(config.validatorAnnounce)
+        );
         vm.serializeString(
             baseConfig,
             "addresses",
@@ -219,6 +224,11 @@ library ConfigLib {
             address(config.igp)
         );
         vm.serializeAddress(contracts, "proxyAdmin", address(config.admin));
+        vm.serializeAddress(
+            contracts,
+            "validatorAnnounce",
+            address(config.validatorAnnounce)
+        );
         vm.serializeAddress(
             contracts,
             "testRecipient",
