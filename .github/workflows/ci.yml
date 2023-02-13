@@ -50,6 +50,35 @@ jobs:
       - name: Build
         run: forge build
 
+  run:
+    needs: [yarn-install]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-yarn-cache4-${{ hashFiles('./yarn.lock') }}
+
+      - name: Install Foundry
+        uses: onbjerg/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Deploy core
+        # Get MD5 of networks.json
+        # Deploy
+        # Get MD5, ensure changed
+        # Redeploy
+        # Get MD5, ensure unchanged
+        run: |
+          anvil &
+          LOCAL=anvil REMOTES=alfajores,goerli,mumbai \
+            forge script scripts/DeployCore.s.sol --broadcast \
+            --rpc-url http://localhost:8545 \
+            --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+            --slow
+
   lint:
     needs: [yarn-install]
     runs-on: ubuntu-latest
