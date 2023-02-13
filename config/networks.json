@@ -1,14 +1,14 @@
 {
-  "foochain": {
-    "id": 1174786466,
+  "hyperspace": {
+    "id": 3141,
     "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
     "contracts": {
-      "interchainGasPaymaster": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      "proxyAdmin": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "mailbox": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
-      "testRecipient": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
-      "validatorAnnounce": "0x3Fc742696D5dc9846e04f7A1823D92cb51695f9a",
-      "create2Factory": "0x0000000000000000000000000000000000000000"
+      "interchainGasPaymaster": "0xb6643f81a6Ba7fc0f979a7C63296cEFe5B81A8F7",
+      "mailbox": "0x901f27806BB84F1a298dcF7fC1ad42dd06D45918",
+      "testRecipient": "0xBbf6F28aaE0C16679a4BE11847B2fAD7636A2D9c",
+      "proxyAdmin": "0xB3057C222af7d3C1a84330093AA5cCE301264e15",
+      "create2Factory": "0x0000000000000000000000000000000000000000",
+      "validatorAnnounce": "0x1fC2e7DAc5810EDBb408cE7F7963f0dA735838e4"
     }
   },
   "alfajores": {
