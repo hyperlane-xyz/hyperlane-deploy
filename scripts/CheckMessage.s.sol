@@ -35,7 +35,7 @@ contract CheckMessage is Script {
             );
         }
         console.log(
-            "https://explorer-v2.hyperlane.xyz/message/%s",
+            "https://explorer.hyperlane.xyz/message/%s",
             string(abi.encodePacked(vm.toString(messageId)).slice(2, 64))
         );
     }
