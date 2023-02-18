@@ -1,10 +1,10 @@
 {
-  "foochain": {
+  "sepolia": {
     "threshold": 1,
     "validators": [
       {
-        "address": "0xb17861defd784d13c257f2430c4724ffa7ffc554",
-        "name": "asa test validator"
+        "address": "0x2cad4bac31c978731055532e18563b8638555272",
+        "name": "mattie dx validator"
       }
     ]
   },
