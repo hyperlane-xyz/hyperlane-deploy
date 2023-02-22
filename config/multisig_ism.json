@@ -144,6 +144,15 @@
       }
     ]
   },
+  "khalatestnet": {
+    "threshold": 1,
+    "validators": [
+      {
+        "address": "0x336de91d0fd4af45af69d227c3a81601481aa7e7",
+        "name": "khala-testnet-validator-signatures-1"
+      }
+    ]
+  },
   "test1": {
     "threshold": 2,
     "validators": [

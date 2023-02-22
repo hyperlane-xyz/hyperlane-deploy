@@ -10,6 +10,17 @@
       "testRecipient": "0xAE791405766B9c3ed253517463196BEF5e4833d7"
     }
   },
+  "khalatestnet": {
+    "id": 10012,
+    "owner": "0xc55f47caBBda19cA5907710D553596e62598f534",
+    "contracts": {
+      "proxyAdmin": "0x0fB7F815969D567aC34bBE143f8049776dAd2772",
+      "testRecipient": "0x79B00741eCC6ef93240BF0ce06d47F0E0ae56a86",
+      "create2Factory": "0x0000000000000000000000000000000000000000",
+      "mailbox": "0xb7723582Ac1f8D714D723Ade22E9876b8473CB63",
+      "interchainGasPaymaster": "0x3b00428446982dB708a16e6dF3D897c5Db82ADFC"
+    }
+  },
   "alfajores": {
     "id": 44787,
     "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
