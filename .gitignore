@@ -4,3 +4,4 @@ out/
 forge-cache/
 cache/
 config/*_agent_config.json
+.env

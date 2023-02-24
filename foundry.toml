@@ -1,7 +1,7 @@
 [profile.default]
 src = 'scripts'
 out = 'out'
-libs = ['node_modules', 'lib']
+libs = ['lib']
 test = 'test'
 cache_path  = 'forge-cache'
 allow_paths = ["../node_modules"]

@@ -1,0 +1,21 @@
+{
+    "goerli": {
+        "arbitrumgoerli": {
+            "id": 421613,
+            "relayer": "0xb1b4e269dD0D19d9D49f3a95bF6c2c15f13E7943",
+            "tokenExchangePrice":1000000000,
+            "gasPrice": 1000000000,
+            "contract": ""
+        }
+    },
+    "arbitrumgoerli": [
+        {
+            "name": "goerli",
+            "id": 5,
+            "relayer": "0xb1b4e269dD0D19d9D49f3a95bF6c2c15f13E7943",
+            "tokenExchangePrice":"1e9",
+            "gasPrice": "1e9",
+            "contract": ""
+        }
+    ]
+}

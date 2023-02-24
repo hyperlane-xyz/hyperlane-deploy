@@ -344,31 +344,31 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@hyperlane-xyz/core@1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@hyperlane-xyz/core/-/core-1.1.2.tgz#d084a8420136dffa63abb813ffae60f2feb10ce5"
-  integrity sha512-x7yUJ9NxmygQ6b5Y7Y/d9NB23bzA/8lUfbB1cmKx2j2eomST9Gwko9TI/v8KqfPDtB83bW0EFW0G31BgQnXNGg==
+"@hyperlane-xyz/core@^1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@hyperlane-xyz/core/-/core-1.1.4.tgz#c2a996c5137dd45768f1a0bcc4fa1d17d03bc87f"
+  integrity sha512-mk/GRYZHyrQOiOsxC+6hGWb/UlOJJlBRxoJxU6RGsMDGiBYAmfsJYRcKPE4AwT7Do0Z++c+sOmGKm0FmfXqipw==
   dependencies:
-    "@hyperlane-xyz/utils" "1.1.2"
+    "@hyperlane-xyz/utils" "1.1.4"
     "@openzeppelin/contracts" "^4.8.0"
     "@openzeppelin/contracts-upgradeable" "^4.8.0"
 
-"@hyperlane-xyz/utils@1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@hyperlane-xyz/utils/-/utils-1.1.2.tgz#c6f10c79bbac0a5c221991a86f79bf33574a7e91"
-  integrity sha512-5ox1L3uJBQJ8Gvy4HFjGTLAnr4WppXmNF9OsIJbD/qZYYr4Nk8s9Q6mj/25xej3Y7jxYH6bnJ3opUHLyG9dh/g==
+"@hyperlane-xyz/utils@1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@hyperlane-xyz/utils/-/utils-1.1.4.tgz#19dfa552d7f228372868524776271aed99601fbb"
+  integrity sha512-QMrvE0jK1FvD7IyZih6054fQ0Dj5UzhBO8Rp2mb5H75PuUzL5FFR+K5hA8SY2dEwZots2aNJkCH08wewCS6IGQ==
   dependencies:
     ethers "^5.7.2"
 
 "@openzeppelin/contracts-upgradeable@^4.8.0":
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.8.0.tgz#26688982f46969018e3ed3199e72a07c8d114275"
-  integrity sha512-5GeFgqMiDlqGT8EdORadp1ntGF0qzWZLmEY7Wbp/yVhN7/B3NNzCxujuI77ktlyG81N3CUZP8cZe3ZAQ/cW10w==
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.8.1.tgz#363f7dd08f25f8f77e16d374350c3d6b43340a7a"
+  integrity sha512-1wTv+20lNiC0R07jyIAbHU7TNHKRwGiTGRfiNnA8jOWjKT98g5OgLpYWOi40Vgpk8SPLA9EvfJAbAeIyVn+7Bw==
 
 "@openzeppelin/contracts@^4.8.0":
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.8.0.tgz#6854c37df205dd2c056bdfa1b853f5d732109109"
-  integrity sha512-AGuwhRRL+NaKx73WKRNzeCxOCOCxpaqF+kp8TJ89QzAipSwZy/NoflkWaL9bywXFRhIzXt8j38sfF7KBKCPWLw==
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.8.1.tgz#709cfc4bbb3ca9f4460d60101f15dac6b7a2d5e4"
+  integrity sha512-xQ6eUZl+RDyb/FiZe1h+U7qr/f4p/SrTSQcTPH2bjur3C5DbuW/zFgCU/b1P/xcIaEqJep+9ju4xDRi3rmChdQ==
 
 "@solidity-parser/parser@^0.14.5":
   version "0.14.5"
@@ -472,6 +472,11 @@ hmac-drbg@^1.0.1:
     hash.js "^1.0.3"
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
+
+husky@^8.0.3:
+  version "8.0.3"
+  resolved "https://registry.yarnpkg.com/husky/-/husky-8.0.3.tgz#4936d7212e46d1dea28fef29bb3a108872cd9184"
+  integrity sha512-+dQSyqPh4x1hlO1swXBiNb2HzTDN1I2IGLQx1GrBuiqFJfoMrnZWwVmatvSiO+Iz8fBUnf+lekwNo4c2LlXItg==
 
 inherits@^2.0.3, inherits@^2.0.4:
   version "2.0.4"

@@ -5,7 +5,8 @@ import "../lib/forge-std/src/console.sol";
 import {ConfigLib} from "../lib/ConfigLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
-import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/igps/InterchainGasPaymaster.sol";
+import {InterchainGasPaymaster} from "@trevor/accurate-gas-oracles/igps/InterchainGasPaymaster.sol";
+import {StorageGasOracle} from "@trevor/accurate-gas-oracles/igps/gas-oracles/StorageGasOracle.sol";
 import {ValidatorAnnounce} from "@hyperlane-xyz/core/contracts/ValidatorAnnounce.sol";
 import {ProxyAdmin} from "@hyperlane-xyz/core/contracts/upgrade/ProxyAdmin.sol";
 import {TransparentUpgradeableProxy} from "@hyperlane-xyz/core/contracts/upgrade/TransparentUpgradeableProxy.sol";
@@ -67,10 +68,10 @@ library DeployLib {
             "Must deploy ProxyAdmin before InterchainGasPaymaster"
         );
         if (address(config.igp) == address(0)) {
-            InterchainGasPaymaster impl = new InterchainGasPaymaster();
+            InterchainGasPaymaster impl = new InterchainGasPaymaster(config.owner);
             bytes memory initData = abi.encodeCall(
                 InterchainGasPaymaster.initialize,
-                ()
+                (config.owner)
             );
             TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
                 address(impl),
@@ -90,6 +91,44 @@ library DeployLib {
             );
         }
     }
+
+    // function deloyGasOrcle(ConfigLib.HyperlaneDomainConfig memory config) private {
+    //     require(
+    //         address(config.admin) != address(0),
+    //         "Must deploy ProxyAdmin before StorageGasOracle"
+    //     );
+    //     require(
+    //         address(config.igp) != address(0),
+    //         "Must deploy IGP before StorageGasOracle"
+    //     );
+
+    //     StorageGasOracle oracle;
+    //     if (address(config.gasOracle) == address(0)) {
+    //         oracle = new StorageGasOracle();
+    //     }  else {
+    //         console.log(
+    //             "Found StorageGasOracle at address %s, skipping deployment",
+    //             address(config.gasOracle)
+    //         );
+    //         oracle = StorageGasOracle(address(config.gasOracle));
+    //     }
+
+    //     oracle.setRemoteGasData(
+    //         StorageGasOracle.RemoteGasDataConfig({
+    //             remoteDomain: config.domainId,
+    //             gasPrice: 2 * 1e9,
+    //             gasPrice: 1 * 1e9
+    //         })
+    //     );
+
+    //     InterchainGasPayment.GasOracleConfig[] memory
+    //         _configs = new InterchainGasPayment.GasOracleConfig[](1);
+    //     _configs[0] = InterchainGasPayment.GasOracleConfig({
+    //         remoteDomain: config.domainId, // TODO
+    //         gasOracle: address(oracle)
+    //     });
+    //     config.igp.setGasOracles(_configs);
+    // }
 
     function deployMailbox(
         ConfigLib.HyperlaneDomainConfig memory config,
@@ -161,5 +200,38 @@ library DeployLib {
         ism.setThresholds(remoteDomainIds, remoteThresholds);
         ism.transferOwnership(owner);
         return ism;
+    }
+
+    function deploy(
+        ConfigLib.HyperlaneDomainConfig memory config,
+        ConfigLib.GasOracleConfigs memory gasConfig
+    ) internal returns (StorageGasOracle[] memory) {
+        require(
+            address(config.admin) != address(0),
+            "Must deploy ProxyAdmin before StorageGasOracle"
+        );
+        require(
+            address(config.igp) != address(0),
+            "Must deploy IGP before StorageGasOracle"
+        );
+        StorageGasOracle[] memory oracle = new StorageGasOracle[](gasConfig.remotes.length);
+        InterchainGasPayment.GasOracleConfig[] memory
+            _configs = new InterchainGasPayment.GasOracleConfig[](gasConfig.remotes.length);
+
+        for (uint256 i = 0; i < gasConfig.remotes.length; i++) {
+            oracle[i].setRemoteGasData(
+                StorageGasOracle.RemoteGasDataConfig({
+                    remoteDomain: gasConfig.remotes[i].domainId,
+                    tokenExchangeRate: gasConfig.remotes[i].tokenExchangePrice,
+                    gasPrice: gasConfig.remotes[i].gasPrice
+                })
+            );
+            _configs[i] = InterchainGasPayment.GasOracleConfig({
+                remoteDomain: gasConfig.remotes[i].domainId,
+                gasOracle: address(oracle[i])
+            });
+        }
+        config.igp.setGasOracles(_configs);
+        return oracle;
     }
 }

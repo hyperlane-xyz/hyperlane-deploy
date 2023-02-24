@@ -30,6 +30,6 @@ contract DeployCore is Script {
         config.write(vm);
         config.writeAgentConfig(vm, startBlock);
 
-        vm.stopBroadcast();
+        // vm.stopBroadcast();
     }
 }
