@@ -5,7 +5,8 @@ import "../lib/forge-std/src/console.sol";
 import {ConfigLib} from "../lib/ConfigLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
-import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/igps/InterchainGasPaymaster.sol";
+import {InterchainGasPaymaster} from "@trevor/accurate-gas-oracles/igps/InterchainGasPaymaster.sol";
+import {StorageGasOracle} from "@trevor/accurate-gas-oracles/igps/gas-oracles/StorageGasOracle.sol";
 import {ValidatorAnnounce} from "@hyperlane-xyz/core/contracts/ValidatorAnnounce.sol";
 import {ProxyAdmin} from "@hyperlane-xyz/core/contracts/upgrade/ProxyAdmin.sol";
 import {TransparentUpgradeableProxy} from "@hyperlane-xyz/core/contracts/upgrade/TransparentUpgradeableProxy.sol";
@@ -21,12 +22,13 @@ library DeployLib {
         deployIgp(config);
         deployMailbox(config, ismConfig);
         deployTestRecipient(config);
-        deployValidatorAnnounce(config);
+        // deployValidatorAnnounce(config);
     }
 
     function deployValidatorAnnounce(
         ConfigLib.HyperlaneDomainConfig memory config
     ) private {
+        console.log("Deploying ValidatorAnnounce", address(config.mailbox));
         if (address(config.validatorAnnounce) == address(0)) {
             config.validatorAnnounce = new ValidatorAnnounce(
                 address(config.mailbox)
@@ -67,10 +69,10 @@ library DeployLib {
             "Must deploy ProxyAdmin before InterchainGasPaymaster"
         );
         if (address(config.igp) == address(0)) {
-            InterchainGasPaymaster impl = new InterchainGasPaymaster();
+            InterchainGasPaymaster impl = new InterchainGasPaymaster(config.owner);
             bytes memory initData = abi.encodeCall(
                 InterchainGasPaymaster.initialize,
-                ()
+                (config.owner)
             );
             TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
                 address(impl),
@@ -161,5 +163,42 @@ library DeployLib {
         ism.setThresholds(remoteDomainIds, remoteThresholds);
         ism.transferOwnership(owner);
         return ism;
+    }
+
+    function deploy(
+        ConfigLib.GasOracleConfigs memory gasConfig,
+        ConfigLib.HyperlaneDomainConfig memory config
+    ) internal returns (StorageGasOracle[] memory) {
+        require(
+            address(config.admin) != address(0),
+            "Must deploy ProxyAdmin before StorageGasOracle"
+        );
+        require(
+            address(config.igp) != address(0),
+            "Must deploy IGP before StorageGasOracle"
+        );
+        StorageGasOracle[] memory oracle = new StorageGasOracle[](gasConfig.remotes.length);
+        InterchainGasPaymaster.GasOracleConfig[] memory
+            _configs = new InterchainGasPaymaster.GasOracleConfig[](gasConfig.remotes.length);
+
+
+        for (uint256 i = 0; i < gasConfig.remotes.length; i++) {
+            oracle[i] = new StorageGasOracle();
+            console.log(address(oracle[i]));
+            oracle[i].setRemoteGasData(
+                StorageGasOracle.RemoteGasDataConfig({
+                    remoteDomain: gasConfig.remotes[i].domainId,
+                    tokenExchangeRate: gasConfig.remotes[i].tokenExchangeRate,
+                    gasPrice: gasConfig.remotes[i].gasPrice
+                })
+            );
+
+            _configs[i] = InterchainGasPaymaster.GasOracleConfig({
+                remoteDomain: gasConfig.remotes[i].domainId,
+                gasOracle: address(oracle[i])
+            });
+        }
+        config.igp.setGasOracles(_configs);
+        return oracle;
     }
 }

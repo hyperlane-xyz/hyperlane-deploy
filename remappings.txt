@@ -1,0 +1,2 @@
+@hyperlane-xyz/core/=lib/hyperlane-monorepo/solidity/
+@trevor/accurate-gas-oracles=lib/hyperlane-monorepo/solidity/contracts/

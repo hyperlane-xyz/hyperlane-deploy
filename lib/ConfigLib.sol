@@ -6,12 +6,13 @@ import {Vm} from "../lib/forge-std/src/Vm.sol";
 import {BytesLib} from "../lib/BytesLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
-import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/igps/InterchainGasPaymaster.sol";
+import {InterchainGasPaymaster} from "@trevor/accurate-gas-oracles/igps/InterchainGasPaymaster.sol";
 import {ValidatorAnnounce} from "@hyperlane-xyz/core/contracts/ValidatorAnnounce.sol";
 import {ProxyAdmin} from "@hyperlane-xyz/core/contracts/upgrade/ProxyAdmin.sol";
 import {TransparentUpgradeableProxy} from "@hyperlane-xyz/core/contracts/upgrade/TransparentUpgradeableProxy.sol";
 import {Create2Factory} from "@hyperlane-xyz/core/contracts/Create2Factory.sol";
 import {TestRecipient} from "@hyperlane-xyz/core/contracts/test/TestRecipient.sol";
+import {StorageGasOracle} from "@trevor/accurate-gas-oracles/igps/gas-oracles/StorageGasOracle.sol";
 
 library ConfigLib {
     using stdJson for string;
@@ -27,6 +28,18 @@ library ConfigLib {
         Create2Factory create2;
         ValidatorAnnounce validatorAnnounce;
         TestRecipient testRecipient;
+    }
+
+    struct GasOracleConfig {
+        string chainName;
+        uint32 domainId;
+        address relayer;
+        uint128 tokenExchangeRate;
+        uint128 gasPrice;
+    }
+
+    struct GasOracleConfigs {
+        GasOracleConfig[] remotes;
     }
 
     struct MultisigIsmDomainConfig {
@@ -50,7 +63,7 @@ library ConfigLib {
         try
             vm.parseJson(
                 json,
-                string.concat(chainName, string.concat(prefix, contractName))
+                string.concat(".", chainName, string.concat(prefix, contractName))
             )
         returns (bytes memory result) {
             address parsedAddr = abi.decode(result, (address));
@@ -66,11 +79,11 @@ library ConfigLib {
     ) internal view returns (HyperlaneDomainConfig memory) {
         string memory json = vm.readFile("config/networks.json");
         uint32 domainId = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".id")),
+            vm.parseJson(json, string.concat(".", chainName, ".id")),
             (uint32)
         );
         address owner = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".owner")),
+            vm.parseJson(json, string.concat(".", chainName, ".owner")),
             (address)
         );
         Mailbox mailbox = Mailbox(
@@ -111,11 +124,11 @@ library ConfigLib {
     ) private view returns (MultisigIsmDomainConfig memory) {
         string memory json = vm.readFile("config/multisig_ism.json");
         uint8 threshold = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".threshold")),
+            vm.parseJson(json, string.concat(".", chainName, ".threshold")),
             (uint8)
         );
         bytes memory validatorBytes = json.parseRaw(
-            string.concat(chainName, ".validators[*].address")
+            string.concat(".", chainName, ".validators[*].address")
         );
         uint256 numValidators = validatorBytes.length / 32;
         address[] memory validators = new address[](numValidators);
@@ -128,7 +141,7 @@ library ConfigLib {
 
         json = vm.readFile("config/networks.json");
         uint32 domainId = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".id")),
+            vm.parseJson(json, string.concat(".", chainName, ".id")),
             (uint32)
         );
         return
@@ -146,6 +159,50 @@ library ConfigLib {
             domains[i] = readMultisigIsmDomainConfig(vm, chainName);
         }
         return MultisigIsmConfig(domains);
+    }
+
+    function readGasOracleConfig(
+        Vm vm,
+        string memory localChainName,
+        string memory remoteChainName
+    ) internal view returns (GasOracleConfig memory) {
+        string memory json = vm.readFile("config/gas_oracle.json");
+        uint32 domain = abi.decode(
+            vm.parseJson(json, string.concat(".", localChainName, ".arbitrumgoerli.domainId")),
+            (uint32)
+        );
+        address relayer = abi.decode(
+            vm.parseJson(json, string.concat(".", localChainName, ".arbitrumgoerli.relayer")),
+            (address)
+        );
+        uint128 tokenExchangeRate = abi.decode(
+            vm.parseJson(json, string.concat(".", localChainName, ".arbitrumgoerli.tokenExchangeRate")),
+            (uint128)
+        );
+        uint128 gasPrice = abi.decode(
+            vm.parseJson(json, string.concat(".", localChainName, ".arbitrumgoerli.gasPrice")),
+            (uint128)
+        );
+
+        return GasOracleConfig(remoteChainName, domain, relayer, tokenExchangeRate, gasPrice);
+    }
+
+    function readGasOracleConfigs(
+        Vm vm,
+        string memory localChainName,
+        string[] memory remoteChainNames
+    ) internal view returns (GasOracleConfigs memory) {
+        GasOracleConfig[] memory configs = new GasOracleConfig[](
+            remoteChainNames.length
+        );
+        for (uint256 i = 0; i < remoteChainNames.length; i++) {
+            configs[i] = readGasOracleConfig(
+                vm,
+                localChainName,
+                remoteChainNames[i]
+            );
+        }
+        return GasOracleConfigs(configs);
     }
 
     function writeAgentConfig(
@@ -244,5 +301,29 @@ library ConfigLib {
                 "./config/networks.json",
                 string.concat(".", config.chainName, ".contracts")
             );
+    }
+
+    function write(GasOracleConfigs memory config, Vm vm, InterchainGasPaymaster igp, string memory local) internal {
+        string memory gasContracts = "remote";
+        for (uint256 i = 0; i < config.remotes.length; i++) {
+            address connectedGasOracles = address(igp.gasOracles(config.remotes[i].domainId));
+
+            vm.serializeUint(gasContracts, "domainId", config.remotes[i].domainId);
+            vm.serializeUint(gasContracts, "tokenExchangeRate", config.remotes[i].tokenExchangeRate);
+            vm.serializeUint(gasContracts, "gasPrice", config.remotes[i].gasPrice);
+
+            vm.serializeAddress(gasContracts, "relayer", config.remotes[i].relayer);
+            vm
+            .serializeAddress(
+                gasContracts,
+                "contract",
+                connectedGasOracles
+            )
+            .write(
+                "./config/gas_oracle.json",
+                string.concat(".", local, ".", config.remotes[i].chainName)
+            );
+        }
+
     }
 }

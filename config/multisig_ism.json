@@ -1,5 +1,5 @@
 {
-  "foochain": {
+  "localMainnet": {
     "threshold": 1,
     "validators": [
       {
