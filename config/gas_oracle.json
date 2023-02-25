@@ -1,21 +1,20 @@
 {
+  "goerli": {
+    "arbitrumgoerli": {
+      "domainId": 421613,
+      "relayer": "0xb1b4e269dD0D19d9D49f3a95bF6c2c15f13E7943",
+      "contract": "0x03800056D8B4054008E7e6602BB99535eF12228F",
+      "tokenExchangeRate": 1000000000,
+      "gasPrice": 1000000000
+    }
+  },
+  "arbitrumgoerli": {
     "goerli": {
-        "arbitrumgoerli": {
-            "id": 421613,
-            "relayer": "0xb1b4e269dD0D19d9D49f3a95bF6c2c15f13E7943",
-            "tokenExchangePrice":1000000000,
-            "gasPrice": 1000000000,
-            "contract": ""
-        }
-    },
-    "arbitrumgoerli": [
-        {
-            "name": "goerli",
-            "id": 5,
-            "relayer": "0xb1b4e269dD0D19d9D49f3a95bF6c2c15f13E7943",
-            "tokenExchangePrice":"1e9",
-            "gasPrice": "1e9",
-            "contract": ""
-        }
-    ]
+      "gasPrice": 1000000000,
+      "relayer": "0xb1b4e269dD0D19d9D49f3a95bF6c2c15f13E7943",
+      "tokenExchangeRate": 1000000000,
+      "domainId": 421613,
+      "contract": ""
+    }
+  }
 }

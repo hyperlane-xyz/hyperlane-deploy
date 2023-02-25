@@ -14,7 +14,7 @@ contract CheckMessage is Script {
     using TypeCasts for address;
     using BytesLib for bytes;
 
-    function run() public view {
+    function run() public {
         string memory destination = vm.envString("DESTINATION");
         bytes32 messageId = vm.envBytes32("MESSAGE_ID");
         Mailbox mailbox = ConfigLib

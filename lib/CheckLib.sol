@@ -4,6 +4,7 @@ import "../lib/forge-std/src/console.sol";
 
 import {ConfigLib} from "../lib/ConfigLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
+import {InterchainGasPaymaster} from "@trevor/accurate-gas-oracles/igps/InterchainGasPaymaster.sol";
 import {TransparentUpgradeableProxy} from "@hyperlane-xyz/core/contracts/upgrade/TransparentUpgradeableProxy.sol";
 
 library CheckLib {
@@ -100,6 +101,15 @@ library CheckLib {
                     )
                 );
             }
+        }
+    }
+
+    function check(ConfigLib.GasOracleConfigs memory config, InterchainGasPaymaster igp) internal view {
+        for (uint256 i = 0; i < config.remotes.length; i++) {
+            uint32 domain = config.remotes[i].domainId;
+            (uint128 tokenExchangeRate, uint128 gasPrice) = igp.getExchangeRateAndGasPrice(domain);
+            require(tokenExchangeRate == config.remotes[i].tokenExchangeRate, string.concat("InterchainGasPaymaster token exchange rate misconfigured for ", config.remotes[i].chainName));
+            require(gasPrice == config.remotes[i].gasPrice, string.concat("InterchainGasPaymaster gas price misconfigured for ", config.remotes[i].chainName));
         }
     }
 }

@@ -34,7 +34,7 @@ library ConfigLib {
         string chainName;
         uint32 domainId;
         address relayer;
-        uint128 tokenExchangePrice;
+        uint128 tokenExchangeRate;
         uint128 gasPrice;
     }
 
@@ -78,7 +78,6 @@ library ConfigLib {
         string memory chainName
     ) internal view returns (HyperlaneDomainConfig memory) {
         string memory json = vm.readFile("config/networks.json");
-        // console.log(json);
         uint32 domainId = abi.decode(
             vm.parseJson(json, string.concat(".", chainName, ".id")),
             (uint32)
@@ -168,19 +167,16 @@ library ConfigLib {
         string memory remoteChainName
     ) internal view returns (GasOracleConfig memory) {
         string memory json = vm.readFile("config/gas_oracle.json");
-        // bytes memory domain = json.parseRaw(
-        //     string.concat(".", localChainName, ".id")
-        // );
         uint32 domain = abi.decode(
-            vm.parseJson(json, string.concat(".", localChainName, ".arbitrumgoerli.id")),
+            vm.parseJson(json, string.concat(".", localChainName, ".arbitrumgoerli.domainId")),
             (uint32)
         );
         address relayer = abi.decode(
             vm.parseJson(json, string.concat(".", localChainName, ".arbitrumgoerli.relayer")),
             (address)
         );
-        uint128 tokenExchangePrice = abi.decode(
-            vm.parseJson(json, string.concat(".", localChainName, ".arbitrumgoerli.tokenExchangePrice")),
+        uint128 tokenExchangeRate = abi.decode(
+            vm.parseJson(json, string.concat(".", localChainName, ".arbitrumgoerli.tokenExchangeRate")),
             (uint128)
         );
         uint128 gasPrice = abi.decode(
@@ -188,7 +184,7 @@ library ConfigLib {
             (uint128)
         );
 
-        return GasOracleConfig(remoteChainName, domain, relayer, tokenExchangePrice, gasPrice);
+        return GasOracleConfig(remoteChainName, domain, relayer, tokenExchangeRate, gasPrice);
     }
 
     function readGasOracleConfigs(
@@ -295,5 +291,29 @@ library ConfigLib {
                 "./config/networks.json",
                 string.concat(".", config.chainName, ".contracts")
             );
+    }
+
+    function write(GasOracleConfigs memory config, Vm vm, InterchainGasPaymaster igp, string memory local) internal {
+        string memory gasContracts = "remote";
+        for (uint256 i = 0; i < config.remotes.length; i++) {
+            address connectedGasOracles = address(igp.gasOracles(config.remotes[i].domainId));
+
+            vm.serializeUint(gasContracts, "domainId", config.remotes[i].domainId);
+            vm.serializeUint(gasContracts, "tokenExchangeRate", config.remotes[i].tokenExchangeRate);
+            vm.serializeUint(gasContracts, "gasPrice", config.remotes[i].gasPrice);
+
+            vm.serializeAddress(gasContracts, "relayer", config.remotes[i].relayer);
+            vm
+            .serializeAddress(
+                gasContracts,
+                "contract",
+                connectedGasOracles
+            )
+            .write(
+                "./config/gas_oracle.json",
+                string.concat(".", local, ".", config.remotes[i].chainName)
+            );
+        }
+
     }
 }
