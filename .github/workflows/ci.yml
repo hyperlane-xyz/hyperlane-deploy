@@ -32,7 +32,7 @@ jobs:
             exit 1
           fi
 
-  build:
+  deploy:
     needs: [yarn-install]
     runs-on: ubuntu-latest
     steps:
@@ -47,8 +47,14 @@ jobs:
         with:
           version: nightly
 
-      - name: Build
-        run: forge build
+      - name: Anvil
+        run: anvil --chain-id 1234 &
+
+      - name: Deploy core
+        run: DEBUG=hyperlane* yarn ts-node scripts/deploy/core.ts --local local --remotes alfajores --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+      - name: Send message
+        run: DEBUG=hyperlane* yarn ts-node scripts/test/message.ts --origin local --destination goerli --recipient 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
   lint:
     needs: [yarn-install]
