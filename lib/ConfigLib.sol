@@ -50,7 +50,11 @@ library ConfigLib {
         try
             vm.parseJson(
                 json,
-                string.concat(".", chainName, string.concat(prefix, contractName))
+                string.concat(
+                    ".",
+                    chainName,
+                    string.concat(prefix, contractName)
+                )
             )
         returns (bytes memory result) {
             address parsedAddr = abi.decode(result, (address));
