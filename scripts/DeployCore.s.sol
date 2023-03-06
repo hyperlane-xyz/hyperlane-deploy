@@ -29,5 +29,7 @@ contract DeployCore is Script {
         // Write the output to disk
         config.write(vm);
         config.writeAgentConfig(vm, startBlock);
+
+        vm.stopBroadcast();
     }
 }

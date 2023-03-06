@@ -50,7 +50,11 @@ library ConfigLib {
         try
             vm.parseJson(
                 json,
-                string.concat(chainName, string.concat(prefix, contractName))
+                string.concat(
+                    ".",
+                    chainName,
+                    string.concat(prefix, contractName)
+                )
             )
         returns (bytes memory result) {
             address parsedAddr = abi.decode(result, (address));
@@ -65,12 +69,13 @@ library ConfigLib {
         string memory chainName
     ) internal view returns (HyperlaneDomainConfig memory) {
         string memory json = vm.readFile("config/networks.json");
+        // console.log(json);
         uint32 domainId = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".id")),
+            vm.parseJson(json, string.concat(".", chainName, ".id")),
             (uint32)
         );
         address owner = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".owner")),
+            vm.parseJson(json, string.concat(".", chainName, ".owner")),
             (address)
         );
         Mailbox mailbox = Mailbox(
@@ -111,11 +116,11 @@ library ConfigLib {
     ) private view returns (MultisigIsmDomainConfig memory) {
         string memory json = vm.readFile("config/multisig_ism.json");
         uint8 threshold = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".threshold")),
+            vm.parseJson(json, string.concat(".", chainName, ".threshold")),
             (uint8)
         );
         bytes memory validatorBytes = json.parseRaw(
-            string.concat(chainName, ".validators[*].address")
+            string.concat(".", chainName, ".validators[*].address")
         );
         uint256 numValidators = validatorBytes.length / 32;
         address[] memory validators = new address[](numValidators);
@@ -128,7 +133,7 @@ library ConfigLib {
 
         json = vm.readFile("config/networks.json");
         uint32 domainId = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".id")),
+            vm.parseJson(json, string.concat(".", chainName, ".id")),
             (uint32)
         );
         return
