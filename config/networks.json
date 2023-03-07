@@ -17,7 +17,7 @@
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
-      "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
+      "interchainGasPaymaster": "0x8f9C3888bFC8a5B25AED115A82eCbb788b196d2a",
       "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
       "validatorAnnounce": "0x3Fc742696D5dc9846e04f7A1823D92cb51695f9a",
       "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
@@ -29,7 +29,7 @@
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
-      "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
+      "interchainGasPaymaster": "0x8f9C3888bFC8a5B25AED115A82eCbb788b196d2a",
       "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
       "validatorAnnounce": "0x3Fc742696D5dc9846e04f7A1823D92cb51695f9a",
       "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
@@ -41,7 +41,7 @@
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
-      "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
+      "interchainGasPaymaster": "0x8f9C3888bFC8a5B25AED115A82eCbb788b196d2a",
       "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
       "validatorAnnounce": "0x3Fc742696D5dc9846e04f7A1823D92cb51695f9a",
       "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
@@ -53,7 +53,7 @@
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
-      "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
+      "interchainGasPaymaster": "0x8f9C3888bFC8a5B25AED115A82eCbb788b196d2a",
       "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
       "validatorAnnounce": "0x3Fc742696D5dc9846e04f7A1823D92cb51695f9a",
       "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
@@ -65,7 +65,7 @@
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
-      "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
+      "interchainGasPaymaster": "0x8f9C3888bFC8a5B25AED115A82eCbb788b196d2a",
       "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
       "validatorAnnounce": "0x3Fc742696D5dc9846e04f7A1823D92cb51695f9a",
       "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
@@ -77,7 +77,7 @@
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
-      "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
+      "interchainGasPaymaster": "0x8f9C3888bFC8a5B25AED115A82eCbb788b196d2a",
       "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
       "validatorAnnounce": "0x3Fc742696D5dc9846e04f7A1823D92cb51695f9a",
       "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
@@ -89,7 +89,7 @@
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
-      "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
+      "interchainGasPaymaster": "0x8f9C3888bFC8a5B25AED115A82eCbb788b196d2a",
       "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
       "validatorAnnounce": "0x3Fc742696D5dc9846e04f7A1823D92cb51695f9a",
       "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
@@ -101,7 +101,7 @@
     "contracts": {
       "proxyAdmin": "0x4e4D563e2cBFC35c4BC16003685443Fae2FA702f",
       "mailbox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
-      "interchainGasPaymaster": "0xf857706CE59Cb7AE6df81Bbd0B0a656dB3e6beDA",
+      "interchainGasPaymaster": "0x8f9C3888bFC8a5B25AED115A82eCbb788b196d2a",
       "create2Factory": "0xc97D8e6f57b0d64971453dDc6EB8483fec9d163a",
       "validatorAnnounce": "0x3Fc742696D5dc9846e04f7A1823D92cb51695f9a",
       "testRecipient": "0xBC3cFeca7Df5A45d61BC60E7898E63670e1654aE"
