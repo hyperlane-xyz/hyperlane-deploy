@@ -1,19 +1,9 @@
 import {
-  ChainMap,
-  buildContracts,
   MultiProvider,
   HyperlaneCore,
   HyperlaneIgp,
   DispatchedMessage,
 } from '@hyperlane-xyz/sdk';
-import {
-  CoreContracts,
-  coreFactories,
-} from '@hyperlane-xyz/sdk/dist/core/contracts';
-import {
-  IgpContracts,
-  igpFactories,
-} from '@hyperlane-xyz/sdk/dist/gas/contracts';
 import { utils } from '@hyperlane-xyz/utils';
 import { sleep } from '@hyperlane-xyz/utils/dist/src/utils';
 import { ethers } from 'ethers';
@@ -47,18 +37,12 @@ async function main() {
   let { chains, key } = await getArgs(multiProvider);
   const signer = new ethers.Wallet(key);
   multiProvider.setSharedSigner(signer);
-  const core = new HyperlaneCore(
-    buildContracts(
-      mergedContractAddresses,
-      coreFactories,
-    ) as ChainMap<CoreContracts>,
+  const core = HyperlaneCore.fromAddresses(
+    mergedContractAddresses,
     multiProvider,
   );
-  const igp = new HyperlaneIgp(
-    buildContracts(
-      mergedContractAddresses,
-      igpFactories,
-    ) as ChainMap<IgpContracts>,
+  const igp = HyperlaneIgp.fromAddresses(
+    mergedContractAddresses,
     multiProvider,
   );
   const messages: Set<DispatchedMessage> = new Set();

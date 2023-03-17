@@ -112,6 +112,11 @@ export class HyperlanePermissionlessDeployer {
     let contracts: ChainMap<HyperlaneContracts> = {};
     const owner = await this.signer.getAddress();
     // First, deploy core contracts to the local chain
+    // NB: We create core configs for *all* chains because
+    // we also use coreDeployer to deploy MultisigIsms.
+    // Once we move that out to a HyperlaneIsmDeployer
+    // we can just do:
+    // const coreContracts = await coreDeployer.deploy();
     const coreConfig = buildCoreConfig(owner, this.chains);
     const coreDeployer = new HyperlaneCoreDeployer(
       this.multiProvider,
@@ -125,6 +130,7 @@ export class HyperlanePermissionlessDeployer {
     contracts = objMerge(contracts, coreContracts);
 
     // Next, deploy MultisigIsms to the remote chains
+    // TODO: Would be cleaner if using HyperlaneIsmDeployer
     const isms: ChainMap<MultisigIsmContracts> = {};
     isms[this.local] = {
       multisigIsm: coreContracts[this.local].multisigIsm,
@@ -163,12 +169,10 @@ export class HyperlanePermissionlessDeployer {
     // Write contract address artifacts
     mergeJSON('./artifacts/', 'addresses.json', addresses);
 
-    // TODO: Need to include IGPs from other chains...
     startBlocks[this.local] = await this.multiProvider
       .getProvider(this.local)
       .getBlockNumber();
 
-    // TODO: Add start block from local...
     const agentConfig = buildOverriddenAgentConfig(
       this.chains,
       this.multiProvider,
