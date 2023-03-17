@@ -1,7 +1,7 @@
-import { HyperlanePermissionlessCoreDeployer } from '../../src/deployer';
+import { HyperlanePermissionlessDeployer } from '../src/deployer';
 
 async function main() {
-  const deployer = await HyperlanePermissionlessCoreDeployer.fromArgs();
+  const deployer = await HyperlanePermissionlessDeployer.fromArgs();
   try {
     await deployer.deploy();
   } catch (e) {
