@@ -22,6 +22,7 @@ import {
   buildCoreConfig,
   buildIgpConfig,
   buildOverriddenAgentConfig,
+  assertBalances,
 } from './config';
 import {
   HyperlaneTestRecipientDeployer,
@@ -71,7 +72,10 @@ export function getArgs(multiProvider: MultiProvider) {
     .describe('key', 'A hexadecimal private key for transaction signing')
     .string('key')
     .coerce('key', assertBytes32)
-    .demandOption('key').argv;
+    .demandOption('key')
+    .middleware(
+      assertBalances(multiProvider, (argv) => argv.remotes.concat(argv.local)),
+    ).argv;
 }
 
 type MultisigIsmContracts = {

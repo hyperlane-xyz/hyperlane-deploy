@@ -19,6 +19,7 @@ import { sleep } from '@hyperlane-xyz/utils/dist/src/utils';
 import { ethers } from 'ethers';
 import yargs from 'yargs';
 import {
+  assertBalances,
   assertBytes32,
   getMultiProvider,
   mergedContractAddresses,
@@ -37,7 +38,8 @@ export function getArgs(multiProvider: MultiProvider) {
     .describe('key', 'hexadecimal private key for transaction signing')
     .string('key')
     .coerce('key', assertBytes32)
-    .demandOption('key').argv;
+    .demandOption('key')
+    .middleware(assertBalances(multiProvider, (argv) => argv.chains)).argv;
 }
 
 async function main() {

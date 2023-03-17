@@ -38,6 +38,26 @@ export function assertBytes32(value: string): string {
   throw new Error(`Invalid value ${value}, must be a 32 byte hex string`);
 }
 
+export function assertBalances(
+  multiProvider: MultiProvider,
+  chainsFunc: (argv: any) => ChainName[],
+): (argv: any) => Promise<void> {
+  return async (argv: any) => {
+    const chains = chainsFunc(argv);
+    const signer = new ethers.Wallet(argv.key);
+    const address = await signer.getAddress();
+    Promise.all(
+      chains.map(async (chain: ChainName) => {
+        const balance = await multiProvider
+          .getProvider(chain)
+          .getBalance(address);
+        if (balance.isZero())
+          throw new Error(`${address} has no balance on ${chain}`);
+      }),
+    );
+  };
+}
+
 export function coerceAddressToBytes32(value: string): string {
   if (ethers.utils.isHexString(value)) {
     const length = ethers.utils.hexDataLength(value);
