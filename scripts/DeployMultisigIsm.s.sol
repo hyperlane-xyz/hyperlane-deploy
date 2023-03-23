@@ -30,8 +30,10 @@ contract DeployMultisigIsm is Script {
         console.log("TestRecipient deployed at address %s", address(recipient));
 
         InterchainGasPaymaster igp = new InterchainGasPaymaster();
-        console.log("InterchainGasPaymaster deployed at address %s", address(igp));
+        console.log(
+            "InterchainGasPaymaster deployed at address %s",
+            address(igp)
+        );
         config.check(ism, owner);
-
     }
 }
