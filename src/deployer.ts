@@ -1,35 +1,35 @@
 import {
   ChainMap,
   ChainName,
-  HyperlaneCoreDeployer,
-  MultiProvider,
-  serializeContracts,
-  HyperlaneIgpDeployer,
-  objMap,
   CoreContracts,
-  objMerge,
   HyperlaneAddresses,
   HyperlaneContracts,
+  HyperlaneCoreDeployer,
+  HyperlaneIgpDeployer,
+  MultiProvider,
+  objMap,
+  objMerge,
+  serializeContracts,
 } from '@hyperlane-xyz/sdk';
 import yargs from 'yargs';
 
-import { multisigIsmConfig } from '../config/multisig_ism';
+import { LegacyMultisigIsm } from '@hyperlane-xyz/core';
 import { ethers } from 'ethers';
-import { mergeJSON, writeJSON } from './json';
+import { multisigIsmConfig } from '../config/multisig_ism';
+import { startBlocks } from '../config/start_blocks';
 import {
+  assertBalances,
   assertBytes32,
-  getMultiProvider,
   buildCoreConfig,
   buildIgpConfig,
   buildOverriddenAgentConfig,
-  assertBalances,
+  getMultiProvider,
 } from './config';
+import { mergeJSON, writeJSON } from './json';
 import {
   HyperlaneTestRecipientDeployer,
   TestRecipientConfig,
 } from './TestRecipientDeployer';
-import { MultisigIsm } from '@hyperlane-xyz/core';
-import { startBlocks } from '../config/start_blocks';
 
 // HyperlanePermissionlessDeployer
 //   Has HyperlaneCoreDeployer
@@ -75,11 +75,14 @@ export function getArgs(multiProvider: MultiProvider) {
     .demandOption('key')
     .middleware(
       assertBalances(multiProvider, (argv) => argv.remotes.concat(argv.local)),
-    ).argv;
+    )
+    .describe('write-agent-config', 'Whether or not to write agent config')
+    .default('write-agent-config', true)
+    .boolean('write-agent-config').argv;
 }
 
 type MultisigIsmContracts = {
-  multisigIsm: MultisigIsm;
+  multisigIsm: LegacyMultisigIsm;
 };
 
 export class HyperlanePermissionlessDeployer {
@@ -88,11 +91,14 @@ export class HyperlanePermissionlessDeployer {
     protected signer: ethers.Signer,
     protected local: ChainName,
     protected remotes: ChainName[],
+    protected writeAgentConfig?: boolean,
   ) {}
 
   static async fromArgs(): Promise<HyperlanePermissionlessDeployer> {
     const multiProvider = getMultiProvider();
-    const { local, remotes, key } = await getArgs(multiProvider);
+    const { local, remotes, key, writeAgentConfig } = await getArgs(
+      multiProvider,
+    );
     const signer = new ethers.Wallet(key);
     multiProvider.setSharedSigner(signer);
 
@@ -101,6 +107,7 @@ export class HyperlanePermissionlessDeployer {
       signer,
       local,
       remotes as unknown as string[],
+      writeAgentConfig,
     );
   }
 
@@ -137,7 +144,7 @@ export class HyperlanePermissionlessDeployer {
     };
     for (const remote of this.remotes) {
       isms[remote] = {
-        multisigIsm: await coreDeployer.deployMultisigIsm(remote),
+        multisigIsm: await coreDeployer.deployLegacyMultisigIsm(remote),
       };
     }
     contracts = objMerge(contracts, isms);
@@ -173,14 +180,15 @@ export class HyperlanePermissionlessDeployer {
       .getProvider(this.local)
       .getBlockNumber();
 
-    const agentConfig = buildOverriddenAgentConfig(
-      this.chains,
-      this.multiProvider,
-      addresses,
-      startBlocks,
-    );
+    if (this.writeAgentConfig) {
+      const agentConfig = buildOverriddenAgentConfig(
+        this.chains,
+        this.multiProvider,
+        startBlocks,
+      );
 
-    // Write AgentConfig artifacts
-    writeJSON('./artifacts/', 'agent_config.json', agentConfig);
+      // Write AgentConfig artifacts
+      writeJSON('./artifacts/', 'agent_config.json', agentConfig);
+    }
   }
 }

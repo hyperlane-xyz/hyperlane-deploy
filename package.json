@@ -26,6 +26,7 @@
   "packageManager": "yarn@3.4.1",
   "resolutions": {
     "@hyperlane-xyz/sdk": "portal:../hyperlane-monorepo/typescript/sdk",
-    "@hyperlane-xyz/core": "portal:../hyperlane-monorepo/solidity"
+    "@hyperlane-xyz/core": "portal:../hyperlane-monorepo/solidity",
+    "@hyperlane-xyz/utils": "portal:../hyperlane-monorepo/typescript/utils"
   }
 }

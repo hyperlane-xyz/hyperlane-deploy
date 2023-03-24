@@ -1,8 +1,9 @@
 import { ChainMap, ChainMetadata } from '@hyperlane-xyz/sdk';
 
 export const chains: ChainMap<ChainMetadata> = {
+  // ----------- Your chains here -----------------
   anvil: {
-    name: 'anvil',
+    name: 'anvil1',
     // anvil default chain id
     chainId: 31337,
     publicRpcUrls: [
@@ -11,7 +12,6 @@ export const chains: ChainMap<ChainMetadata> = {
       },
     ],
   },
-  // Add your chain(s) here
   anvil2: {
     name: 'anvil2',
     // anvil default chain id

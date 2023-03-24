@@ -420,7 +420,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hyperlane-xyz/core@portal:../hyperlane-monorepo/solidity::locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A."
   dependencies:
-    "@hyperlane-xyz/utils": 1.2.2
+    "@hyperlane-xyz/utils": 1.2.3
     "@openzeppelin/contracts": ^4.8.0
     "@openzeppelin/contracts-upgradeable": ^4.8.0
   languageName: node
@@ -448,8 +448,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hyperlane-xyz/sdk@portal:../hyperlane-monorepo/typescript/sdk::locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A."
   dependencies:
-    "@hyperlane-xyz/core": 1.2.2
-    "@hyperlane-xyz/utils": 1.2.2
+    "@hyperlane-xyz/core": 1.2.3
+    "@hyperlane-xyz/utils": 1.2.3
     "@wagmi/chains": ^0.2.6
     coingecko-api: ^1.0.10
     cross-fetch: ^3.1.5
@@ -459,14 +459,13 @@ __metadata:
   languageName: node
   linkType: soft
 
-"@hyperlane-xyz/utils@npm:1.2.2, @hyperlane-xyz/utils@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "@hyperlane-xyz/utils@npm:1.2.2"
+"@hyperlane-xyz/utils@portal:../hyperlane-monorepo/typescript/utils::locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@hyperlane-xyz/utils@portal:../hyperlane-monorepo/typescript/utils::locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A."
   dependencies:
     ethers: ^5.7.2
-  checksum: ac118a1604eb3d14064ccfc6208735ea6fbf909cf178592a22570864fcbce4ba55833e0bb7ec0942240eec7db36412ec21ea4ce10f3c3dd0167213c6734b302b
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@jridgewell/resolve-uri@npm:^3.0.3":
   version: 3.1.0

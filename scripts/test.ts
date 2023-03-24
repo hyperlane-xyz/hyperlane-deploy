@@ -1,8 +1,8 @@
 import {
-  MultiProvider,
+  DispatchedMessage,
   HyperlaneCore,
   HyperlaneIgp,
-  DispatchedMessage,
+  MultiProvider,
 } from '@hyperlane-xyz/sdk';
 import { utils } from '@hyperlane-xyz/utils';
 import { sleep } from '@hyperlane-xyz/utils/dist/src/utils';
@@ -29,12 +29,16 @@ export function getArgs(multiProvider: MultiProvider) {
     .string('key')
     .coerce('key', assertBytes32)
     .demandOption('key')
+    .describe('timeout', 'timeout in seconds')
+    .number('timeout')
+    .default('timeout', 10 * 60)
     .middleware(assertBalances(multiProvider, (argv) => argv.chains)).argv;
 }
 
 async function main() {
   const multiProvider = getMultiProvider();
-  let { chains, key } = await getArgs(multiProvider);
+  let { chains, key, timeout } = await getArgs(multiProvider);
+  const endTime = Date.now() + timeout * 1000;
   const signer = new ethers.Wallet(key);
   multiProvider.setSharedSigner(signer);
   const core = HyperlaneCore.fromAddresses(
@@ -96,7 +100,7 @@ async function main() {
       }
     }
   }
-  while (messages.size > 0) {
+  while (messages.size > 0 && Date.now() < endTime) {
     for (const message of messages.values()) {
       const origin = multiProvider.getChainName(message.parsed.origin);
       const destination = multiProvider.getChainName(
@@ -123,4 +127,4 @@ async function main() {
   }
 }
 
-main().then(console.log).catch(console.error);
+main().then(console.log);

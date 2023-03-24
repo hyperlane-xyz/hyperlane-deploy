@@ -1,10 +1,9 @@
-import { ethers } from 'ethers';
-import { types, utils } from '@hyperlane-xyz/utils';
 import {
   buildAgentConfig,
   ChainMap,
   ChainName,
   CoreConfig,
+  defaultMultisigIsmConfigs,
   GasOracleContractType,
   HyperlaneAddresses,
   HyperlaneAgentAddresses,
@@ -15,10 +14,13 @@ import {
   objMerge,
   OverheadIgpConfig,
 } from '@hyperlane-xyz/sdk';
+import { hyperlaneEnvironments } from '@hyperlane-xyz/sdk/dist/consts/environments';
+import { types, utils } from '@hyperlane-xyz/utils';
+import { ethers } from 'ethers';
+import artifactAddresses from '../artifacts/addresses.json';
 import { chains } from '../config/chains';
 import { multisigIsmConfig } from '../config/multisig_ism';
-import { hyperlaneEnvironments } from '@hyperlane-xyz/sdk/dist/consts/environments';
-import artifactAddresses from '../artifacts/addresses.json';
+import { readJSON } from './json';
 
 export function getMultiProvider() {
   const multiProvider = new MultiProvider();
@@ -77,9 +79,13 @@ export function buildCoreConfig(
   const configMap: ChainMap<CoreConfig> = {};
   for (const local of chains) {
     const multisigIsmConfigs: ChainMap<MultisigIsmConfig> = {};
+    const mergedMultisigIsmConfig: ChainMap<MultisigIsmConfig> = objMerge(
+      defaultMultisigIsmConfigs,
+      multisigIsmConfig,
+    );
     for (const remote of chains) {
       if (local === remote) continue;
-      multisigIsmConfigs[remote] = multisigIsmConfig[remote];
+      multisigIsmConfigs[remote] = mergedMultisigIsmConfig[remote];
     }
     configMap[local] = {
       owner,
@@ -128,12 +134,15 @@ export const mergedContractAddresses: ChainMap<HyperlaneAddresses> = objMerge(
 export function buildOverriddenAgentConfig(
   chains: ChainName[],
   multiProvider: MultiProvider,
-  addressOverrides: ChainMap<HyperlaneAddresses>,
   startBlocks: ChainMap<number>,
 ) {
+  const localAddresses: ChainMap<HyperlaneAddresses> = readJSON(
+    './artifacts',
+    'addresses.json',
+  );
   const mergedAddresses: ChainMap<HyperlaneAddresses> = objMerge(
     sdkContractAddresses,
-    addressOverrides,
+    localAddresses,
   );
   const filteredAddresses: ChainMap<HyperlaneAgentAddresses> = objFilter(
     mergedAddresses,
@@ -146,7 +155,6 @@ export function buildOverriddenAgentConfig(
 
   return buildAgentConfig(
     chains,
-    // @ts-ignore
     multiProvider,
     filteredAddresses,
     startBlocks,
