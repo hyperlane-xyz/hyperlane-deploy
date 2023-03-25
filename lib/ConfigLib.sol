@@ -124,9 +124,6 @@ library ConfigLib {
             vm.parseJson(json, string.concat(".", chainName, ".validators")),
             (address[])
         );
-        for (uint256 i = 0; i < validators.length; i++) {
-            console.log(validators[i]);
-        }
 
         json = vm.readFile("config/networks.json");
         uint32 domainId = abi.decode(
