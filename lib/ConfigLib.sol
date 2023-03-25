@@ -114,22 +114,16 @@ library ConfigLib {
         Vm vm,
         string memory chainName
     ) private view returns (MultisigIsmDomainConfig memory) {
+        console.log(chainName);
         string memory json = vm.readFile("config/multisig_ism.json");
         uint8 threshold = abi.decode(
             vm.parseJson(json, string.concat(".", chainName, ".threshold")),
             (uint8)
         );
-        bytes memory validatorBytes = json.parseRaw(
-            string.concat(".", chainName, ".validators[*].address")
+        address[] memory validators = abi.decode(
+            vm.parseJson(json, string.concat(".", chainName, ".validators")),
+            (address[])
         );
-        uint256 numValidators = validatorBytes.length / 32;
-        address[] memory validators = new address[](numValidators);
-        for (uint256 i = 0; i < validators.length; i++) {
-            validators[i] = abi.decode(
-                validatorBytes.slice(i * 32, 32),
-                (address)
-            );
-        }
 
         json = vm.readFile("config/networks.json");
         uint32 domainId = abi.decode(

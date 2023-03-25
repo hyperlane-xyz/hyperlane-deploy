@@ -3,12 +3,12 @@
     "id": 1174786466,
     "owner": "0xfaD1C94469700833717Fa8a3017278BC1cA8031C",
     "contracts": {
-      "interchainGasPaymaster": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      "proxyAdmin": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "mailbox": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
       "testRecipient": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
-      "validatorAnnounce": "0x3Fc742696D5dc9846e04f7A1823D92cb51695f9a",
-      "create2Factory": "0x0000000000000000000000000000000000000000"
+      "create2Factory": "0x0000000000000000000000000000000000000000",
+      "mailbox": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+      "validatorAnnounce": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+      "interchainGasPaymaster": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "proxyAdmin": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
     }
   },
   "alfajores": {

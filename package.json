@@ -6,7 +6,6 @@
   "repository": "git@github.com:hyperlane-xyz/hyperlane-deploy.git",
   "author": "asa@hyperlane.xyz",
   "license": "Apache 2.0",
-  "private": false,
   "scripts": {
     "prettier": "prettier --write ./scripts ./lib"
   },
