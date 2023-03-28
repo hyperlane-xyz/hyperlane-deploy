@@ -6,7 +6,8 @@ import {Vm} from "../lib/forge-std/src/Vm.sol";
 import {BytesLib} from "../lib/BytesLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {Mailbox} from "@hyperlane-xyz/core/contracts/Mailbox.sol";
-import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/InterchainGasPaymaster.sol";
+import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/igps/InterchainGasPaymaster.sol";
+import {ValidatorAnnounce} from "@hyperlane-xyz/core/contracts/ValidatorAnnounce.sol";
 import {ProxyAdmin} from "@hyperlane-xyz/core/contracts/upgrade/ProxyAdmin.sol";
 import {TransparentUpgradeableProxy} from "@hyperlane-xyz/core/contracts/upgrade/TransparentUpgradeableProxy.sol";
 import {Create2Factory} from "@hyperlane-xyz/core/contracts/Create2Factory.sol";
@@ -24,6 +25,7 @@ library ConfigLib {
         InterchainGasPaymaster igp;
         ProxyAdmin admin;
         Create2Factory create2;
+        ValidatorAnnounce validatorAnnounce;
         TestRecipient testRecipient;
     }
 
@@ -48,7 +50,11 @@ library ConfigLib {
         try
             vm.parseJson(
                 json,
-                string.concat(chainName, string.concat(prefix, contractName))
+                string.concat(
+                    ".",
+                    chainName,
+                    string.concat(prefix, contractName)
+                )
             )
         returns (bytes memory result) {
             address parsedAddr = abi.decode(result, (address));
@@ -63,12 +69,13 @@ library ConfigLib {
         string memory chainName
     ) internal view returns (HyperlaneDomainConfig memory) {
         string memory json = vm.readFile("config/networks.json");
+        // console.log(json);
         uint32 domainId = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".id")),
+            vm.parseJson(json, string.concat(".", chainName, ".id")),
             (uint32)
         );
         address owner = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".owner")),
+            vm.parseJson(json, string.concat(".", chainName, ".owner")),
             (address)
         );
         Mailbox mailbox = Mailbox(
@@ -86,6 +93,9 @@ library ConfigLib {
         TestRecipient recipient = TestRecipient(
             readContractAddress(vm, chainName, "testRecipient")
         );
+        ValidatorAnnounce validatorAnnounce = ValidatorAnnounce(
+            readContractAddress(vm, chainName, "validatorAnnounce")
+        );
         return
             HyperlaneDomainConfig(
                 chainName,
@@ -95,6 +105,7 @@ library ConfigLib {
                 igp,
                 admin,
                 create2,
+                validatorAnnounce,
                 recipient
             );
     }
@@ -103,26 +114,20 @@ library ConfigLib {
         Vm vm,
         string memory chainName
     ) private view returns (MultisigIsmDomainConfig memory) {
+        console.log(chainName);
         string memory json = vm.readFile("config/multisig_ism.json");
         uint8 threshold = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".threshold")),
+            vm.parseJson(json, string.concat(".", chainName, ".threshold")),
             (uint8)
         );
-        bytes memory validatorBytes = json.parseRaw(
-            string.concat(chainName, ".validators[*].address")
+        address[] memory validators = abi.decode(
+            vm.parseJson(json, string.concat(".", chainName, ".validators")),
+            (address[])
         );
-        uint256 numValidators = validatorBytes.length / 32;
-        address[] memory validators = new address[](numValidators);
-        for (uint256 i = 0; i < validators.length; i++) {
-            validators[i] = abi.decode(
-                validatorBytes.slice(i * 32, 32),
-                (address)
-            );
-        }
 
         json = vm.readFile("config/networks.json");
         uint32 domainId = abi.decode(
-            vm.parseJson(json, string.concat(chainName, ".id")),
+            vm.parseJson(json, string.concat(".", chainName, ".id")),
             (uint32)
         );
         return
@@ -158,6 +163,11 @@ library ConfigLib {
 
         string memory addresses = "addresses";
         vm.serializeAddress(addresses, "mailbox", address(config.mailbox));
+        vm.serializeAddress(
+            addresses,
+            "validatorAnnounce",
+            address(config.validatorAnnounce)
+        );
         vm.serializeString(
             baseConfig,
             "addresses",
@@ -213,6 +223,11 @@ library ConfigLib {
             address(config.igp)
         );
         vm.serializeAddress(contracts, "proxyAdmin", address(config.admin));
+        vm.serializeAddress(
+            contracts,
+            "validatorAnnounce",
+            address(config.validatorAnnounce)
+        );
         vm.serializeAddress(
             contracts,
             "testRecipient",

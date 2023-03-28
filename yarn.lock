@@ -344,19 +344,19 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@hyperlane-xyz/core@1.0.0-beta6":
-  version "1.0.0-beta6"
-  resolved "https://registry.yarnpkg.com/@hyperlane-xyz/core/-/core-1.0.0-beta6.tgz#ffb54f4d0ffecf751c0326d782ce7221585cbb63"
-  integrity sha512-Ucjp07uQGvSa5K4Zsk3/nrAjpvhO83QDwndjxKGS8yw8KQgXHs9x6wl0UPDHtgrC1Kiv14Yn4vfCd/0vJhOWGA==
+"@hyperlane-xyz/core@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@hyperlane-xyz/core/-/core-1.1.2.tgz#d084a8420136dffa63abb813ffae60f2feb10ce5"
+  integrity sha512-x7yUJ9NxmygQ6b5Y7Y/d9NB23bzA/8lUfbB1cmKx2j2eomST9Gwko9TI/v8KqfPDtB83bW0EFW0G31BgQnXNGg==
   dependencies:
-    "@hyperlane-xyz/utils" "1.0.0-beta6"
+    "@hyperlane-xyz/utils" "1.1.2"
     "@openzeppelin/contracts" "^4.8.0"
     "@openzeppelin/contracts-upgradeable" "^4.8.0"
 
-"@hyperlane-xyz/utils@1.0.0-beta6":
-  version "1.0.0-beta6"
-  resolved "https://registry.yarnpkg.com/@hyperlane-xyz/utils/-/utils-1.0.0-beta6.tgz#3ae72c0e29798df82739b88728013348d9bfabaf"
-  integrity sha512-vRBnQwgiijQB0KqBiDm9RhqVPm5nnNk+Wu89MT3a8Ff3BUGTYBd2Shrb7gvtz6kXpxqk1l4/v9GU86NZ99J9BA==
+"@hyperlane-xyz/utils@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@hyperlane-xyz/utils/-/utils-1.1.2.tgz#c6f10c79bbac0a5c221991a86f79bf33574a7e91"
+  integrity sha512-5ox1L3uJBQJ8Gvy4HFjGTLAnr4WppXmNF9OsIJbD/qZYYr4Nk8s9Q6mj/25xej3Y7jxYH6bnJ3opUHLyG9dh/g==
   dependencies:
     ethers "^5.7.2"
 

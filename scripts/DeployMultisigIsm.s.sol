@@ -9,6 +9,7 @@ import {CheckLib} from "../lib/CheckLib.sol";
 import {DeployLib} from "../lib/DeployLib.sol";
 import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {TestRecipient} from "@hyperlane-xyz/core/contracts/test/TestRecipient.sol";
+import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/igps/InterchainGasPaymaster.sol";
 
 // TODO: Deploy test recipient, maybe write to networks.
 contract DeployMultisigIsm is Script {
@@ -27,6 +28,12 @@ contract DeployMultisigIsm is Script {
         TestRecipient recipient = new TestRecipient();
         recipient.setInterchainSecurityModule(address(ism));
         console.log("TestRecipient deployed at address %s", address(recipient));
+
+        InterchainGasPaymaster igp = new InterchainGasPaymaster();
+        console.log(
+            "InterchainGasPaymaster deployed at address %s",
+            address(igp)
+        );
         config.check(ism, owner);
     }
 }
