@@ -1,7 +1,7 @@
 {
   "khalanitestnet": {
     "id": 10012,
-    "owner": "PLACEHOLDER",
+    "owner": "<ADDRESS>",
     "contracts": {
       "proxyAdmin": "0x0000000000000000000000000000000000000000",
       "testRecipient": "0x0000000000000000000000000000000000000000",
