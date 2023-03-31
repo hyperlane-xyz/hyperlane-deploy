@@ -11,7 +11,6 @@ import {MultisigIsm} from "@hyperlane-xyz/core/contracts/isms/MultisigIsm.sol";
 import {TestRecipient} from "@hyperlane-xyz/core/contracts/test/TestRecipient.sol";
 import {InterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/igps/InterchainGasPaymaster.sol";
 
-// TODO: Deploy test recipient, maybe write to networks.
 contract DeployMultisigIsm is Script {
     using CheckLib for ConfigLib.MultisigIsmConfig;
     using DeployLib for ConfigLib.MultisigIsmConfig;
@@ -25,15 +24,14 @@ contract DeployMultisigIsm is Script {
         vm.startBroadcast();
 
         MultisigIsm ism = config.deploy(owner);
-        TestRecipient recipient = new TestRecipient();
-        recipient.setInterchainSecurityModule(address(ism));
-        console.log("TestRecipient deployed at address %s", address(recipient));
-
-        InterchainGasPaymaster igp = new InterchainGasPaymaster();
-        console.log(
-            "InterchainGasPaymaster deployed at address %s",
-            address(igp)
-        );
+//        TestRecipient recipient = new TestRecipient();
+//        recipient.setInterchainSecurityModule(address(ism));
+//        console.log("TestRecipient deployed at address %s", address(recipient));
+//        InterchainGasPaymaster igp = new InterchainGasPaymaster();
+//        console.log(
+//            "InterchainGasPaymaster deployed at address %s",
+//            address(igp)
+//        );
         config.check(ism, owner);
     }
 }
