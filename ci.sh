@@ -30,6 +30,8 @@ docker run --mount type=bind,source="$(pwd)/artifacts",target=/config --net=host
 echo "Running validator on anvil2"
 docker run --mount type=bind,source="$(pwd)/artifacts",target=/config --net=host -e CONFIG_FILES=/config/agent_config.json -e HYP_VALIDATOR_ORIGINCHAINNAME=anvil2 -e HYP_VALIDATOR_REORGPERIOD=1 -e HYP_VALIDATOR_INTERVAL=1 -e HYP_BASE_CHAINS_ANVIL2_CONNECTION_URL=http://127.0.0.1:8555 -e HYP_VALIDATOR_VALIDATOR_TYPE=hexKey -e HYP_VALIDATOR_VALIDATOR_KEY=0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6 -e HYP_VALIDATOR_CHECKPOINTSYNCER_TYPE=localStorage -e HYP_VALIDATOR_CHECKPOINTSYNCER_PATH=/config/anvil2/validator -e HYP_BASE_TRACING_LEVEL=info -e HYP_BASE_TRACING_FMT=pretty gcr.io/abacus-labs-dev/hyperlane-agent:5bf8aed-20230323-140136 ./validator &
 
+sleep 10
+
 echo "Announcing validator on anvil1"
 ls ./artifacts/ ./artifacts/anvil1/ ./artifacts/anvil1/validator
 cat ./artifacts/anvil1/validator/*
