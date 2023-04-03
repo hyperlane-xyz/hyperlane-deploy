@@ -153,6 +153,7 @@ async function main() {
     }
   }
   if (timedOut) {
+    console.error('Timed out waiting for messages to be delivered');
     process.exit(1);
   }
 }
