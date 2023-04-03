@@ -52,7 +52,7 @@ do
 done
 
 
-for i in "anvil1 ANVIL1 ANVIL2" "anvil2 ANVIL2 ANVIL1"
+for i in "anvil1 anvil2 ANVIL2" "anvil2 anvil1 ANVIL1"
 do
     set -- $i
     echo "Running relayer on $1"
