@@ -154,4 +154,4 @@ async function main() {
   }
 }
 
-main().then(console.log);
+main().then(() => console.info('Testing complete'));

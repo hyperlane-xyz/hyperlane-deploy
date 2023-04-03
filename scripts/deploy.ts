@@ -10,4 +10,4 @@ async function main() {
   }
 }
 
-main().then(console.log);
+main().then(() => console.info('Deploy completed successfully'));
