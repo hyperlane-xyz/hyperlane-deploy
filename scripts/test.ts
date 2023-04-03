@@ -152,6 +152,9 @@ async function main() {
       await sleep(5000);
     }
   }
+  if (timedOut) {
+    process.exit(1);
+  }
 }
 
 main().then(() => console.info('Testing complete'));
