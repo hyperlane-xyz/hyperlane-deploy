@@ -13,7 +13,9 @@ sleep 1
 
 set -e
 
+echo "Deploying contracts to anvil1"
 DEBUG=hyperlane* yarn ts-node scripts/deploy.ts --local anvil1 --remotes anvil2 --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --no-write-agent-config
+echo "Deploying contracts to anvil2"
 DEBUG=hyperlane* yarn ts-node scripts/deploy.ts --local anvil2 --remotes anvil1 --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
 #kill $ANVIL_1_PID
@@ -23,11 +25,15 @@ cat artifacts/addresses.json
 cat artifacts/agent_config.json
 
 # Won't work on anything but linux
+echo "Running validator on anvil1"
 docker run --mount type=bind,source="$(pwd)/artifacts",target=/config --net=host -e CONFIG_FILES=/config/agent_config.json -e HYP_VALIDATOR_ORIGINCHAINNAME=anvil1 -e HYP_VALIDATOR_REORGPERIOD=1 -e HYP_VALIDATOR_INTERVAL=1 -e HYP_BASE_CHAINS_ANVIL1_CONNECTION_URL=http://127.0.0.1:8545 -e HYP_VALIDATOR_VALIDATOR_TYPE=hexKey -e HYP_VALIDATOR_VALIDATOR_KEY=0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6 -e HYP_VALIDATOR_CHECKPOINTSYNCER_TYPE=localStorage -e HYP_VALIDATOR_CHECKPOINTSYNCER_PATH=/config/anvil1/validator -e HYP_BASE_TRACING_LEVEL=info -e HYP_BASE_TRACING_FMT=pretty gcr.io/abacus-labs-dev/hyperlane-agent:5bf8aed-20230323-140136 ./validator &
+echo "Running validator on anvil2"
 docker run --mount type=bind,source="$(pwd)/artifacts",target=/config --net=host -e CONFIG_FILES=/config/agent_config.json -e HYP_VALIDATOR_ORIGINCHAINNAME=anvil2 -e HYP_VALIDATOR_REORGPERIOD=1 -e HYP_VALIDATOR_INTERVAL=1 -e HYP_BASE_CHAINS_ANVIL2_CONNECTION_URL=http://127.0.0.1:8555 -e HYP_VALIDATOR_VALIDATOR_TYPE=hexKey -e HYP_VALIDATOR_VALIDATOR_KEY=0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6 -e HYP_VALIDATOR_CHECKPOINTSYNCER_TYPE=localStorage -e HYP_VALIDATOR_CHECKPOINTSYNCER_PATH=/config/anvil2/validator -e HYP_BASE_TRACING_LEVEL=info -e HYP_BASE_TRACING_FMT=pretty gcr.io/abacus-labs-dev/hyperlane-agent:5bf8aed-20230323-140136 ./validator &
 
+echo "Do we have jq?"
 jq --help
 
+echo "Announcing validator on anvil1"
 VALIDATOR_ANNOUNCE_ADDRESS=$(cat artifacts/addresses.json | jq '.anvil1.validatorAnnounce')
 VALIDATOR=$(cat artifacts/anvil1/validator/announcement.json | jq '.value.validator')
 STORAGE_LOCATION=$(cat artifacts/anvil1/validator/announcement.json | jq '.value.storage_location')
@@ -35,6 +41,7 @@ SIGNATURE=$(cat artifacts/anvil1/validator/announcement.json | jq '.serialized_s
 cast send $VALIDATOR_ANNOUNCE_ADDRESS  "announce(address, string calldata, bytes calldata)(bool)" $VALIDATOR $STORAGE_LOCATION $SIGNATURE --rpc-url http://127.0.0.1:8545 --private-key 0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba
 
 
+echo "Announcing validator on anvil2"
 VALIDATOR_ANNOUNCE_ADDRESS=$(cat artifacts/addresses.json | jq '.anvil2.validatorAnnounce')
 VALIDATOR=$(cat artifacts/anvil2/validator/announcement.json | jq '.value.validator')
 STORAGE_LOCATION=$(cat artifacts/anvil2/validator/announcement.json | jq '.value.storage_location')
