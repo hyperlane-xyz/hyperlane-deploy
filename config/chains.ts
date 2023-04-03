@@ -8,7 +8,7 @@ export const chains: ChainMap<ChainMetadata> = {
     chainId: 31337,
     publicRpcUrls: [
       {
-        http: 'http://localhost:8545',
+        http: 'http://127.0.0.1:8545',
       },
     ],
   },
@@ -17,7 +17,7 @@ export const chains: ChainMap<ChainMetadata> = {
     chainId: 31338,
     publicRpcUrls: [
       {
-        http: 'http://localhost:8555',
+        http: 'http://127.0.0.1:8555',
       },
     ],
   },

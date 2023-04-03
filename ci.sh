@@ -1,4 +1,4 @@
-anvil --chain-id 31337 -p 8545
+anvil --chain-id 31337 -p 8545 > /dev/null &
 ANVIL_1_PID=$!
 
 anvil --chain-id 31338 -p 8555 > /dev/null &
