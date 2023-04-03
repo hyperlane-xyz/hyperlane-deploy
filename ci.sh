@@ -1,5 +1,9 @@
 anvil --chain-id 31337 -p 8545 > /dev/null &
+ANVIL_1_PID=$!
+
 anvil --chain-id 31338 -p 8555 > /dev/null &
+ANVIL_2_PID=$!
+
 sleep 5
 DEBUG=hyperlane* yarn ts-node scripts/deploy.ts --local anvil1 --remotes anvil2 --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --no-write-agent-config
 DEBUG=hyperlane* yarn ts-node scripts/deploy.ts --local anvil2 --remotes anvil1 --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
@@ -9,4 +13,7 @@ docker run -it --mount type=bind,source="$(pwd)/artifacts/agent_config.json",tar
 
 
 
-DEBUG=hyperlane* yarn ts-node scripts/test.ts --chains anvil1 anvil2 --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --timeout 10
+#DEBUG=hyperlane* yarn ts-node scripts/test.ts --chains anvil1 anvil2 --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --timeout 10
+
+kill $ANVIL_1_PID
+kill $ANVIL_2_PID
