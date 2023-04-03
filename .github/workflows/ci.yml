@@ -44,18 +44,8 @@ jobs:
         with:
           version: nightly
 
-      - name: Anvil1
-        run: anvil --chain-id 31337 --block-time 1 -p 8545 &
-      - name: Anvil2
-        run: anvil --chain-id 31338 --block-time 1 -p 8555 &
-
-      - name: Deploy core
-        run: |
-          DEBUG=hyperlane* yarn ts-node scripts/deploy.ts --local anvil1 --remotes anvil2 --no-write-agent-config --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-          DEBUG=hyperlane* yarn ts-node scripts/deploy.ts --local anvil2 --remotes anvil1 --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-
-      - name: Send message
-        run: DEBUG=hyperlane* yarn ts-node scripts/test.ts --chains anvil1 anvil2 --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --timeout 10
+      - name: deploy
+        run: ./ci.sh
 
   lint:
     needs: [yarn-install]
