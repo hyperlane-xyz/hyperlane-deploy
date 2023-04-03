@@ -50,7 +50,7 @@ jobs:
       - name: Anvil1
         run: anvil &
       - name: Anvil2
-        run: anvil --chain-id 1234 -p 8555 &
+        run: anvil --chain-id 31338 --block-time 1 -p 8555 &
 
       - name: Deploy core
         run: |

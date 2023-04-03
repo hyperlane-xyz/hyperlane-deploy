@@ -1,15 +1,14 @@
 import {
   ChainMap,
   ChainName,
-  CoreContracts,
-  HyperlaneAddresses,
-  HyperlaneContracts,
+  CoreFactories,
+  HyperlaneContractsMap,
   HyperlaneCoreDeployer,
   HyperlaneIgpDeployer,
   MultiProvider,
   objMap,
   objMerge,
-  serializeContracts,
+  serializeContractsMap,
 } from '@hyperlane-xyz/sdk';
 import yargs from 'yargs';
 
@@ -116,7 +115,7 @@ export class HyperlanePermissionlessDeployer {
   }
 
   async deploy(): Promise<void> {
-    let contracts: ChainMap<HyperlaneContracts> = {};
+    let contracts: HyperlaneContractsMap<CoreFactories> = {};
     const owner = await this.signer.getAddress();
     // First, deploy core contracts to the local chain
     // NB: We create core configs for *all* chains because
@@ -129,7 +128,7 @@ export class HyperlanePermissionlessDeployer {
       this.multiProvider,
       coreConfig,
     );
-    const coreContracts: ChainMap<CoreContracts> = {};
+    const coreContracts: HyperlaneContractsMap<CoreFactories> = {};
     coreContracts[this.local] = await coreDeployer.deployContracts(
       this.local,
       coreConfig[this.local],
@@ -170,9 +169,7 @@ export class HyperlanePermissionlessDeployer {
     const igps = await igpDeployer.deploy();
     contracts = objMerge(contracts, igps);
 
-    const addresses = serializeContracts(
-      contracts,
-    ) as ChainMap<HyperlaneAddresses>;
+    const addresses = serializeContractsMap(contracts);
     // Write contract address artifacts
     mergeJSON('./artifacts/', 'addresses.json', addresses);
 

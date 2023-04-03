@@ -5,7 +5,7 @@ import {
   CoreConfig,
   defaultMultisigIsmConfigs,
   GasOracleContractType,
-  HyperlaneAddresses,
+  HyperlaneAddressesMap,
   HyperlaneAgentAddresses,
   MultiProvider,
   MultisigIsmConfig,
@@ -121,12 +121,12 @@ export function buildIgpConfig(
   return configMap;
 }
 
-export const sdkContractAddresses: ChainMap<HyperlaneAddresses> = {
+export const sdkContractAddresses = {
   ...hyperlaneEnvironments.testnet,
   ...hyperlaneEnvironments.mainnet,
 };
 
-export const mergedContractAddresses: ChainMap<HyperlaneAddresses> = objMerge(
+export const mergedContractAddresses = objMerge(
   sdkContractAddresses,
   artifactAddresses,
 );
@@ -136,11 +136,8 @@ export function buildOverriddenAgentConfig(
   multiProvider: MultiProvider,
   startBlocks: ChainMap<number>,
 ) {
-  const localAddresses: ChainMap<HyperlaneAddresses> = readJSON(
-    './artifacts',
-    'addresses.json',
-  );
-  const mergedAddresses: ChainMap<HyperlaneAddresses> = objMerge(
+  const localAddresses = readJSON('./artifacts', 'addresses.json');
+  const mergedAddresses: HyperlaneAddressesMap<any> = objMerge(
     sdkContractAddresses,
     localAddresses,
   );

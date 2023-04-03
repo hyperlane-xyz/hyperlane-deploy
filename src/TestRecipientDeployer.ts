@@ -5,7 +5,8 @@ import {
   HyperlaneDeployer,
   MultiProvider,
 } from '@hyperlane-xyz/sdk';
-import { debug, types } from '@hyperlane-xyz/utils';
+import { types } from '@hyperlane-xyz/utils';
+import debug from 'debug';
 
 // Maps chain name to ISM address
 export type TestRecipientConfig = {
@@ -26,7 +27,6 @@ export const testRecipientFactories = {
 
 export class HyperlaneTestRecipientDeployer extends HyperlaneDeployer<
   TestRecipientConfig,
-  TestRecipientContracts,
   typeof testRecipientFactories
 > {
   constructor(

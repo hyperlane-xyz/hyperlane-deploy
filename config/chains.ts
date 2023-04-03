@@ -14,8 +14,7 @@ export const chains: ChainMap<ChainMetadata> = {
   },
   anvil2: {
     name: 'anvil2',
-    // anvil default chain id
-    chainId: 1234,
+    chainId: 31338,
     publicRpcUrls: [
       {
         http: 'http://localhost:8555',
