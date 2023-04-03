@@ -45,7 +45,7 @@ jobs:
           version: nightly
 
       - name: Anvil1
-        run: anvil &
+        run: anvil --chain-id 31337 --block-time 1 -p 8545 &
       - name: Anvil2
         run: anvil --chain-id 31338 --block-time 1 -p 8555 &
 
