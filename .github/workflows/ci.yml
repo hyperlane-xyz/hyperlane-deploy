@@ -43,6 +43,12 @@ jobs:
         uses: onbjerg/foundry-toolchain@v1
         with:
           version: nightly
+
+      - name: Anvil1
+        run: anvil &
+      - name: Anvil2
+        run: anvil --chain-id 31338 --block-time 1 -p 8555 &
+
   lint:
     needs: [yarn-install]
     runs-on: ubuntu-latest
