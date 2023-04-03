@@ -37,7 +37,7 @@ ls ./artifacts/ ./artifacts/anvil1/ ./artifacts/anvil1/validator
 cat ./artifacts/anvil1/validator/*
 VALIDATOR_ANNOUNCE_ADDRESS=$(cat ./artifacts/addresses.json | jq -r '.anvil1.validatorAnnounce')
 VALIDATOR=$(cat ./artifacts/anvil1/validator/announcement.json | jq -r '.value.validator')
-STORAGE_LOCATION=$(cat ./artifacts/anvil1/validator/announcement.json -r | jq '.value.storage_location')
+STORAGE_LOCATION=$(cat ./artifacts/anvil1/validator/announcement.json | jq -r '.value.storage_location')
 SIGNATURE=$(cat ./artifacts/anvil1/validator/announcement.json | jq -r '.serialized_signature')
 cast send $VALIDATOR_ANNOUNCE_ADDRESS  "announce(address, string calldata, bytes calldata)(bool)" $VALIDATOR $STORAGE_LOCATION $SIGNATURE --rpc-url http://127.0.0.1:8545 --private-key 0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba
 
