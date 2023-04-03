@@ -1,1 +1,22 @@
-{}
+{
+  "anvil1": {
+    "validatorAnnounce": "0x38a024C0b412B9d1db8BC398140D00F5Af3093D4",
+    "proxyAdmin": "0xD42912755319665397FF090fBB63B1a31aE87Cee",
+    "mailbox": "0x525C7063E7C20997BaaE9bDa922159152D0e8417",
+    "multisigIsm": "0xCA8c8688914e0F7096c920146cd0Ad85cD7Ae8b9",
+    "testRecipient": "0x976fcd02f7C4773dd89C309fBF55D5923B4c98a1",
+    "storageGasOracle": "0xfcDB4564c18A9134002b9771816092C9693622e3",
+    "interchainGasPaymaster": "0x32EEce76C2C2e8758584A83Ee2F522D4788feA0f",
+    "defaultIsmInterchainGasPaymaster": "0x02b0B4EFd909240FCB2Eb5FAe060dC60D112E3a4"
+  },
+  "anvil2": {
+    "multisigIsm": "0xF32D39ff9f6Aa7a7A64d7a4F00a54826Ef791a55",
+    "testRecipient": "0x976fcd02f7C4773dd89C309fBF55D5923B4c98a1",
+    "proxyAdmin": "0xD42912755319665397FF090fBB63B1a31aE87Cee",
+    "storageGasOracle": "0xfcDB4564c18A9134002b9771816092C9693622e3",
+    "interchainGasPaymaster": "0x32EEce76C2C2e8758584A83Ee2F522D4788feA0f",
+    "defaultIsmInterchainGasPaymaster": "0x02b0B4EFd909240FCB2Eb5FAe060dC60D112E3a4",
+    "validatorAnnounce": "0x5FeaeBfB4439F3516c74939A9D04e95AFE82C4ae",
+    "mailbox": "0xB0f05d25e41FbC2b52013099ED9616f1206Ae21B"
+  }
+}
