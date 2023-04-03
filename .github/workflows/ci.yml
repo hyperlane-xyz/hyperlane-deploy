@@ -12,9 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
       - uses: actions/cache@v3
         with:
           path: '**/node_modules'
@@ -32,7 +29,7 @@ jobs:
             exit 1
           fi
 
-  build:
+  deploy:
     needs: [yarn-install]
     runs-on: ubuntu-latest
     steps:
@@ -47,8 +44,8 @@ jobs:
         with:
           version: nightly
 
-      - name: Build
-        run: forge build
+      - name: deploy
+        run: ./ci.sh
 
   lint:
     needs: [yarn-install]

@@ -1,6 +1,4 @@
 node_modules/
-broadcast/
-out/
-forge-cache/
-cache/
-config/*_agent_config.json
+dist/
+artifacts/
+.yarn*
