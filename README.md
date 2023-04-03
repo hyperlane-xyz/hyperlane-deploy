@@ -14,61 +14,43 @@ For more detailed instructions on how to deploy Hyperlane to the EVM chain of yo
 
 ### Setup
 
-- Installing foundry
-  See https://github.com/foundry-rs/foundry#installation
-
 - Installing dependencies
 
   ```bash
   yarn install
-  git submodule init && git submodule update --remote
   ```
 
-### Deploying core contracts
+### Deploying contracts
 
-This script is used to incrementally deploy the core Hyperlane smart contracts to a new chain.
+If you're deploying to a new chain, ensure there is a corresponding entry `config/networks.ts` and `config/multisig_ism.ts`.
 
-If a contract address for `$LOCAL` is set to `0x0` in `./config/networks.json`, that contract will be deployed. If not, the script will assert that the contract is configured according to the config in `./config`.
+This script is used to deploy the following core Hyperlane contracts to a new chain.
+The Hyperlane protocol expects exactly one instance of these contracts on every supported chain.
 
-If you're deploying to a new chain, ensure there is a corresponding entry for `$LOCAL` in `./config/networks.json` with all contract addresses set to `0x0`.
+- A `Mailbox` for sending and receiving messages
+- `ValidatorAnnounce` for registering validators
 
-The script deploys:
+This script also deploys the following contracts to all chains, new and existing.
+The Hyperlane protocol expects many instances of these contracts on every supported chains
 
-- A `ProxyAdmin`, used to administer `TransparentUpgradableProxies` for `Mailbox` and `InterchainGasPaymaster`
-- A `Mailbox`, which applications can use to send and receive messages
-- A `MultisigIsm`. Applications can optionally use this ISM to verify interchain messages sent to the local chain.
-- An `InterchainGasPaymaster`. Applications can optionally use this contract to pay a relayer to deliver their interchain messages to remote chains.
-- A `TestRecipient`. Users can send messages to this contract to verify that everything is working properly.
+- An `ISM` (MultisigISM) for verifying inbound messages from remote chains
+- An `InterchainGasPaymaster` for paying relayers for message delivery
+- A `TestRecipient` contract that can be used to test that interchain messages can be delivered
 
 ```bash
-# The name of the chain to deploy to. Used to configure the localDomain for the
-# Mailbox contract.
-export LOCAL=YOUR_CHAIN_NAME
-# An RPC url for the chain to deploy to.
-export RPC_URL=YOUR_CHAIN_RPC_URL
-# The comma separated name(s) of the chains to receive messages from.
-# Used to configure the default MultisigIsm.
-export REMOTES=ethereum,polygon,avalanche,celo,arbitrum,optimism,bsc,moonbeam
-
-# Pass whatever wallet option you would like to use https://book.getfoundry.sh/reference/forge/forge-script#wallet-options---raw
-forge script scripts/DeployCore.s.sol --broadcast --rpc-url $RPC_URL
+DEBUG=hyperlane* yarn ts-node script scripts/deploy.ts --local anvil \
+  --remotes goerli sepolia \
+  --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
-### Deploying a MultisigIsm
+### Sending test messages
 
-This script is used to deploy a `MultigsigIsm` to the chain of your choice. It will be initialized to verify messages from `$REMOTES` using the config for each remote chain specified in `./config/multisig_ism.json`.
+This script is used to verify that Hyperlane messages can be sent between specified chains.
 
-Applications can optionally use this ISM to verify interchain messages.
+Users should have first deployed `TestRecipient` contracts to each of the specified chains.
 
-The script will also deploy a `TestRecipient`, configured to use the deployed ISM.
-
-```bash
-# This address will wind up owning the MultisigIsm after it's deployed.
-export OWNER=0x1234
-# An RPC url for the chain to deploy to.
-export RPC_URL=YOUR_CHAIN_RPC_URL
-# The comma separated name(s) of the chain(s) to receive messages from.
-export REMOTES=YOUR_CHAIN_NAME
-
-forge script scripts/DeployMultisigIsm.s.sol --broadcast --rpc-url $RPC_URL --private-key $PRIVATE_KEY
+```
+DEBUG=hyperlane* yarn ts-node scripts/test-messages.ts \
+  --chains anvil goerli sepolia \
+  --key 0x6f0311f4a0722954c46050bb9f088c4890999e16b64ad02784d24b5fd6d09061
 ```

@@ -10,4 +10,9 @@ async function main() {
   }
 }
 
-main().then(() => console.info('Deploy completed successfully'));
+main()
+  .then(() => console.info('Deploy completed successfully'))
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });

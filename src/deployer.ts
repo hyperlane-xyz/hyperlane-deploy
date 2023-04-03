@@ -30,25 +30,6 @@ import {
   TestRecipientConfig,
 } from './TestRecipientDeployer';
 
-// HyperlanePermissionlessDeployer
-//   Has HyperlaneCoreDeployer
-//   Has HyperlaneIgpDeployer
-//   Has HyperlaneTestRecipientDeployer
-// Loads configs for each from yargs
-//   CoreConfig -> Signer is owner + MultisigIsm from configs
-//   OverheadIgpConfig -> ???
-//   TestRecipientConfig -> ???
-//
-// 0. Configure your local chain
-//      Output: Add ChainMetadata to chains.ts
-// 1. Generate your validator addresses
-//      Output: Add MultisigIsmConfig to multisig_ism.ts
-// 2. Deploy all contracts
-//      Output: Contract addresses in addresses.json, agent config in agent_config.json
-// 3. Run validators
-// 4. Run relayers
-// 5. Send test messages
-
 export function getArgs(multiProvider: MultiProvider) {
   // For each chain, we need:
   //   - ChainMetadata for the MultiProvider
@@ -86,11 +67,11 @@ type MultisigIsmContracts = {
 
 export class HyperlanePermissionlessDeployer {
   constructor(
-    protected multiProvider: MultiProvider,
-    protected signer: ethers.Signer,
-    protected local: ChainName,
-    protected remotes: ChainName[],
-    protected writeAgentConfig?: boolean,
+    public readonly multiProvider: MultiProvider,
+    public readonly signer: ethers.Signer,
+    public readonly local: ChainName,
+    public readonly remotes: ChainName[],
+    public readonly writeAgentConfig?: boolean,
   ) {}
 
   static async fromArgs(): Promise<HyperlanePermissionlessDeployer> {

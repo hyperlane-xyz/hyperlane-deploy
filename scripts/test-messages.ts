@@ -71,7 +71,7 @@ async function main() {
   let timedOut = false;
   const multiProvider = getMultiProvider();
   let { chains, key, timeout } = await getArgs(multiProvider);
-  setTimeout(() => {
+  const timeoutId = setTimeout(() => {
     timedOut = true;
   }, timeout * 1000);
   const signer = new ethers.Wallet(key);
@@ -152,10 +152,16 @@ async function main() {
       await sleep(5000);
     }
   }
+  clearTimeout(timeoutId);
   if (timedOut) {
     console.error('Timed out waiting for messages to be delivered');
     process.exit(1);
   }
 }
 
-main().then(() => console.info('Testing complete'));
+main()
+  .then(() => console.info('Testing complete'))
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
