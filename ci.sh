@@ -39,7 +39,13 @@ do
       -e HYP_VALIDATOR_CHECKPOINTSYNCER_PATH=/config/${1}/validator \
       -e HYP_BASE_TRACING_LEVEL=info -e HYP_BASE_TRACING_FMT=pretty \
       gcr.io/abacus-labs-dev/hyperlane-agent:5bf8aed-20230323-140136 ./validator &
-    sleep 5
+done
+
+sleep 10
+
+for i in "anvil1 8545" "anvil2 8555"
+do
+    set -- $i
     echo "Announcing validator on $1"
     VALIDATOR_ANNOUNCE_ADDRESS=$(cat ./artifacts/addresses.json | jq -r ".$1.validatorAnnounce")
     VALIDATOR=$(cat ./artifacts/$1/validator/announcement.json | jq -r '.value.validator')
