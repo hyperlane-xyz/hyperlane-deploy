@@ -49,7 +49,7 @@ This script is used to verify that Hyperlane messages can be sent between specif
 
 Users should have first deployed `TestRecipient` contracts to each of the specified chains.
 
-```
+```sh
 DEBUG=hyperlane* yarn ts-node scripts/test-messages.ts \
   --chains anvil goerli sepolia \
   --key 0x6f0311f4a0722954c46050bb9f088c4890999e16b64ad02784d24b5fd6d09061

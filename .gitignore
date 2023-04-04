@@ -1,4 +1,8 @@
 node_modules/
 dist/
 artifacts/
-.yarn*
+
+# Yarn files
+.yarn/install-state.gz
+.yarn/cache
+yarn-error.log
