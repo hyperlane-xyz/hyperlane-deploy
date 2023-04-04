@@ -3,7 +3,7 @@ import { ChainMap, ChainMetadata } from '@hyperlane-xyz/sdk';
 // A map of chain names to ChainMetadata
 export const chains: ChainMap<ChainMetadata> = {
   // ----------- Your chains here -----------------
-  anvil: {
+  anvil1: {
     name: 'anvil1',
     // anvil default chain id
     chainId: 31337,
