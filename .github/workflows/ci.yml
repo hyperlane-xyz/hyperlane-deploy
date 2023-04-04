@@ -47,6 +47,11 @@ jobs:
             .yarn/cache
           key: ${{ runner.os }}-yarn-cache-${{ hashFiles('./yarn.lock') }}
 
+      - name: Install Foundry
+        uses: onbjerg/foundry-toolchain@v1
+        with:
+          version: nightly
+
       - name: deploy
         run: ./ci.sh
 
