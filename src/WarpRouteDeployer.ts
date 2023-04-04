@@ -30,7 +30,6 @@ export class WarpRouteDeployer {
     const { key } = await getArgs(multiProvider);
     const signer = new ethers.Wallet(key);
     multiProvider.setSharedSigner(signer);
-
     return new WarpRouteDeployer(multiProvider, signer);
   }
 

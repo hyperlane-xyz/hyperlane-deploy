@@ -1,8 +1,8 @@
-import { HyperlanePermissionlessDeployer } from '../src/HyperlanePermissionlessDeployer';
+import { WarpRouteDeployer } from '../src/WarpRouteDeployer';
 
 async function main() {
   console.info('Preparing Warp Route deployer');
-  const deployer = await HyperlanePermissionlessDeployer.fromArgs();
+  const deployer = await WarpRouteDeployer.fromArgs();
   console.info('Beginning warp route deployment');
   await deployer.deploy();
 }
