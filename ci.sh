@@ -19,7 +19,7 @@ for i in "anvil1 anvil2 --no-write-agent-config" "anvil2 anvil1 --write-agent-co
 do
     set -- $i
     echo "Deploying contracts to $1"
-    DEBUG=hyperlane* yarn ts-node scripts/deploy.ts --local $1 --remotes $2 \
+    DEBUG=hyperlane* yarn ts-node scripts/deploy-hyperlane.ts --local $1 --remotes $2 \
     --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 $3
 done
 

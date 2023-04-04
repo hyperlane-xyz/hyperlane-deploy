@@ -70,7 +70,7 @@ function igpFromAddressesMap(
 async function main() {
   let timedOut = false;
   const multiProvider = getMultiProvider();
-  let { chains, key, timeout } = await getArgs(multiProvider);
+  const { chains, key, timeout } = await getArgs(multiProvider);
   const timeoutId = setTimeout(() => {
     timedOut = true;
   }, timeout * 1000);

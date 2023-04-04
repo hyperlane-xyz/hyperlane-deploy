@@ -51,7 +51,7 @@ export function assertBalances(
     const chains = chainsFunc(argv);
     const signer = new ethers.Wallet(argv.key);
     const address = await signer.getAddress();
-    Promise.all(
+    await Promise.all(
       chains.map(async (chain: ChainName) => {
         const balance = await multiProvider
           .getProvider(chain)
