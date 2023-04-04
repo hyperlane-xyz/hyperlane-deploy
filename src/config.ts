@@ -1,6 +1,7 @@
 import {
   buildAgentConfig,
   ChainMap,
+  chainMetadata,
   ChainName,
   CoreConfig,
   defaultMultisigIsmConfigs,
@@ -22,10 +23,12 @@ import { chains } from '../config/chains';
 import { multisigIsmConfig } from '../config/multisig_ism';
 import { readJSON } from './json';
 
+let multiProvider: MultiProvider;
+
 export function getMultiProvider() {
-  const multiProvider = new MultiProvider();
-  for (const metadata of Object.values(chains)) {
-    multiProvider.addChain(metadata);
+  if (!multiProvider) {
+    const chainConfigs = { ...chainMetadata, ...chains };
+    multiProvider = new MultiProvider(chainConfigs);
   }
   return multiProvider;
 }
