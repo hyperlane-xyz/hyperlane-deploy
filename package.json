@@ -31,10 +31,6 @@
   "author": "asa@hyperlane.xyz",
   "license": "Apache 2.0",
   "homepage": "https://www.hyperlane.xyz",
-  "keywords": [
-    "Hyperlane",
-    "SDK",
-    "Typescript"
-  ],
+  "keywords": [ "Hyperlane", "Permissionless", "Deployment", "Typescript" ],
   "packageManager": "yarn@3.2.0"
 }
