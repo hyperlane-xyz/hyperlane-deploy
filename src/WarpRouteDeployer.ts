@@ -9,6 +9,7 @@ import { types } from '@hyperlane-xyz/utils';
 import yargs from 'yargs';
 
 import {
+  ERC20Upgradeable__factory,
   ERC20__factory,
   HypERC20Config,
   HypERC20Deployer,
@@ -215,6 +216,15 @@ export class WarpRouteDeployer {
 
     currentTokenList.tokens.push(newToken);
     writeJSON('./artifacts/', 'warp-ui-token-list.json', currentTokenList);
+  }
+
+  // Use only for development
+  async deployTestErc20(chain: ChainName, config: TokenMetadata) {
+    this.logger('Deploying ERC20 on chain', chain, 'with config', config);
+    const signer = this.multiProvider.getSigner(chain);
+    const factory = new ERC20Upgradeable__factory(signer);
+    const contract = await factory.deploy();
+    return contract.address;
   }
 }
 
