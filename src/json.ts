@@ -36,3 +36,11 @@ export function readJSONAtPath(filepath: string) {
 export function readJSON(directory: string, filename: string) {
   return readJSONAtPath(path.join(directory, filename));
 }
+
+export function tryReadJSON(directory: string, filename: string) {
+  try {
+    return readJSONAtPath(path.join(directory, filename));
+  } catch (error) {
+    return null;
+  }
+}
