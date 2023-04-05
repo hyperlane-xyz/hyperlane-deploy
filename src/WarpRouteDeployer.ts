@@ -1,9 +1,9 @@
 import {
   ChainMap,
+  chainMetadata,
   ChainName,
   HyperlaneContractsMap,
   MultiProvider,
-  chainMetadata,
 } from '@hyperlane-xyz/sdk';
 import { types } from '@hyperlane-xyz/utils';
 import yargs from 'yargs';
@@ -19,7 +19,12 @@ import {
 import debug from 'debug';
 import { ethers } from 'ethers';
 import { warpTokenConfig } from '../config/warp_tokens';
-import { assertBalances, assertBytes32, getMultiProvider } from './config';
+import {
+  assertBalances,
+  assertBytes32,
+  buildHypERC20Config,
+  getMultiProvider,
+} from './config';
 import { mergeJSON, tryReadJSON, writeJSON } from './json';
 
 export async function getArgs(multiProvider: MultiProvider) {
@@ -50,18 +55,20 @@ export class WarpRouteDeployer {
   }
 
   async deploy(): Promise<void> {
-    const { tokenConfigs, originToken, originChainName, originTokenMetadata } =
-      await this.validateTokenConfig();
+    const owner = await this.signer.getAddress();
+    const configMap = buildHypERC20Config(owner);
+    const { originToken, originChainName, originTokenMetadata } =
+      await this.validateTokenConfig(configMap);
 
     const deployer = new HypERC20Deployer(
       this.multiProvider,
-      tokenConfigs,
+      configMap,
       undefined,
     );
     await deployer.deploy();
 
     this.writeDeploymentResult(
-      tokenConfigs,
+      configMap,
       originChainName,
       originToken,
       originTokenMetadata,
@@ -69,8 +76,8 @@ export class WarpRouteDeployer {
     );
   }
 
-  async validateTokenConfig() {
-    const tokenConfigs = Object.entries(warpTokenConfig);
+  async validateTokenConfig(configMap: ChainMap<HypERC20Config>) {
+    const tokenConfigs = Object.entries(configMap);
     if (!tokenConfigs.length)
       throw new Error('No chains found in warp token config');
 
@@ -117,7 +124,6 @@ export class WarpRouteDeployer {
     );
 
     return {
-      tokenConfigs: warpTokenConfig,
       originChainName,
       originToken,
       originTokenMetadata,

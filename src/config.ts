@@ -1,3 +1,4 @@
+import { HypERC20Config } from '@hyperlane-xyz/hyperlane-token';
 import {
   buildAgentConfig,
   ChainMap,
@@ -21,6 +22,7 @@ import { ethers } from 'ethers';
 import artifactAddresses from '../artifacts/addresses.json';
 import { chains } from '../config/chains';
 import { multisigIsmConfig } from '../config/multisig_ism';
+import { warpTokenConfig } from '../config/warp_tokens';
 import { readJSON } from './json';
 
 let multiProvider: MultiProvider;
@@ -159,4 +161,20 @@ export function buildOverriddenAgentConfig(
     filteredAddresses,
     startBlocks,
   );
+}
+
+export function buildHypERC20Config(
+  owner: types.Address,
+): ChainMap<HypERC20Config> {
+  const configMap: ChainMap<HypERC20Config> = {};
+  for (const chain of Object.keys(warpTokenConfig)) {
+    configMap[chain] = {
+      ...warpTokenConfig[chain],
+      owner,
+      mailbox: mergedContractAddresses[chain].mailbox,
+      interchainGasPaymaster:
+        mergedContractAddresses[chain].interchainGasPaymaster,
+    };
+  }
+  return configMap;
 }
