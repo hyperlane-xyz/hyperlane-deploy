@@ -14,6 +14,7 @@ export const warpTokenConfig: ChainMap<HypERC20Config> = {
   },
   alfajores: {
     type: TokenType.synthetic,
+    // TODO get these from the token metadata
     name: 'Weth',
     symbol: 'WETH',
     totalSupply: 0,

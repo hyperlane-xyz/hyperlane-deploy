@@ -1,21 +1,20 @@
 import {
   ChainMap,
-  HyperlaneContracts,
+  HyperlaneContractsMap,
   MultiProvider,
-  serializeContractsMap,
 } from '@hyperlane-xyz/sdk';
 import yargs from 'yargs';
 
 import {
   HypERC20Config,
   HypERC20Deployer,
+  HypERC20Factories,
   TokenType,
 } from '@hyperlane-xyz/hyperlane-token';
 import debug from 'debug';
 import { ethers } from 'ethers';
 import { warpTokenConfig } from '../config/warp_tokens';
 import { assertBalances, assertBytes32, getMultiProvider } from './config';
-import { mergeJSON } from './json';
 
 export async function getArgs(multiProvider: MultiProvider) {
   const args = await yargs(process.argv.slice(2))
@@ -46,21 +45,13 @@ export class WarpRouteDeployer {
 
   async deploy(): Promise<void> {
     const tokenConfigs = this.getValidatedTokenConfig();
-    console.log('Starting deployments');
     const deployer = new HypERC20Deployer(
-      // TODO update hyperlane-token to latest to fix type error
       this.multiProvider,
       tokenConfigs,
       undefined,
     );
     await deployer.deploy();
-
-    const deployedContracts = deployer.deployedContracts as ChainMap<
-      HyperlaneContracts<any>
-    >;
-    const tokenAddrs = serializeContractsMap(deployedContracts);
-    // Write contract address artifacts
-    mergeJSON('./artifacts/', 'warp-tokens.json', tokenAddrs);
+    this.writeTokenList(deployer.deployedContracts);
   }
 
   getValidatedTokenConfig(): ChainMap<HypERC20Config> {
@@ -100,5 +91,10 @@ export class WarpRouteDeployer {
     );
 
     return warpTokenConfig;
+  }
+
+  writeTokenList(contracts: HyperlaneContractsMap<HypERC20Factories>) {
+    this.logger(JSON.stringify(contracts));
+    // mergeJSON('./artifacts/', 'warp-tokens.json', tokenAddrs);
   }
 }
