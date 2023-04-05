@@ -218,12 +218,12 @@ export class WarpRouteDeployer {
     writeJSON('./artifacts/', 'warp-ui-token-list.json', currentTokenList);
   }
 
-  // Use only for development
   async deployTestErc20(chain: ChainName, config: TokenMetadata) {
     this.logger('Deploying ERC20 on chain', chain, 'with config', config);
     const signer = this.multiProvider.getSigner(chain);
     const factory = new ERC20Upgradeable__factory(signer);
     const contract = await factory.deploy();
+    // TODO init erc20 with config values
     return contract.address;
   }
 }

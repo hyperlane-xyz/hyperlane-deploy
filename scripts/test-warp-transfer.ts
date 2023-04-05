@@ -35,7 +35,7 @@ export function getArgs(multiProvider: MultiProvider) {
     .middleware(assertBalances(multiProvider, (argv) => argv.origin)).argv;
 }
 
-// TODO DRY up with test-messages s
+// TODO DRY up with test-messages script
 async function main() {
   let timedOut = false;
   const multiProvider = getMultiProvider();
