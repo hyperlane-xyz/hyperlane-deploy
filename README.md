@@ -72,7 +72,11 @@ DEBUG=hyperlane* yarn ts-node scripts/deploy-warp-routes.ts \
 
 ### Sending a Test Transfer
 
-TODO
+```sh
+DEBUG=hyperlane* yarn ts-node scripts/test-warp-transfer.ts \
+  --origin goerli --destination alfajores --wei 100000000000000 \
+  --key 0x6f0311f4a0722954c46050bb9f088c4890999e16b64ad02784d24b5fd6d09061
+```
 
 ### Deploying a Warp UI
 
