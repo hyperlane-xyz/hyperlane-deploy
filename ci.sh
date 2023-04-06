@@ -3,7 +3,7 @@ do
     mkdir /tmp/$CHAIN \
     /tmp/$CHAIN/state \
     /tmp/$CHAIN/validator \
-    /tmp/$CHAIN/relayer \
+    /tmp/$CHAIN/relayer && \
     chmod 777 /tmp/$CHAIN -R
 done
 
