@@ -34,15 +34,24 @@ export function getMultiProvider() {
   }
   return multiProvider;
 }
-
-export function assertBytes32(value: string): string {
+export function assertBytesN(value: string, length: number): string {
   if (
     ethers.utils.isHexString(value) &&
-    ethers.utils.hexDataLength(value) == 32
+    ethers.utils.hexDataLength(value) == length
   ) {
     return value;
   }
-  throw new Error(`Invalid value ${value}, must be a 32 byte hex string`);
+  throw new Error(
+    `Invalid value ${value}, must be a ${length} byte hex string`,
+  );
+}
+
+export function assertBytes32(value: string): string {
+  return assertBytesN(value, 32);
+}
+
+export function assertBytes20(value: string): string {
+  return assertBytesN(value, 20);
 }
 
 export function assertBalances(
