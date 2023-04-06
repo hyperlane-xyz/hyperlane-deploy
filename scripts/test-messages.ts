@@ -25,7 +25,7 @@ import {
   mergedContractAddresses,
 } from '../src/config';
 
-export function getArgs(multiProvider: MultiProvider) {
+function getArgs(multiProvider: MultiProvider) {
   // Only accept chains for which we have both a connection and contract addresses
   const { intersection } = multiProvider.intersect(
     Object.keys(mergedContractAddresses),

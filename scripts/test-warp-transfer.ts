@@ -46,7 +46,7 @@ function coreFromAddressesMap(
   return new HyperlaneCore(contractsMap, multiProvider);
 }
 
-export function getArgs(multiProvider: MultiProvider) {
+function getArgs(multiProvider: MultiProvider) {
   // Only accept chains for which we have both a connection and contract addresses
   const { intersection } = multiProvider.intersect(
     Object.keys(mergedContractAddresses),
@@ -84,7 +84,7 @@ function hypErc20FromAddressesMap(
   const contractsMap = objMap(addressesMap, (chain, value) => {
     const entries = Object.entries(value);
     if (entries.length !== 1)
-      throw new Error('Cannot handle multiple warp route deployements');
+      throw new Error('Cannot handle multiple warp route deployments');
     const tokenAddress = entries[0][0];
     const tokenType = entries[0][1];
     const signer = multiProvider.getSigner(chain);

@@ -34,9 +34,9 @@ DEBUG=hyperlane* yarn ts-node scripts/deploy-warp-routes.ts \
   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
 echo "Warp contract artifacts:"
-cat ./artifacts/warp-token-addresses.json.json
+cat ./artifacts/warp-token-addresses.json
 echo "Warp ui token list:"
-cat ./artifacts/warp-ui-token-list.json.json
+cat ./artifacts/warp-ui-token-list.json
 
 for i in "anvil1 8545 ANVIL1" "anvil2 8555 ANVIL2"
 do
