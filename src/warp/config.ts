@@ -18,7 +18,6 @@ export interface WarpCollateralTokenConfig extends WarpBaseToken {
 }
 
 export type WarpSyntheticTokenConfig = {
-  type: TokenType.synthetic;
   chainName: string;
   name?: string;
   symbol?: string;
@@ -51,7 +50,6 @@ export const WarpTokenConfigSchema = z.object({
   synthetics: z
     .array(
       z.object({
-        type: z.literal(TokenType.synthetic),
         chainName: z.string(),
         name: z.string().optional(),
         symbol: z.string().optional(),
