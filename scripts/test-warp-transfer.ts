@@ -9,9 +9,19 @@ import {
   HypNative__factory,
   TokenType,
 } from '@hyperlane-xyz/hyperlane-token';
-import { ChainMap, MultiProvider, objMap } from '@hyperlane-xyz/sdk';
+import {
+  ChainMap,
+  coreFactories,
+  CoreFactories,
+  HyperlaneAddressesMap,
+  HyperlaneApp,
+  HyperlaneCore,
+  MultiProvider,
+  objMap,
+} from '@hyperlane-xyz/sdk';
 import { utils } from '@hyperlane-xyz/utils';
-import { BigNumber, ethers } from 'ethers';
+import assert from 'assert';
+import { BigNumber, ContractReceipt, ethers } from 'ethers';
 import yargs from 'yargs';
 import {
   assertBalances,
@@ -21,6 +31,18 @@ import {
   mergedContractAddresses,
 } from '../src/config';
 import { readJSONAtPath } from '../src/json';
+
+function coreFromAddressesMap(
+  addressesMap: HyperlaneAddressesMap<CoreFactories>,
+  _multiProvider: MultiProvider,
+): HyperlaneCore {
+  const { contractsMap, multiProvider } = HyperlaneApp.fromAddressesMap(
+    addressesMap,
+    coreFactories,
+    _multiProvider,
+  );
+  return new HyperlaneCore(contractsMap, multiProvider);
+}
 
 export function getArgs(multiProvider: MultiProvider) {
   // Only accept chains for which we have both a connection and contract addresses
@@ -128,8 +150,12 @@ async function main() {
     }
   };
   const balanceBefore = await getDestinationBalance();
+  console.log({ balanceBefore });
+
+  const core = coreFromAddressesMap(mergedContractAddresses, multiProvider);
 
   const originType = Object.entries(addressesMap[origin])[0][1];
+  let receipt: ContractReceipt;
   switch (originType) {
     case TokenType.collateral: {
       const router = app.getContracts(origin).router as HypERC20Collateral;
@@ -142,7 +168,7 @@ async function main() {
       if (approval.lt(wei)) {
         await token.approve(router.address, wei);
       }
-      await app.transfer(
+      receipt = await app.transfer(
         origin,
         destination,
         utils.addressToBytes32(recipient),
@@ -162,11 +188,11 @@ async function main() {
         wei,
         { value },
       );
-      await tx.wait();
+      receipt = await tx.wait();
       break;
     }
     case TokenType.synthetic: {
-      await app.transfer(
+      receipt = await app.transfer(
         origin,
         destination,
         utils.addressToBytes32(recipient),
@@ -179,13 +205,22 @@ async function main() {
     }
   }
 
-  while (balanceBefore.eq(await getDestinationBalance()) && !timedOut) {
-    console.log(`Waiting for balance change on destination chain`);
+  const messages = await core.getDispatchedMessages(receipt);
+  const message = messages[0];
+  const destinationn = multiProvider.getChainName(message.parsed.destination);
+  assert(destination === destinationn);
+
+  // TODO: Why not balance change?
+  while (
+    !core.getContracts(destination).mailbox.delivered(message.id) &&
+    !timedOut
+  ) {
+    console.log(`Waiting for message delivery on destination chain`);
     await utils.sleep(1000);
   }
 
   if (!timedOut) {
-    console.log(`Balance changed on destination chain!`);
+    console.log(`Message delivered on destination chain!`);
   }
 
   clearTimeout(timeoutId);
