@@ -176,8 +176,12 @@ async function main() {
   }
 
   while (balanceBefore.eq(await getDestinationBalance()) && !timedOut) {
+    console.log(
+      balanceBefore.toString(),
+      (await getDestinationBalance()).toString(),
+    );
     console.log(`Waiting for balance to change on destination chain`);
-    utils.sleep(1000);
+    await utils.sleep(1000);
   }
 
   if (!timedOut) {
