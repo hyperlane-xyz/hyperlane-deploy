@@ -16,11 +16,11 @@ import {
 import {
   ChainMap,
   CoreFactories,
-  coreFactories,
   HyperlaneAddressesMap,
   HyperlaneApp,
   HyperlaneCore,
   MultiProvider,
+  coreFactories,
   objMap,
 } from '@hyperlane-xyz/sdk';
 import { utils } from '@hyperlane-xyz/utils';
@@ -147,7 +147,6 @@ async function main() {
     }
   };
   const balanceBefore = await getDestinationBalance();
-  console.log({ balanceBefore });
 
   const core = coreFromAddressesMap(mergedContractAddresses, multiProvider);
 
@@ -207,7 +206,6 @@ async function main() {
   const msgDestination = multiProvider.getChainName(message.parsed.destination);
   assert(destination === msgDestination);
 
-  // TODO: Why not balance change?
   while (
     !(await core.getContracts(destination).mailbox.delivered(message.id)) &&
     !timedOut
@@ -218,6 +216,10 @@ async function main() {
 
   if (!timedOut) {
     console.log(`Message delivered on destination chain!`);
+    const balanceAfter = await getDestinationBalance();
+    if (!balanceAfter.gt(balanceBefore)) {
+      throw new Error('Destination chain balance did not increase');
+    }
   }
 
   clearTimeout(timeoutId);

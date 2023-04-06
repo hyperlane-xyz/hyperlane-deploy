@@ -11,10 +11,10 @@ import {
 } from '@hyperlane-xyz/hyperlane-token';
 import {
   ChainMap,
-  chainMetadata,
   ChainName,
   HyperlaneContractsMap,
   MultiProvider,
+  chainMetadata,
   objMap,
 } from '@hyperlane-xyz/sdk';
 import { types } from '@hyperlane-xyz/utils';

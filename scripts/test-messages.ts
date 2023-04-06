@@ -3,13 +3,13 @@ import yargs from 'yargs';
 
 import {
   CoreFactories,
-  coreFactories,
   DispatchedMessage,
   HyperlaneAddressesMap,
   HyperlaneApp,
   HyperlaneCore,
   HyperlaneIgp,
   MultiProvider,
+  coreFactories,
 } from '@hyperlane-xyz/sdk';
 import {
   IgpFactories,
