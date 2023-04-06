@@ -1,10 +1,10 @@
 for CHAIN in anvil1 anvil2
 do
-    mkdir ./tmp/$CHAIN \
-    ./tmp/$CHAIN/state \
-   ./tmp/$CHAIN/validator \
-   ./tmp/$CHAIN/relayer \
-    chmod 777 ./tmp/$CHAIN -R
+    mkdir /tmp/$CHAIN \
+    /tmp/$CHAIN/state \
+    /tmp/$CHAIN/validator \
+    /tmp/$CHAIN/relayer \
+    chmod 777 /tmp/$CHAIN -R
 done
 
 anvil --chain-id 31337 -p 8545 --state /tmp/anvil1/state > /dev/null &
@@ -63,9 +63,9 @@ do
     set -- $i
     echo "Announcing validator on $1"
     VALIDATOR_ANNOUNCE_ADDRESS=$(cat ./artifacts/addresses.json | jq -r ".$1.validatorAnnounce")
-    VALIDATOR=$(cat ./tmp/$1/validator/announcement.json | jq -r '.value.validator')
-    STORAGE_LOCATION=$(cat ./tmp/$1/validator/announcement.json | jq -r '.value.storage_location')
-    SIGNATURE=$(cat ./tmp/$1/validator/announcement.json | jq -r '.serialized_signature')
+    VALIDATOR=$(cat /tmp/$1/validator/announcement.json | jq -r '.value.validator')
+    STORAGE_LOCATION=$(cat /tmp/$1/validator/announcement.json | jq -r '.value.storage_location')
+    SIGNATURE=$(cat /tmp/$1/validator/announcement.json | jq -r '.serialized_signature')
     cast send $VALIDATOR_ANNOUNCE_ADDRESS  \
       "announce(address, string calldata, bytes calldata)(bool)" \
       $VALIDATOR $STORAGE_LOCATION $SIGNATURE --rpc-url http://127.0.0.1:$2 \
@@ -84,7 +84,7 @@ do
       -e HYP_BASE_CHAINS_ANVIL2_CONNECTION_URL=http://127.0.0.1:8555 \
       -e HYP_BASE_TRACING_LEVEL=info -e HYP_BASE_TRACING_FMT=pretty \
       -e HYP_RELAYER_ORIGINCHAINNAME=$1 -e HYP_RELAYER_DESTINATIONCHAINNAMES=$2 \
-      -e HYP_RELAYER_ALLOWLOCALCHECKPOINTSYNCERS=true -e HYP_RELAYER_DB=/config/$1/relayer \
+      -e HYP_RELAYER_ALLOWLOCALCHECKPOINTSYNCERS=true -e HYP_RELAYER_DB=/data/$1/relayer \
       -e HYP_RELAYER_GASPAYMENTENFORCEMENT='[{"type":"none"}]' \
       -e HYP_BASE_CHAINS_${3}_SIGNER_TYPE=hexKey \
       -e HYP_BASE_CHAINS_${3}_SIGNER_KEY=0xdbda1821b80551c9d65939329250298aa3472ba22feea921c0cf5d620ea67b97 \
