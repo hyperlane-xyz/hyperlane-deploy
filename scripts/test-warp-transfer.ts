@@ -207,6 +207,7 @@ async function main() {
 
   const messages = await core.getDispatchedMessages(receipt);
   const message = messages[0];
+  console.log({ message, parsed: message.parsed });
   const destinationn = multiProvider.getChainName(message.parsed.destination);
   assert(destination === destinationn);
 
