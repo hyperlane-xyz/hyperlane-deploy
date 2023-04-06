@@ -16,11 +16,11 @@ import {
 import {
   ChainMap,
   CoreFactories,
-  coreFactories,
   HyperlaneAddressesMap,
   HyperlaneApp,
   HyperlaneCore,
   MultiProvider,
+  coreFactories,
   objMap,
 } from '@hyperlane-xyz/sdk';
 import { utils } from '@hyperlane-xyz/utils';
