@@ -1,6 +1,9 @@
 name: CI
 
 on:
+  # Triggers the workflow on push or pull request against main
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
