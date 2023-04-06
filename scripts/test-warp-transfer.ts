@@ -50,7 +50,7 @@ export function getArgs(multiProvider: MultiProvider) {
     .describe('timeout', 'timeout in seconds')
     .number('timeout')
     .default('timeout', 10 * 60)
-    .middleware(assertBalances(multiProvider, (argv) => argv.origin)).argv;
+    .middleware(assertBalances(multiProvider, (argv) => [argv.origin])).argv;
 }
 
 function hypErc20FromAddressesMap(
