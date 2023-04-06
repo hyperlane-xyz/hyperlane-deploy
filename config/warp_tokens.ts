@@ -14,7 +14,7 @@ export const warpTokenConfig: WarpRouteConfig = {
     // address: '0x123...'
 
     // Optionally, specify owner, mailbox, and interchainGasPaymaster addresses
-    // If not specified, the Permissionless Deployment artifacts will be used
+    // If not specified, the Permissionless Deployment artifacts or the SDK's defaults will be used
   },
   synthetics: [
     {
@@ -25,7 +25,7 @@ export const warpTokenConfig: WarpRouteConfig = {
       // If not specified, the base token's properties will be used
 
       // Optionally, specify owner, mailbox, and interchainGasPaymaster addresses
-      // If not specified, the Permissionless Deployment artifacts will be used
+      // If not specified, the Permissionless Deployment artifacts or the SDK's defaults will be used
     },
   ],
 };
