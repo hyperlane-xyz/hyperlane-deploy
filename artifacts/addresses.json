@@ -1,22 +1,22 @@
 {
   "anvil1": {
-    "validatorAnnounce": "0x96F3Ce39Ad2BfDCf92C0F6E2C2CAbF83874660Fc",
-    "proxyAdmin": "0x26B862f640357268Bd2d9E95bc81553a2Aa81D7E",
-    "mailbox": "0x40a42Baf86Fc821f972Ad2aC878729063CeEF403",
-    "multisigIsm": "0x8bCe54ff8aB45CB075b044AE117b8fD91F9351aB",
-    "testRecipient": "0xaca81583840B1bf2dDF6CDe824ada250C1936B4D",
-    "storageGasOracle": "0xA56F946D6398Dd7d9D4D9B337Cf9E0F68982ca5B",
-    "interchainGasPaymaster": "0xddE78e6202518FF4936b5302cC2891ec180E8bFf",
-    "defaultIsmInterchainGasPaymaster": "0xaB7B4c595d3cE8C85e16DA86630f2fc223B05057"
+    "validatorAnnounce": "0x71a0b8A2245A9770A4D887cE1E4eCc6C1d4FF28c",
+    "proxyAdmin": "0x95775fD3Afb1F4072794CA4ddA27F2444BCf8Ac3",
+    "mailbox": "0x0fe4223AD99dF788A6Dcad148eB4086E6389cEB6",
+    "multisigIsm": "0x0a17FabeA4633ce714F1Fa4a2dcA62C3bAc4758d",
+    "testRecipient": "0x0Dd99d9f56A14E9D53b2DdC62D9f0bAbe806647A",
+    "storageGasOracle": "0xd9fEc8238711935D6c8d79Bef2B9546ef23FC046",
+    "interchainGasPaymaster": "0x512F7469BcC83089497506b5df64c6E246B39925",
+    "defaultIsmInterchainGasPaymaster": "0xCBBe2A5c3A22BE749D5DDF24e9534f98951983e2"
   },
   "anvil2": {
-    "multisigIsm": "0xc582Bc0317dbb0908203541971a358c44b1F3766",
-    "testRecipient": "0xaca81583840B1bf2dDF6CDe824ada250C1936B4D",
-    "proxyAdmin": "0x26B862f640357268Bd2d9E95bc81553a2Aa81D7E",
-    "storageGasOracle": "0xA56F946D6398Dd7d9D4D9B337Cf9E0F68982ca5B",
-    "interchainGasPaymaster": "0xddE78e6202518FF4936b5302cC2891ec180E8bFf",
-    "defaultIsmInterchainGasPaymaster": "0xaB7B4c595d3cE8C85e16DA86630f2fc223B05057",
-    "validatorAnnounce": "0xefAB0Beb0A557E452b398035eA964948c750b2Fd",
-    "mailbox": "0x74Cf9087AD26D541930BaC724B7ab21bA8F00a27"
+    "multisigIsm": "0xb185E9f6531BA9877741022C92CE858cDCc5760E",
+    "testRecipient": "0x22a9B82A6c3D2BFB68F324B2e8367f346Dd6f32a",
+    "proxyAdmin": "0x7C8BaafA542c57fF9B2B90612bf8aB9E86e22C09",
+    "storageGasOracle": "0x0a17FabeA4633ce714F1Fa4a2dcA62C3bAc4758d",
+    "interchainGasPaymaster": "0x79E8AB29Ff79805025c9462a2f2F12e9A496f81d",
+    "defaultIsmInterchainGasPaymaster": "0xeAd789bd8Ce8b9E94F5D0FCa99F8787c7e758817",
+    "validatorAnnounce": "0x1343248Cbd4e291C6979e70a138f4c774e902561",
+    "mailbox": "0x3C1Cb427D20F15563aDa8C249E71db76d7183B6c"
   }
 }

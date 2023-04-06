@@ -148,6 +148,13 @@ export class HyperlanePermissionlessDeployer {
     const igpConfig = buildIgpConfig(owner, this.chains);
     const igpDeployer = new HyperlaneIgpDeployer(this.multiProvider, igpConfig);
     const igps = await igpDeployer.deploy();
+    /*
+    for (const chain in Object.keys(igps)) {
+      const storageGasOracle = igps[chain].storageGasOracle;
+
+    }
+    */
+
     contracts = objMerge(contracts, igps);
 
     const addresses = serializeContractsMap(contracts);

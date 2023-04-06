@@ -77,6 +77,7 @@ export class WarpRouteDeployer {
   }
 
   async validateTokenConfig(configMap: ChainMap<HypERC20Config>) {
+    console.log(configMap);
     const tokenConfigs = Object.entries(configMap);
     if (!tokenConfigs.length)
       throw new Error('No chains found in warp token config');

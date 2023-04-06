@@ -23,9 +23,10 @@ do
     --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 $3
 done
 
-
 echo "Rebuilding..."
 yarn run build
+
+cat ./artifacts/addresses.json
 
 echo "Deploying warp routes"
 DEBUG=hyperlane* yarn ts-node scripts/deploy-warp-routes.ts \
@@ -86,6 +87,8 @@ echo "Testing message sending"
 DEBUG=hyperlane* yarn ts-node scripts/test-messages.ts --chains anvil1 anvil2 \
   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --timeout 60
 
+
+docker ps
 
 echo "Sending a test warp transfer"
 DEBUG=hyperlane* yarn ts-node scripts/test-warp-transfer.ts \

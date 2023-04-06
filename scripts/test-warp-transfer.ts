@@ -59,7 +59,6 @@ function hypErc20FromAddressesMap(
 ): HypERC20App {
   const contractsMap = objMap(addressesMap, (chain, value) => {
     const entries = Object.entries(value);
-    console.log(addressesMap, chain, value, entries);
     if (entries.length !== 1)
       throw new Error('Cannot handle multiple warp route deployements');
     const tokenAddress = entries[0][0];
@@ -155,6 +154,7 @@ async function main() {
       const destinationDomain = multiProvider.getDomainId(destination);
       const router = app.getContracts(origin).router as HypNative;
       const gasPayment = await router.quoteGasPayment(destinationDomain);
+      console.log({ gasPayment: gasPayment.toString() });
       const value = gasPayment.add(wei);
       const tx = await router.transferRemote(
         destinationDomain,
@@ -162,8 +162,7 @@ async function main() {
         wei,
         { value },
       );
-      const events = (await tx.wait()).events!;
-      console.log(events[events.length - 1].args);
+      await tx.wait();
       break;
     }
     case TokenType.synthetic: {
@@ -181,11 +180,7 @@ async function main() {
   }
 
   while (balanceBefore.eq(await getDestinationBalance()) && !timedOut) {
-    console.log(
-      balanceBefore.toString(),
-      (await getDestinationBalance()).toString(),
-    );
-    console.log(`Waiting for balance to change on destination chain`);
+    console.log(`Waiting for balance change on destination chain`);
     await utils.sleep(1000);
   }
 
