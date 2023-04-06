@@ -59,7 +59,8 @@ function hypErc20FromAddressesMap(
 ): HypERC20App {
   const contractsMap = objMap(addressesMap, (chain, value) => {
     const entries = Object.entries(value);
-    if (entries.length > 0)
+    console.log(addressesMap, chain, value, entries);
+    if (entries.length !== 1)
       throw new Error('Cannot handle multiple warp route deployements');
     const tokenAddress = entries[0][0];
     const tokenType = entries[0][1];
@@ -142,7 +143,12 @@ async function main() {
       if (approval.lt(wei)) {
         await token.approve(router.address, wei);
       }
-      await app.transfer(origin, destination, recipient, wei);
+      await app.transfer(
+        origin,
+        destination,
+        utils.addressToBytes32(recipient),
+        wei,
+      );
       break;
     }
     case TokenType.native: {
@@ -150,17 +156,32 @@ async function main() {
       const router = app.getContracts(origin).router as HypNative;
       const gasPayment = await router.quoteGasPayment(destinationDomain);
       const value = gasPayment.add(wei);
-      await router.transferRemote(destinationDomain, recipient, wei, { value });
+      await router.transferRemote(
+        destinationDomain,
+        utils.addressToBytes32(recipient),
+        wei,
+        { value },
+      );
       break;
     }
     case TokenType.synthetic: {
-      await app.transfer(origin, destination, recipient, wei);
+      await app.transfer(
+        origin,
+        destination,
+        utils.addressToBytes32(recipient),
+        wei,
+      );
       break;
     }
   }
 
   while (balanceBefore.eq(await getDestinationBalance()) && !timedOut) {
+    console.log(`Waiting for balance to change on destination chain`);
     utils.sleep(1000);
+  }
+
+  if (!timedOut) {
+    console.log(`Balance changed on destination chain!`);
   }
 
   clearTimeout(timeoutId);

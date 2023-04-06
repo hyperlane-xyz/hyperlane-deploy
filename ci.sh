@@ -79,11 +79,6 @@ echo "Testing message sending"
 DEBUG=hyperlane* yarn ts-node scripts/test-messages.ts --chains anvil1 anvil2 --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --timeout 60
 
 
-echo "Deploying test erc20 contract"
-DEBUG=hyperlane* yarn ts-node scripts/deploy-test-erc20-token.ts \
-  --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-
-
 echo "Deploying warp routes"
 DEBUG=hyperlane* yarn ts-node scripts/deploy-warp-routes.ts \
   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
