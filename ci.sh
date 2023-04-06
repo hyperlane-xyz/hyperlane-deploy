@@ -23,6 +23,10 @@ do
     --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 $3
 done
 
+
+echo "Rebuilding..."
+yarn run build
+
 echo "Deploying warp routes"
 DEBUG=hyperlane* yarn ts-node scripts/deploy-warp-routes.ts \
   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
