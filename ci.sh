@@ -88,9 +88,8 @@ echo "Deploying warp routes"
 DEBUG=hyperlane* yarn ts-node scripts/deploy-warp-routes.ts \
   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
-
 echo "Sending a test warp transfer"
-DEBUG=hyperlane* yarn ts-node scripts/deploy-warp-routes.ts \
+DEBUG=hyperlane* yarn ts-node scripts/test-warp-transfer.ts \
   --origin anvil1 --destination anvil2 --wei 1 --recipient 0xac0974bec39a17e36ba4a6b4d238ff944bacb4a5 \
   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
