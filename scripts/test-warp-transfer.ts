@@ -212,7 +212,7 @@ async function main() {
 
   // TODO: Why not balance change?
   while (
-    !core.getContracts(destination).mailbox.delivered(message.id) &&
+    !(await core.getContracts(destination).mailbox.delivered(message.id)) &&
     !timedOut
   ) {
     console.log(`Waiting for message delivery on destination chain`);
