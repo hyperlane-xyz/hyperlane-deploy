@@ -3,13 +3,13 @@ import yargs from 'yargs';
 
 import {
   CoreFactories,
+  coreFactories,
   DispatchedMessage,
   HyperlaneAddressesMap,
   HyperlaneApp,
   HyperlaneCore,
   HyperlaneIgp,
   MultiProvider,
-  coreFactories,
 } from '@hyperlane-xyz/sdk';
 import {
   IgpFactories,
@@ -112,7 +112,6 @@ async function main() {
           destinationDomain,
           gasAmount,
         );
-        console.log('quoted', { value: value.toString() });
         const paymentTx = await defaultIgp.payForGas(
           dispatchedMessage.id,
           destinationDomain,

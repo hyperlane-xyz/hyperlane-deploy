@@ -16,11 +16,11 @@ import {
 import {
   ChainMap,
   CoreFactories,
+  coreFactories,
   HyperlaneAddressesMap,
   HyperlaneApp,
   HyperlaneCore,
   MultiProvider,
-  coreFactories,
   objMap,
 } from '@hyperlane-xyz/sdk';
 import { utils } from '@hyperlane-xyz/utils';
@@ -33,6 +33,7 @@ import {
   mergedContractAddresses,
 } from '../src/config';
 import { readJSONAtPath } from '../src/json';
+import { WarpRouteArtifacts } from '../src/warp/WarpRouteDeployer';
 
 function coreFromAddressesMap(
   addressesMap: HyperlaneAddressesMap<CoreFactories>,
@@ -78,30 +79,25 @@ function getArgs(multiProvider: MultiProvider) {
 }
 
 function hypErc20FromAddressesMap(
-  addressesMap: ChainMap<{ [key: string]: TokenType }>,
+  artifactsMap: ChainMap<WarpRouteArtifacts>,
   multiProvider: MultiProvider,
 ): HypERC20App {
-  const contractsMap = objMap(addressesMap, (chain, value) => {
-    const entries = Object.entries(value);
-    if (entries.length !== 1)
-      throw new Error('Cannot handle multiple warp route deployments');
-    const tokenAddress = entries[0][0];
-    const tokenType = entries[0][1];
+  const contractsMap = objMap(artifactsMap, (chain, artifacts) => {
     const signer = multiProvider.getSigner(chain);
-    switch (tokenType) {
+    switch (artifacts.tokenType) {
       case TokenType.collateral: {
         const router = HypERC20Collateral__factory.connect(
-          tokenAddress,
+          artifacts.router,
           signer,
         );
         return { router };
       }
       case TokenType.native: {
-        const router = HypNative__factory.connect(tokenAddress, signer);
+        const router = HypNative__factory.connect(artifacts.router, signer);
         return { router };
       }
       case TokenType.synthetic: {
-        const router = HypERC20__factory.connect(tokenAddress, signer);
+        const router = HypERC20__factory.connect(artifacts.router, signer);
         return { router };
       }
       default: {
@@ -124,14 +120,13 @@ async function main() {
   }, timeout * 1000);
   const signer = new ethers.Wallet(key);
   multiProvider.setSharedSigner(signer);
-  const addressesMap: ChainMap<{ [key: string]: TokenType }> = readJSONAtPath(
+  const artifacts: ChainMap<WarpRouteArtifacts> = readJSONAtPath(
     './artifacts/warp-token-addresses.json',
   );
-  const app = hypErc20FromAddressesMap(addressesMap, multiProvider);
+  const app = hypErc20FromAddressesMap(artifacts, multiProvider);
 
   const getDestinationBalance = async (): Promise<BigNumber> => {
-    const destinationType = Object.entries(addressesMap[destination])[0][1];
-    switch (destinationType) {
+    switch (artifacts[destination].tokenType) {
       case TokenType.collateral: {
         const router = app.getContracts(destination)
           .router as HypERC20Collateral;
@@ -156,9 +151,8 @@ async function main() {
 
   const core = coreFromAddressesMap(mergedContractAddresses, multiProvider);
 
-  const originType = Object.entries(addressesMap[origin])[0][1];
   let receipt: ContractReceipt;
-  switch (originType) {
+  switch (artifacts[origin].tokenType) {
     case TokenType.collateral: {
       const router = app.getContracts(origin).router as HypERC20Collateral;
       const tokenAddress = await router.wrappedToken();

@@ -11,10 +11,11 @@ import {
 } from '@hyperlane-xyz/hyperlane-token';
 import {
   ChainMap,
+  chainMetadata,
   ChainName,
   HyperlaneContractsMap,
   MultiProvider,
-  chainMetadata,
+  objMap,
 } from '@hyperlane-xyz/sdk';
 import { types } from '@hyperlane-xyz/utils';
 
@@ -40,6 +41,11 @@ export async function getArgs(multiProvider: MultiProvider) {
     );
   return args.argv;
 }
+
+export type WarpRouteArtifacts = {
+  router: types.Address;
+  tokenType: TokenType;
+};
 
 export class WarpRouteDeployer {
   constructor(
@@ -174,17 +180,16 @@ export class WarpRouteDeployer {
     contracts: HyperlaneContractsMap<HypERC20Factories>,
   ) {
     this.logger('Writing token deployment artifacts');
-    const tokenAddrs: ChainMap<Record<string, TokenType>> = {};
-    for (const [chainName, factory] of Object.entries(contracts)) {
-      const tokenType = tokenConfigs[chainName].type;
-      const tokenAddr = factory.router.address;
-      this.logger(
-        `Token type ${tokenType} has address to ${tokenAddr} on ${chainName}`,
-      );
-      // Using a map here so it's mergeJson friendly
-      tokenAddrs[chainName] = { [factory.router.address]: tokenType };
-    }
-    mergeJSON('./artifacts/', 'warp-token-addresses.json', tokenAddrs);
+    const artifacts: ChainMap<WarpRouteArtifacts> = objMap(
+      contracts,
+      (chain, contract) => {
+        return {
+          router: contract.router.address,
+          tokenType: tokenConfigs[chain].type,
+        };
+      },
+    );
+    mergeJSON('./artifacts/', 'warp-token-addresses.json', artifacts);
   }
 
   writeWarpUiTokenList(
