@@ -28,7 +28,7 @@ import {
 } from '../config';
 import { mergeJSON, tryReadJSON, writeJSON } from '../json';
 
-import { validateWarpTokenConfig } from './config';
+import { getWarpConfigChains, validateWarpTokenConfig } from './config';
 
 export async function getArgs(multiProvider: MultiProvider) {
   const args = await yargs(process.argv.slice(2))
@@ -37,7 +37,7 @@ export async function getArgs(multiProvider: MultiProvider) {
     .coerce('key', assertBytes32)
     .demandOption('key')
     .middleware(
-      assertBalances(multiProvider, () => Object.keys(warpTokenConfig)),
+      assertBalances(multiProvider, () => getWarpConfigChains(warpTokenConfig)),
     );
   return args.argv;
 }
@@ -129,17 +129,17 @@ export class WarpRouteDeployer {
   }
 
   async getTokenMetadata(
-    chainName: string,
+    chain: ChainName,
     type: TokenType,
     address: types.Address,
   ) {
     if (type === TokenType.native) {
       return (
-        this.multiProvider.getChainMetadata(chainName).nativeToken ||
+        this.multiProvider.getChainMetadata(chain).nativeToken ||
         chainMetadata.ethereum.nativeToken!
       );
     } else if (type === TokenType.collateral || type === TokenType.synthetic) {
-      const provider = this.multiProvider.getProvider(chainName);
+      const provider = this.multiProvider.getProvider(chain);
       const erc20Contract = ERC20__factory.connect(address, provider);
       const [name, symbol, decimals] = await Promise.all([
         erc20Contract.name(),
@@ -189,8 +189,8 @@ export class WarpRouteDeployer {
   }
 
   writeWarpUiTokenList(
-    baseChainName: ChainName,
-    baseTokenAddress: types.Address,
+    baseChain: ChainName,
+    baseTokenAddr: types.Address,
     baseTokenMetadata: TokenMetadata,
     contracts: HyperlaneContractsMap<HypERC20Factories>,
   ) {
@@ -201,15 +201,15 @@ export class WarpRouteDeployer {
     ) || { tokens: [] };
 
     const { name, symbol, decimals } = baseTokenMetadata;
-    const hypTokenAddr = contracts[baseChainName].router.address;
+    const hypTokenAddr = contracts[baseChain].router.address;
     const newToken = {
-      chainId: this.multiProvider.getChainId(baseChainName),
+      chainId: this.multiProvider.getChainId(baseChain),
       address: hypTokenAddr,
       name,
       symbol,
       decimals,
       logoURI: 'SET_IMG_URL_HERE',
-      hypCollateralAddress: baseTokenAddress,
+      hypCollateralAddress: baseTokenAddr,
     };
 
     currentTokenList.tokens.push(newToken);
