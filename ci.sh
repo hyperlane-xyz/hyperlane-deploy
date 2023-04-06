@@ -26,11 +26,17 @@ done
 echo "Rebuilding..."
 yarn run build
 
+echo "Contract artifacts:"
 cat ./artifacts/addresses.json
 
 echo "Deploying warp routes"
 DEBUG=hyperlane* yarn ts-node scripts/deploy-warp-routes.ts \
   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+echo "Warp contract artifacts:"
+cat ./artifacts/warp-token-addresses.json.json
+echo "Warp ui token list:"
+cat ./artifacts/warp-ui-token-list.json.json
 
 for i in "anvil1 8545 ANVIL1" "anvil2 8555 ANVIL2"
 do
@@ -89,10 +95,10 @@ DEBUG=hyperlane* yarn ts-node scripts/test-messages.ts --chains anvil1 anvil2 \
 
 #docker ps
 
-echo "Sending a test warp transfer"
-DEBUG=hyperlane* yarn ts-node scripts/test-warp-transfer.ts \
-  --origin anvil1 --destination anvil2 --wei 1 --recipient 0xac0974bec39a17e36ba4a6b4d238ff944bacb4a5 \
-  --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --timeout 60
+# echo "Sending a test warp transfer"
+# DEBUG=hyperlane* yarn ts-node scripts/test-warp-transfer.ts \
+#   --origin anvil1 --destination anvil2 --wei 1 --recipient 0xac0974bec39a17e36ba4a6b4d238ff944bacb4a5 \
+#   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --timeout 60
 
 
 docker ps -aq | xargs docker stop | xargs docker rm
