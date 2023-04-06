@@ -1,43 +1,58 @@
+import { ethers } from 'ethers';
+
 import {
-  buildAgentConfig,
   ChainMap,
   ChainName,
   CoreConfig,
-  defaultMultisigIsmConfigs,
   GasOracleContractType,
   HyperlaneAddressesMap,
   HyperlaneAgentAddresses,
   MultiProvider,
   MultisigIsmConfig,
+  OverheadIgpConfig,
+  buildAgentConfig,
+  chainMetadata,
+  defaultMultisigIsmConfigs,
   multisigIsmVerificationCost,
   objFilter,
   objMerge,
-  OverheadIgpConfig,
 } from '@hyperlane-xyz/sdk';
 import { hyperlaneEnvironments } from '@hyperlane-xyz/sdk/dist/consts/environments';
 import { types, utils } from '@hyperlane-xyz/utils';
-import { ethers } from 'ethers';
+
 import artifactAddresses from '../artifacts/addresses.json';
 import { chains } from '../config/chains';
 import { multisigIsmConfig } from '../config/multisig_ism';
+
 import { readJSON } from './json';
 
+let multiProvider: MultiProvider;
+
 export function getMultiProvider() {
-  const multiProvider = new MultiProvider();
-  for (const metadata of Object.values(chains)) {
-    multiProvider.addChain(metadata);
+  if (!multiProvider) {
+    const chainConfigs = { ...chainMetadata, ...chains };
+    multiProvider = new MultiProvider(chainConfigs);
   }
   return multiProvider;
 }
-
-export function assertBytes32(value: string): string {
+export function assertBytesN(value: string, length: number): string {
   if (
     ethers.utils.isHexString(value) &&
-    ethers.utils.hexDataLength(value) == 32
+    ethers.utils.hexDataLength(value) == length
   ) {
     return value;
   }
-  throw new Error(`Invalid value ${value}, must be a 32 byte hex string`);
+  throw new Error(
+    `Invalid value ${value}, must be a ${length} byte hex string`,
+  );
+}
+
+export function assertBytes32(value: string): string {
+  return assertBytesN(value, 32);
+}
+
+export function assertBytes20(value: string): string {
+  return assertBytesN(value, 20);
 }
 
 export function assertBalances(
@@ -48,7 +63,7 @@ export function assertBalances(
     const chains = chainsFunc(argv);
     const signer = new ethers.Wallet(argv.key);
     const address = await signer.getAddress();
-    Promise.all(
+    await Promise.all(
       chains.map(async (chain: ChainName) => {
         const balance = await multiProvider
           .getProvider(chain)

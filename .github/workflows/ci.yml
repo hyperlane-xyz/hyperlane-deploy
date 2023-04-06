@@ -1,6 +1,8 @@
 name: CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -12,10 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+
+      - name: yarn-cache
+        uses: actions/cache@v3
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-yarn-cache4-${{ hashFiles('./yarn.lock') }}
+          path: |
+            **/node_modules
+            .yarn/cache
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('./yarn.lock') }}
 
       - name: yarn-install
         # Check out the lockfile from main, reinstall, and then
@@ -34,10 +40,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+
+      - name: yarn-cache
+        uses: actions/cache@v3
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-yarn-cache4-${{ hashFiles('./yarn.lock') }}
+          path: |
+            **/node_modules
+            .yarn/cache
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('./yarn.lock') }}
 
       - name: Install Foundry
         uses: onbjerg/foundry-toolchain@v1
@@ -52,10 +62,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+
+      - name: yarn-cache
+        uses: actions/cache@v3
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-yarn-cache4-${{ hashFiles('./yarn.lock') }}
+          path: |
+            **/node_modules
+            .yarn/cache
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('./yarn.lock') }}
+
+      - name: eslint
+        run: yarn lint
+
       - name: prettier
         run: |
           yarn prettier

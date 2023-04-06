@@ -1,5 +1,6 @@
 import { ChainMap } from '@hyperlane-xyz/sdk';
 
+// TODO move to SDK
 export const startBlocks: ChainMap<number> = {
   // --------------- Mainnets ---------------------
   celo: 16884144,

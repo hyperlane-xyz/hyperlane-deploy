@@ -1,21 +1,23 @@
+import { ethers } from 'ethers';
+import yargs from 'yargs';
+
 import {
   CoreFactories,
-  coreFactories,
   DispatchedMessage,
   HyperlaneAddressesMap,
   HyperlaneApp,
   HyperlaneCore,
   HyperlaneIgp,
   MultiProvider,
+  coreFactories,
 } from '@hyperlane-xyz/sdk';
 import {
-  igpFactories,
   IgpFactories,
+  igpFactories,
 } from '@hyperlane-xyz/sdk/dist/gas/contracts';
 import { utils } from '@hyperlane-xyz/utils';
 import { sleep } from '@hyperlane-xyz/utils/dist/src/utils';
-import { ethers } from 'ethers';
-import yargs from 'yargs';
+
 import {
   assertBalances,
   assertBytes32,
@@ -23,7 +25,7 @@ import {
   mergedContractAddresses,
 } from '../src/config';
 
-export function getArgs(multiProvider: MultiProvider) {
+function getArgs(multiProvider: MultiProvider) {
   // Only accept chains for which we have both a connection and contract addresses
   const { intersection } = multiProvider.intersect(
     Object.keys(mergedContractAddresses),
@@ -70,7 +72,7 @@ function igpFromAddressesMap(
 async function main() {
   let timedOut = false;
   const multiProvider = getMultiProvider();
-  let { chains, key, timeout } = await getArgs(multiProvider);
+  const { chains, key, timeout } = await getArgs(multiProvider);
   const timeoutId = setTimeout(() => {
     timedOut = true;
   }, timeout * 1000);

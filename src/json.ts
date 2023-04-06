@@ -1,6 +1,8 @@
-import { objMerge } from '@hyperlane-xyz/sdk';
+// TODO move these to @hyperlane-xyz/utils
 import fs from 'fs';
 import path from 'path';
+
+import { objMerge } from '@hyperlane-xyz/sdk';
 
 export function writeJSON(directory: string, filename: string, obj: any) {
   if (!fs.existsSync(directory)) {
@@ -34,4 +36,12 @@ export function readJSONAtPath(filepath: string) {
 
 export function readJSON(directory: string, filename: string) {
   return readJSONAtPath(path.join(directory, filename));
+}
+
+export function tryReadJSON(directory: string, filename: string) {
+  try {
+    return readJSONAtPath(path.join(directory, filename));
+  } catch (error) {
+    return null;
+  }
 }
