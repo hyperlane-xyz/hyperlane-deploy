@@ -4,7 +4,7 @@ import type { WarpRouteConfig } from '../src/warp/config';
 
 // A config for deploying Warp Routes to a set of chains
 // Not required for Hyperlane core deployments
-export const warpTokenConfig: WarpRouteConfig = {
+export const warpRouteConfig: WarpRouteConfig = {
   base: {
     // Chain name must be in the Hyperlane SDK or in the chains.ts config
     chainName: 'anvil1',

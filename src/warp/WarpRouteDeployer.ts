@@ -18,7 +18,7 @@ import {
 } from '@hyperlane-xyz/sdk';
 import { types } from '@hyperlane-xyz/utils';
 
-import { warpTokenConfig } from '../../config/warp_tokens';
+import { warpRouteConfig } from '../../config/warp_tokens';
 import {
   assertBalances,
   assertBytes32,
@@ -36,7 +36,7 @@ export async function getArgs(multiProvider: MultiProvider) {
     .coerce('key', assertBytes32)
     .demandOption('key')
     .middleware(
-      assertBalances(multiProvider, () => getWarpConfigChains(warpTokenConfig)),
+      assertBalances(multiProvider, () => getWarpConfigChains(warpRouteConfig)),
     );
   return args.argv;
 }
@@ -74,8 +74,8 @@ export class WarpRouteDeployer {
   }
 
   async buildHypERC20Config() {
-    validateWarpTokenConfig(warpTokenConfig);
-    const { base, synthetics } = warpTokenConfig;
+    validateWarpTokenConfig(warpRouteConfig);
+    const { base, synthetics } = warpRouteConfig;
     const { type: baseType, chainName: baseChainName } = base;
 
     const baseTokenAddr =
