@@ -1,28 +1,29 @@
-import { HypERC20Config } from '@hyperlane-xyz/hyperlane-token';
+import { ethers } from 'ethers';
+
 import {
-  buildAgentConfig,
   ChainMap,
-  chainMetadata,
   ChainName,
   CoreConfig,
-  defaultMultisigIsmConfigs,
   GasOracleContractType,
   HyperlaneAddressesMap,
   HyperlaneAgentAddresses,
   MultiProvider,
   MultisigIsmConfig,
+  OverheadIgpConfig,
+  buildAgentConfig,
+  chainMetadata,
+  defaultMultisigIsmConfigs,
   multisigIsmVerificationCost,
   objFilter,
   objMerge,
-  OverheadIgpConfig,
 } from '@hyperlane-xyz/sdk';
 import { hyperlaneEnvironments } from '@hyperlane-xyz/sdk/dist/consts/environments';
 import { types, utils } from '@hyperlane-xyz/utils';
-import { ethers } from 'ethers';
+
 import artifactAddresses from '../artifacts/addresses.json';
 import { chains } from '../config/chains';
 import { multisigIsmConfig } from '../config/multisig_ism';
-import { warpTokenConfig } from '../config/warp_tokens';
+
 import { readJSON } from './json';
 
 let multiProvider: MultiProvider;
@@ -170,20 +171,4 @@ export function buildOverriddenAgentConfig(
     filteredAddresses,
     startBlocks,
   );
-}
-
-export function buildHypERC20Config(
-  owner: types.Address,
-): ChainMap<HypERC20Config> {
-  const configMap: ChainMap<HypERC20Config> = {};
-  for (const chain of Object.keys(warpTokenConfig)) {
-    configMap[chain] = {
-      ...warpTokenConfig[chain],
-      owner,
-      mailbox: mergedContractAddresses[chain].mailbox,
-      interchainGasPaymaster:
-        mergedContractAddresses[chain].interchainGasPaymaster,
-    };
-  }
-  return configMap;
 }

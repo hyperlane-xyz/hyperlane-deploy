@@ -1,11 +1,5 @@
-import {
-  ChainMap,
-  chainMetadata,
-  ChainName,
-  HyperlaneContractsMap,
-  MultiProvider,
-} from '@hyperlane-xyz/sdk';
-import { types } from '@hyperlane-xyz/utils';
+import debug from 'debug';
+import { ethers } from 'ethers';
 import yargs from 'yargs';
 
 import {
@@ -16,16 +10,25 @@ import {
   HypERC20Factories,
   TokenType,
 } from '@hyperlane-xyz/hyperlane-token';
-import debug from 'debug';
-import { ethers } from 'ethers';
-import { warpTokenConfig } from '../config/warp_tokens';
+import {
+  ChainMap,
+  ChainName,
+  HyperlaneContractsMap,
+  MultiProvider,
+  chainMetadata,
+} from '@hyperlane-xyz/sdk';
+import { types } from '@hyperlane-xyz/utils';
+
+import { warpTokenConfig } from '../../config/warp_tokens';
 import {
   assertBalances,
   assertBytes32,
-  buildHypERC20Config,
   getMultiProvider,
-} from './config';
-import { mergeJSON, tryReadJSON, writeJSON } from './json';
+  mergedContractAddresses,
+} from '../config';
+import { mergeJSON, tryReadJSON, writeJSON } from '../json';
+
+import { validateWarpTokenConfig } from './config';
 
 export async function getArgs(multiProvider: MultiProvider) {
   const args = await yargs(process.argv.slice(2))
@@ -55,10 +58,7 @@ export class WarpRouteDeployer {
   }
 
   async deploy(): Promise<void> {
-    const owner = await this.signer.getAddress();
-    const configMap = buildHypERC20Config(owner);
-    const { originToken, originChainName, originTokenMetadata } =
-      await this.validateTokenConfig(configMap);
+    const { configMap, baseToken } = await this.buildHypERC20Config();
 
     const deployer = new HypERC20Deployer(
       this.multiProvider,
@@ -68,84 +68,77 @@ export class WarpRouteDeployer {
     await deployer.deploy();
 
     this.writeDeploymentResult(
-      configMap,
-      originChainName,
-      originToken,
-      originTokenMetadata,
       deployer.deployedContracts,
+      configMap,
+      baseToken,
     );
   }
 
-  async validateTokenConfig(configMap: ChainMap<HypERC20Config>) {
-    console.log(configMap);
-    const tokenConfigs = Object.entries(configMap);
-    if (!tokenConfigs.length)
-      throw new Error('No chains found in warp token config');
+  async buildHypERC20Config() {
+    validateWarpTokenConfig(warpTokenConfig);
+    const { base, synthetics } = warpTokenConfig;
+    const { type: baseType, chainName: baseChainName } = base;
 
-    this.logger(`Found token configs for ${tokenConfigs.length} chains`);
-
-    // Ensure MP has config for each chain
-    tokenConfigs.forEach(([chain]) =>
-      this.multiProvider.getChainMetadata(chain),
-    );
-
-    const collateralOrNativeTokens = tokenConfigs.filter((t) =>
-      [TokenType.collateral, TokenType.native].includes(t[1].type),
-    );
-    if (collateralOrNativeTokens.length !== 1)
-      throw new Error(
-        'Exactly one collateral or native token must be configured',
-      );
-    const originChainName = collateralOrNativeTokens[0][0];
-    const originToken = collateralOrNativeTokens[0][1];
-    const originTokenAddr =
-      originToken.type === TokenType.collateral
-        ? originToken.token
+    const baseTokenAddr =
+      baseType === TokenType.collateral
+        ? base.address
         : ethers.constants.AddressZero;
 
-    const syntheticTokens = tokenConfigs.filter(
-      (t) => t[1].type === TokenType.synthetic,
+    const baseTokenMetadata = await this.getTokenMetadata(
+      baseChainName,
+      baseType,
+      baseTokenAddr,
     );
-    if (syntheticTokens.length < 1)
-      throw new Error('At least one synthetic token must be configured');
-    const destChainNames = syntheticTokens.map((t) => t[0]);
+    const owner = await this.signer.getAddress();
 
-    const uriTokens = tokenConfigs.filter((t) =>
-      [TokenType.collateralUri, TokenType.syntheticUri].includes(t[1].type),
-    );
-    if (uriTokens.length > 0)
-      throw new Error(
-        'No uri tokens should be configured for an ERC20 warp route',
-      );
+    const configMap: ChainMap<HypERC20Config> = {
+      [baseChainName]: {
+        type: baseType,
+        token: baseTokenAddr,
+        owner,
+        mailbox: base.mailbox || mergedContractAddresses[baseChainName].mailbox,
+        interchainGasPaymaster:
+          base.interchainGasPaymaster ||
+          mergedContractAddresses[baseChainName].interchainGasPaymaster,
+      },
+    };
 
-    const originTokenMetadata = await this.getTokenMetadata(
-      originChainName,
-      originToken,
-      originTokenAddr,
-    );
-
+    for (const synthetic of synthetics) {
+      const sChainName = synthetic.chainName;
+      configMap[sChainName] = {
+        type: TokenType.synthetic,
+        name: synthetic.name || baseTokenMetadata.name,
+        symbol: synthetic.symbol || baseTokenMetadata.symbol,
+        totalSupply: synthetic.totalSupply || 0,
+        owner,
+        mailbox:
+          synthetic.mailbox || mergedContractAddresses[sChainName].mailbox,
+        interchainGasPaymaster:
+          synthetic.interchainGasPaymaster ||
+          mergedContractAddresses[sChainName].interchainGasPaymaster,
+      };
+    }
     return {
-      originChainName,
-      originToken,
-      originTokenMetadata,
-      destChainNames,
+      configMap,
+      baseToken: {
+        chainName: baseChainName,
+        address: baseTokenAddr,
+        metadata: baseTokenMetadata,
+      },
     };
   }
 
   async getTokenMetadata(
     chainName: string,
-    token: HypERC20Config,
+    type: TokenType,
     address: types.Address,
   ) {
-    if (token.type === TokenType.native) {
+    if (type === TokenType.native) {
       return (
         this.multiProvider.getChainMetadata(chainName).nativeToken ||
         chainMetadata.ethereum.nativeToken!
       );
-    } else if (
-      token.type === TokenType.collateral ||
-      token.type === TokenType.synthetic
-    ) {
+    } else if (type === TokenType.collateral || type === TokenType.synthetic) {
       const provider = this.multiProvider.getProvider(chainName);
       const erc20Contract = ERC20__factory.connect(address, provider);
       const [name, symbol, decimals] = await Promise.all([
@@ -155,22 +148,24 @@ export class WarpRouteDeployer {
       ]);
       return { name, symbol, decimals };
     } else {
-      throw new Error(`Unsupported token type: ${token.type}`);
+      throw new Error(`Unsupported token type: ${type}`);
     }
   }
 
   writeDeploymentResult(
-    tokenConfigs: ChainMap<HypERC20Config>,
-    originChainName: ChainName,
-    originToken: HypERC20Config,
-    originTokenMetadata: TokenMetadata,
     contracts: HyperlaneContractsMap<HypERC20Factories>,
+    configMap: ChainMap<HypERC20Config>,
+    baseToken: {
+      chainName: ChainName;
+      address: types.Address;
+      metadata: TokenMetadata;
+    },
   ) {
-    this.writeTokenDeploymentArtifacts(tokenConfigs, contracts);
+    this.writeTokenDeploymentArtifacts(configMap, contracts);
     this.writeWarpUiTokenList(
-      originChainName,
-      originToken,
-      originTokenMetadata,
+      baseToken.chainName,
+      baseToken.address,
+      baseToken.metadata,
       contracts,
     );
   }
@@ -194,9 +189,9 @@ export class WarpRouteDeployer {
   }
 
   writeWarpUiTokenList(
-    originChainName: ChainName,
-    originToken: HypERC20Config,
-    originTokenMetadata: TokenMetadata,
+    baseChainName: ChainName,
+    baseTokenAddress: types.Address,
+    baseTokenMetadata: TokenMetadata,
     contracts: HyperlaneContractsMap<HypERC20Factories>,
   ) {
     this.logger('Writing token list for warp ui');
@@ -205,20 +200,16 @@ export class WarpRouteDeployer {
       'warp-tokens.json',
     ) || { tokens: [] };
 
-    const { name, symbol, decimals } = originTokenMetadata;
-    const hypTokenAddr = contracts[originChainName].router.address;
-    const hypCollateralAddress =
-      originToken.type === TokenType.collateral
-        ? originToken.token
-        : ethers.constants.AddressZero;
+    const { name, symbol, decimals } = baseTokenMetadata;
+    const hypTokenAddr = contracts[baseChainName].router.address;
     const newToken = {
-      chainId: this.multiProvider.getChainId(originChainName),
+      chainId: this.multiProvider.getChainId(baseChainName),
       address: hypTokenAddr,
       name,
       symbol,
       decimals,
       logoURI: 'SET_IMG_URL_HERE',
-      hypCollateralAddress,
+      hypCollateralAddress: baseTokenAddress,
     };
 
     currentTokenList.tokens.push(newToken);

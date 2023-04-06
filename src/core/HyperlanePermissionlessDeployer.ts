@@ -1,3 +1,7 @@
+import { ethers } from 'ethers';
+import yargs from 'yargs';
+
+import { LegacyMultisigIsm } from '@hyperlane-xyz/core';
 import {
   ChainMap,
   ChainName,
@@ -10,12 +14,9 @@ import {
   objMerge,
   serializeContractsMap,
 } from '@hyperlane-xyz/sdk';
-import yargs from 'yargs';
 
-import { LegacyMultisigIsm } from '@hyperlane-xyz/core';
-import { ethers } from 'ethers';
-import { multisigIsmConfig } from '../config/multisig_ism';
-import { startBlocks } from '../config/start_blocks';
+import { multisigIsmConfig } from '../../config/multisig_ism';
+import { startBlocks } from '../../config/start_blocks';
 import {
   assertBalances,
   assertBytes32,
@@ -23,8 +24,9 @@ import {
   buildIgpConfig,
   buildOverriddenAgentConfig,
   getMultiProvider,
-} from './config';
-import { mergeJSON, writeJSON } from './json';
+} from '../config';
+import { mergeJSON, writeJSON } from '../json';
+
 import {
   HyperlaneTestRecipientDeployer,
   TestRecipientConfig,

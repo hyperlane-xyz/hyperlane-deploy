@@ -1,3 +1,7 @@
+import assert from 'assert';
+import { BigNumber, ContractReceipt, ethers } from 'ethers';
+import yargs from 'yargs';
+
 import {
   ERC20__factory,
   HypERC20,
@@ -11,18 +15,16 @@ import {
 } from '@hyperlane-xyz/hyperlane-token';
 import {
   ChainMap,
-  coreFactories,
   CoreFactories,
   HyperlaneAddressesMap,
   HyperlaneApp,
   HyperlaneCore,
   MultiProvider,
+  coreFactories,
   objMap,
 } from '@hyperlane-xyz/sdk';
 import { utils } from '@hyperlane-xyz/utils';
-import assert from 'assert';
-import { BigNumber, ContractReceipt, ethers } from 'ethers';
-import yargs from 'yargs';
+
 import {
   assertBalances,
   assertBytes20,
@@ -208,8 +210,8 @@ async function main() {
   const messages = await core.getDispatchedMessages(receipt);
   const message = messages[0];
   console.log({ message, parsed: message.parsed });
-  const destinationn = multiProvider.getChainName(message.parsed.destination);
-  assert(destination === destinationn);
+  const msgDestination = multiProvider.getChainName(message.parsed.destination);
+  assert(destination === msgDestination);
 
   // TODO: Why not balance change?
   while (

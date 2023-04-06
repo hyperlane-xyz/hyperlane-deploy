@@ -1,4 +1,4 @@
-import { WarpRouteDeployer } from '../src/WarpRouteDeployer';
+import { WarpRouteDeployer } from '../src/warp/WarpRouteDeployer';
 
 async function main() {
   console.info('Preparing Warp Route deployer');

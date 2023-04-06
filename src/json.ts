@@ -1,7 +1,8 @@
 // TODO move these to @hyperlane-xyz/utils
-import { objMerge } from '@hyperlane-xyz/sdk';
 import fs from 'fs';
 import path from 'path';
+
+import { objMerge } from '@hyperlane-xyz/sdk';
 
 export function writeJSON(directory: string, filename: string, obj: any) {
   if (!fs.existsSync(directory)) {

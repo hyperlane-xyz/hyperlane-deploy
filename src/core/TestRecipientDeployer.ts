@@ -1,3 +1,5 @@
+import debug from 'debug';
+
 import { TestRecipient, TestRecipient__factory } from '@hyperlane-xyz/core';
 import {
   ChainMap,
@@ -6,7 +8,6 @@ import {
   MultiProvider,
 } from '@hyperlane-xyz/sdk';
 import { types } from '@hyperlane-xyz/utils';
-import debug from 'debug';
 
 // Maps chain name to ISM address
 export type TestRecipientConfig = {

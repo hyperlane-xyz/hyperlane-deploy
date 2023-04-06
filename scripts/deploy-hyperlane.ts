@@ -1,4 +1,4 @@
-import { HyperlanePermissionlessDeployer } from '../src/HyperlanePermissionlessDeployer';
+import { HyperlanePermissionlessDeployer } from '../src/core/HyperlanePermissionlessDeployer';
 
 async function main() {
   console.info('Preparing Hyperlane deployer');

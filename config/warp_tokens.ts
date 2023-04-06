@@ -1,19 +1,31 @@
-import { TokenConfig, TokenType } from '@hyperlane-xyz/hyperlane-token';
-import { ChainMap } from '@hyperlane-xyz/sdk';
+import { TokenType } from '@hyperlane-xyz/hyperlane-token';
 
-// A map of chain name to token configs
+import type { WarpRouteConfig } from '../src/warp/config';
+
+// A config for deploying Warp Routes to a set of chains
 // Not required for Hyperlane core deployments
-export const warpTokenConfig: ChainMap<TokenConfig> = {
-  anvil1: {
+export const warpTokenConfig: WarpRouteConfig = {
+  base: {
+    // Chain name must be in the Hyperlane SDK or in the chains.ts config
+    chainName: 'anvil1',
     // Type for origin chain is TokenType.native or TokenType.collateral
     type: TokenType.native,
-    // If type is collateral, address is required:
-    // token: '0x123...'
+    // If type is collateral, a token address is required:
+    // address: '0x123...'
+
+    // Optionally, specify owner, mailbox, and interchainGasPaymaster addresses
+    // If not specified, the Permissionless Deployment artifacts will be used
   },
-  anvil2: {
-    type: TokenType.synthetic,
-    name: 'Weth',
-    symbol: 'WETH',
-    totalSupply: 0,
-  },
+  synthetics: [
+    {
+      chainName: 'anvil2',
+      type: TokenType.synthetic,
+
+      // Optionally specify a name, symbol, and totalSupply
+      // If not specified, the base token's properties will be used
+
+      // Optionally, specify owner, mailbox, and interchainGasPaymaster addresses
+      // If not specified, the Permissionless Deployment artifacts will be used
+    },
+  ],
 };
