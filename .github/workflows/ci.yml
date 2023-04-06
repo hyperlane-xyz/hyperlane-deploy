@@ -1,6 +1,8 @@
 name: CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -69,8 +71,8 @@ jobs:
             .yarn/cache
           key: ${{ runner.os }}-yarn-cache-${{ hashFiles('./yarn.lock') }}
 
-      - name: eslint 
-        run: yarn lint 
+      - name: eslint
+        run: yarn lint
 
       - name: prettier
         run: |

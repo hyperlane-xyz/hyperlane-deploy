@@ -16,11 +16,11 @@ import {
 import {
   ChainMap,
   CoreFactories,
+  coreFactories,
   HyperlaneAddressesMap,
   HyperlaneApp,
   HyperlaneCore,
   MultiProvider,
-  coreFactories,
   objMap,
 } from '@hyperlane-xyz/sdk';
 import { utils } from '@hyperlane-xyz/utils';
@@ -175,7 +175,6 @@ async function main() {
       const destinationDomain = multiProvider.getDomainId(destination);
       const router = app.getContracts(origin).router as HypNative;
       const gasPayment = await router.quoteGasPayment(destinationDomain);
-      console.log({ gasPayment: gasPayment.toString() });
       const value = gasPayment.add(wei);
       const tx = await router.transferRemote(
         destinationDomain,
@@ -202,7 +201,6 @@ async function main() {
 
   const messages = await core.getDispatchedMessages(receipt);
   const message = messages[0];
-  console.log({ message, parsed: message.parsed });
   const msgDestination = multiProvider.getChainName(message.parsed.destination);
   assert(destination === msgDestination);
 
@@ -220,6 +218,7 @@ async function main() {
     if (!balanceAfter.gt(balanceBefore)) {
       throw new Error('Destination chain balance did not increase');
     }
+    console.log(`Confirmed balance increase`);
   }
 
   clearTimeout(timeoutId);
