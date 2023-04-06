@@ -156,12 +156,14 @@ async function main() {
       const router = app.getContracts(origin).router as HypNative;
       const gasPayment = await router.quoteGasPayment(destinationDomain);
       const value = gasPayment.add(wei);
-      await router.transferRemote(
+      const tx = await router.transferRemote(
         destinationDomain,
         utils.addressToBytes32(recipient),
         wei,
         { value },
       );
+      const events = (await tx.wait()).events!;
+      console.log(events[events.length - 1].args);
       break;
     }
     case TokenType.synthetic: {
@@ -172,6 +174,9 @@ async function main() {
         wei,
       );
       break;
+    }
+    default: {
+      throw new Error('Unsupported token type');
     }
   }
 
