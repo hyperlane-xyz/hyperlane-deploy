@@ -114,6 +114,10 @@ export function buildIgpConfig(
   owner: types.Address,
   chains: ChainName[],
 ): ChainMap<OverheadIgpConfig> {
+  const mergedMultisigIsmConfig: ChainMap<MultisigIsmConfig> = objMerge(
+    defaultMultisigIsmConfigs,
+    multisigIsmConfig,
+  );
   const configMap: ChainMap<OverheadIgpConfig> = {};
   for (const local of chains) {
     const overhead: ChainMap<number> = {};
@@ -121,8 +125,8 @@ export function buildIgpConfig(
     for (const remote of chains) {
       if (local === remote) continue;
       overhead[remote] = multisigIsmVerificationCost(
-        multisigIsmConfig[remote].threshold,
-        multisigIsmConfig[remote].validators.length,
+        mergedMultisigIsmConfig[remote].threshold,
+        mergedMultisigIsmConfig[remote].validators.length,
       );
       gasOracleType[remote] = GasOracleContractType.StorageGasOracle;
     }
