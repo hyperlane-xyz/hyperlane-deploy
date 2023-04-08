@@ -1,15 +1,11 @@
+import { logger } from '../src/logger';
 import { WarpRouteDeployer } from '../src/warp/WarpRouteDeployer';
 
-async function main() {
-  console.info('Preparing Warp Route deployer');
-  const deployer = await WarpRouteDeployer.fromArgs();
-  console.info('Beginning warp route deployment');
-  await deployer.deploy();
-}
+import { run } from './run';
 
-main()
-  .then(() => console.info('Warp Routes deployed successfully'))
-  .catch((e) => {
-    console.error('Error deploying Warp Routes', e);
-    process.exit(1);
-  });
+run('Hyperlane deployment', async () => {
+  logger('Preparing Warp Route deployer');
+  const deployer = await WarpRouteDeployer.fromArgs();
+  logger('Beginning warp route deployment');
+  await deployer.deploy();
+});

@@ -1,4 +1,3 @@
-import debug from 'debug';
 import { ethers } from 'ethers';
 import yargs from 'yargs';
 
@@ -27,6 +26,7 @@ import {
   mergedContractAddresses,
 } from '../config';
 import { mergeJSON, tryReadJSON, writeJSON } from '../json';
+import { createLogger } from '../logger';
 
 import { getWarpConfigChains, validateWarpTokenConfig } from './config';
 
@@ -51,7 +51,7 @@ export class WarpRouteDeployer {
   constructor(
     public readonly multiProvider: MultiProvider,
     public readonly signer: ethers.Signer,
-    protected readonly logger = debug('hyperlane:WarpRouteDeployer'),
+    protected readonly logger = createLogger('WarpRouteDeployer'),
   ) {}
 
   static async fromArgs(): Promise<WarpRouteDeployer> {
@@ -65,12 +65,14 @@ export class WarpRouteDeployer {
   async deploy(): Promise<void> {
     const { configMap, baseToken } = await this.buildHypERC20Config();
 
+    this.logger('Initiating HypERC20 deployments');
     const deployer = new HypERC20Deployer(
       this.multiProvider,
       configMap,
       undefined,
     );
     await deployer.deploy();
+    this.logger('HypERC20 deployments complete');
 
     this.writeDeploymentResult(
       deployer.deployedContracts,
@@ -144,6 +146,7 @@ export class WarpRouteDeployer {
         chainMetadata.ethereum.nativeToken!
       );
     } else if (type === TokenType.collateral || type === TokenType.synthetic) {
+      this.logger(`Fetching token metadata for ${address} on ${chain}}`);
       const provider = this.multiProvider.getProvider(chain);
       const erc20Contract = ERC20__factory.connect(address, provider);
       const [name, symbol, decimals] = await Promise.all([
@@ -179,7 +182,9 @@ export class WarpRouteDeployer {
     tokenConfigs: ChainMap<HypERC20Config>,
     contracts: HyperlaneContractsMap<HypERC20Factories>,
   ) {
-    this.logger('Writing token deployment artifacts');
+    this.logger(
+      'Writing token deployment addresses to artifacts/warp-token-addresses.json',
+    );
     const artifacts: ChainMap<WarpRouteArtifacts> = objMap(
       contracts,
       (chain, contract) => {
@@ -198,7 +203,9 @@ export class WarpRouteDeployer {
     baseTokenMetadata: TokenMetadata,
     contracts: HyperlaneContractsMap<HypERC20Factories>,
   ) {
-    this.logger('Writing token list for warp ui');
+    this.logger(
+      'Writing warp ui token list to artifacts/warp-ui-token-list.json',
+    );
     const currentTokenList = tryReadJSON(
       './artifacts/',
       'warp-tokens.json',

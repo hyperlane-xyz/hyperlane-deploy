@@ -33,7 +33,13 @@ import {
   mergedContractAddresses,
 } from '../src/config';
 import { readJSONAtPath } from '../src/json';
+import { createLogger } from '../src/logger';
 import { WarpRouteArtifacts } from '../src/warp/WarpRouteDeployer';
+
+import { run } from './run';
+
+const logger = createLogger('WarpTransferTest');
+const error = createLogger('WarpTransferTest', true);
 
 function coreFromAddressesMap(
   addressesMap: HyperlaneAddressesMap<CoreFactories>,
@@ -108,8 +114,7 @@ function hypErc20FromAddressesMap(
   return new HypERC20App(contractsMap, multiProvider);
 }
 
-// TODO DRY up with test-messages script
-async function main() {
+run('Warp transfer test', async () => {
   let timedOut = false;
   const multiProvider = getMultiProvider();
   const { recipient, origin, destination, wei, key, timeout } = await getArgs(
@@ -208,29 +213,22 @@ async function main() {
     !(await core.getContracts(destination).mailbox.delivered(message.id)) &&
     !timedOut
   ) {
-    console.log(`Waiting for message delivery on destination chain`);
+    logger(`Waiting for message delivery on destination chain`);
     await utils.sleep(1000);
   }
 
   if (!timedOut) {
-    console.log(`Message delivered on destination chain!`);
+    logger(`Message delivered on destination chain!`);
     const balanceAfter = await getDestinationBalance();
     if (!balanceAfter.gt(balanceBefore)) {
       throw new Error('Destination chain balance did not increase');
     }
-    console.log(`Confirmed balance increase`);
+    logger(`Confirmed balance increase`);
   }
 
   clearTimeout(timeoutId);
   if (timedOut) {
-    console.error('Timed out waiting for messages to be delivered');
+    error('Timed out waiting for messages to be delivered');
     process.exit(1);
   }
-}
-
-main()
-  .then(() => console.info('Warp test transfer complete'))
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
+});

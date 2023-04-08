@@ -24,6 +24,12 @@ import {
   getMultiProvider,
   mergedContractAddresses,
 } from '../src/config';
+import { createLogger } from '../src/logger';
+
+import { run } from './run';
+
+const logger = createLogger('MessageDeliveryTest');
+const error = createLogger('MessageDeliveryTest', true);
 
 function getArgs(multiProvider: MultiProvider) {
   // Only accept chains for which we have both a connection and contract addresses
@@ -69,7 +75,7 @@ function igpFromAddressesMap(
   return new HyperlaneIgp(contractsMap, multiProvider);
 }
 
-async function main() {
+run('Message delivery test', async () => {
   let timedOut = false;
   const multiProvider = getMultiProvider();
   const { chains, key, timeout } = await getArgs(multiProvider);
@@ -103,7 +109,7 @@ async function main() {
         const dispatchedMessages = core.getDispatchedMessages(messageReceipt);
         if (dispatchedMessages.length !== 1) continue;
         const dispatchedMessage = dispatchedMessages[0];
-        console.log(
+        logger(
           `Sent message from ${origin} to ${recipient} on ${destination} with message ID ${dispatchedMessage.id}`,
         );
         // Make gas payment...
@@ -122,10 +128,10 @@ async function main() {
         await paymentTx.wait();
         messages.add(dispatchedMessage);
       } catch (e) {
-        console.error(
+        error(
           `Encountered error sending message from ${origin} to ${destination}`,
         );
-        console.error(e);
+        error(e);
       }
     }
   }
@@ -139,13 +145,13 @@ async function main() {
       const delivered = await mailbox.delivered(message.id);
       if (delivered) {
         messages.delete(message);
-        console.log(
+        logger(
           `Message from ${origin} to ${destination} with ID ${
             message!.id
           } was delivered`,
         );
       } else {
-        console.log(
+        logger(
           `Message from ${origin} to ${destination} with ID ${
             message!.id
           } has not yet been delivered`,
@@ -156,14 +162,7 @@ async function main() {
   }
   clearTimeout(timeoutId);
   if (timedOut) {
-    console.error('Timed out waiting for messages to be delivered');
+    error('Timed out waiting for messages to be delivered');
     process.exit(1);
   }
-}
-
-main()
-  .then(() => console.info('Testing complete'))
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
+});
