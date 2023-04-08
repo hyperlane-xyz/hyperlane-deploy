@@ -13,6 +13,7 @@ import {
   objMap,
   objMerge,
   serializeContractsMap,
+  defaultMultisigIsmConfigs
 } from '@hyperlane-xyz/sdk';
 
 import { multisigIsmConfig } from '../../config/multisig_ism';
@@ -37,7 +38,7 @@ export function getArgs(multiProvider: MultiProvider) {
   //   - ChainMetadata for the MultiProvider
   //   - A MultisigIsmConfig
   const { intersection } = multiProvider.intersect(
-    Object.keys(multisigIsmConfig),
+    Object.keys(multisigIsmConfig).concat(Object.keys(defaultMultisigIsmConfigs)),
   );
 
   return yargs(process.argv.slice(2))
