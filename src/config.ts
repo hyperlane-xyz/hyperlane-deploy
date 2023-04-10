@@ -61,7 +61,7 @@ export function assertUnique(
 ): (argv: any) => void {
   return (argv: any) => {
     const _values = values(argv);
-    const hasDuplicates = new Set(_values).size !== values.length;
+    const hasDuplicates = new Set(_values).size !== _values.length;
     if (hasDuplicates) {
       throw new Error(`Must provide unique values, got ${_values}`);
     }
