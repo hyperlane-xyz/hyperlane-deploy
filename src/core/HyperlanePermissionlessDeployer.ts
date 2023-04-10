@@ -39,7 +39,7 @@ export function getArgs(multiProvider: MultiProvider) {
   //   - ChainMetadata for the MultiProvider
   //   - A MultisigIsmConfig
   const { intersection } = multiProvider.intersect(
-    Object.keys(objMerge(multisigIsmConfig, defaultMultisigIsmConfigs)),
+    Object.keys(objMerge(defaultMultisigIsmConfigs, multisigIsmConfig)),
   );
 
   return yargs(process.argv.slice(2))
