@@ -36,11 +36,12 @@ export function getMultiProvider() {
   return multiProvider;
 }
 export function assertBytesN(value: string, length: number): string {
+  const valueWithPrefix = utils.ensure0x(value);
   if (
-    ethers.utils.isHexString(value) &&
-    ethers.utils.hexDataLength(value) == length
+    ethers.utils.isHexString(valueWithPrefix) &&
+    ethers.utils.hexDataLength(valueWithPrefix) == length
   ) {
-    return value;
+    return valueWithPrefix;
   }
   throw new Error(
     `Invalid value ${value}, must be a ${length} byte hex string`,
@@ -53,6 +54,18 @@ export function assertBytes32(value: string): string {
 
 export function assertBytes20(value: string): string {
   return assertBytesN(value, 20);
+}
+
+export function assertUnique(
+  values: (argv: any) => string[],
+): (argv: any) => void {
+  return (argv: any) => {
+    const _values = values(argv);
+    const hasDuplicates = new Set(_values).size !== values.length;
+    if (hasDuplicates) {
+      throw new Error(`Must provide unique values, got ${_values}`);
+    }
+  };
 }
 
 export function assertBalances(

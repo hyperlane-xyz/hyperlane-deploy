@@ -21,6 +21,7 @@ import { sleep } from '@hyperlane-xyz/utils/dist/src/utils';
 import {
   assertBalances,
   assertBytes32,
+  assertUnique,
   getMultiProvider,
   mergedContractAddresses,
 } from '../src/config';
@@ -35,6 +36,7 @@ function getArgs(multiProvider: MultiProvider) {
     .choices('chains', intersection)
     .demandOption('chains')
     .array('chains')
+    .middleware(assertUnique((argv) => argv.chains))
     .describe('key', 'hexadecimal private key for transaction signing')
     .string('key')
     .coerce('key', assertBytes32)
