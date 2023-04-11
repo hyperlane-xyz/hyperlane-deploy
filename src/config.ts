@@ -36,11 +36,12 @@ export function getMultiProvider() {
   return multiProvider;
 }
 export function assertBytesN(value: string, length: number): string {
+  const valueWithPrefix = utils.ensure0x(value);
   if (
-    ethers.utils.isHexString(value) &&
-    ethers.utils.hexDataLength(value) == length
+    ethers.utils.isHexString(valueWithPrefix) &&
+    ethers.utils.hexDataLength(valueWithPrefix) == length
   ) {
-    return value;
+    return valueWithPrefix;
   }
   throw new Error(
     `Invalid value ${value}, must be a ${length} byte hex string`,
@@ -53,6 +54,18 @@ export function assertBytes32(value: string): string {
 
 export function assertBytes20(value: string): string {
   return assertBytesN(value, 20);
+}
+
+export function assertUnique(
+  values: (argv: any) => string[],
+): (argv: any) => void {
+  return (argv: any) => {
+    const _values = values(argv);
+    const hasDuplicates = new Set(_values).size !== _values.length;
+    if (hasDuplicates) {
+      throw new Error(`Must provide unique values, got ${_values}`);
+    }
+  };
 }
 
 export function assertBalances(
@@ -114,6 +127,10 @@ export function buildIgpConfig(
   owner: types.Address,
   chains: ChainName[],
 ): ChainMap<OverheadIgpConfig> {
+  const mergedMultisigIsmConfig: ChainMap<MultisigIsmConfig> = objMerge(
+    defaultMultisigIsmConfigs,
+    multisigIsmConfig,
+  );
   const configMap: ChainMap<OverheadIgpConfig> = {};
   for (const local of chains) {
     const overhead: ChainMap<number> = {};
@@ -121,8 +138,8 @@ export function buildIgpConfig(
     for (const remote of chains) {
       if (local === remote) continue;
       overhead[remote] = multisigIsmVerificationCost(
-        multisigIsmConfig[remote].threshold,
-        multisigIsmConfig[remote].validators.length,
+        mergedMultisigIsmConfig[remote].threshold,
+        mergedMultisigIsmConfig[remote].validators.length,
       );
       gasOracleType[remote] = GasOracleContractType.StorageGasOracle;
     }

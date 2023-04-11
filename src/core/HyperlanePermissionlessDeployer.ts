@@ -10,6 +10,7 @@ import {
   HyperlaneCoreDeployer,
   HyperlaneIgpDeployer,
   MultiProvider,
+  defaultMultisigIsmConfigs,
   objMap,
   objMerge,
   serializeContractsMap,
@@ -20,6 +21,7 @@ import { startBlocks } from '../../config/start_blocks';
 import {
   assertBalances,
   assertBytes32,
+  assertUnique,
   buildCoreConfig,
   buildIgpConfig,
   buildOverriddenAgentConfig,
@@ -38,7 +40,7 @@ export function getArgs(multiProvider: MultiProvider) {
   //   - ChainMetadata for the MultiProvider
   //   - A MultisigIsmConfig
   const { intersection } = multiProvider.intersect(
-    Object.keys(multisigIsmConfig),
+    Object.keys(objMerge(defaultMultisigIsmConfigs, multisigIsmConfig)),
   );
 
   return yargs(process.argv.slice(2))
@@ -52,6 +54,7 @@ export function getArgs(multiProvider: MultiProvider) {
     )
     .choices('remotes', intersection)
     .demandOption('remotes')
+    .middleware(assertUnique((argv) => argv.remotes.concat(argv.local)))
     .describe('key', 'A hexadecimal private key for transaction signing')
     .string('key')
     .coerce('key', assertBytes32)
@@ -83,6 +86,8 @@ export class HyperlanePermissionlessDeployer {
     const { local, remotes, key, writeAgentConfig } = await getArgs(
       multiProvider,
     );
+    if (remotes.includes(local))
+      throw new Error('Local and remotes must be distinct');
     const signer = new ethers.Wallet(key);
     multiProvider.setSharedSigner(signer);
 
