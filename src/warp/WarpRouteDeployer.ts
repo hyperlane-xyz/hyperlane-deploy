@@ -122,7 +122,7 @@ export class WarpRouteDeployer {
           synthetic.mailbox || mergedContractAddresses[sChainName].mailbox,
         interchainGasPaymaster:
           synthetic.interchainGasPaymaster ||
-          mergedContractAddresses[sChainName].interchainGasPaymaster,
+          mergedContractAddresses[sChainName].defaultIsmInterchainGasPaymaster,
       };
     }
     return {
