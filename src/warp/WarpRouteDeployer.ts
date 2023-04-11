@@ -106,7 +106,7 @@ export class WarpRouteDeployer {
         mailbox: base.mailbox || mergedContractAddresses[baseChainName].mailbox,
         interchainGasPaymaster:
           base.interchainGasPaymaster ||
-          mergedContractAddresses[baseChainName].interchainGasPaymaster,
+          mergedContractAddresses[baseChainName].defaultIsmInterchainGasPaymaster,
       },
     };
 
