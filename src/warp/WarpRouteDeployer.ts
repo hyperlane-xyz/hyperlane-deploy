@@ -104,6 +104,9 @@ export class WarpRouteDeployer {
         token: baseTokenAddr,
         owner,
         mailbox: base.mailbox || mergedContractAddresses[baseChainName].mailbox,
+        interchainSecurityModule:
+          base.interchainSecurityModule ||
+          mergedContractAddresses[baseChainName].multisigIsm,
         interchainGasPaymaster:
           base.interchainGasPaymaster ||
           mergedContractAddresses[baseChainName]
@@ -121,6 +124,9 @@ export class WarpRouteDeployer {
         owner,
         mailbox:
           synthetic.mailbox || mergedContractAddresses[sChainName].mailbox,
+        interchainSecurityModule:
+          synthetic.interchainSecurityModule ||
+          mergedContractAddresses[sChainName].multisigIsm,
         interchainGasPaymaster:
           synthetic.interchainGasPaymaster ||
           mergedContractAddresses[sChainName].defaultIsmInterchainGasPaymaster,
