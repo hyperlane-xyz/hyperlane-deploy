@@ -216,12 +216,12 @@ export class WarpRouteDeployer {
     const hypTokenAddr = contracts[baseChain].router.address;
     const newToken = {
       chainId: this.multiProvider.getChainId(baseChain),
-      address: hypTokenAddr,
+      address: baseTokenAddr,
       name,
       symbol,
       decimals,
       logoURI: 'SET_IMG_URL_HERE',
-      hypCollateralAddress: baseTokenAddr,
+      hypCollateralAddress: hypTokenAddr,
     };
 
     currentTokenList.tokens.push(newToken);
