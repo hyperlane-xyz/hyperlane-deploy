@@ -1,15 +1,11 @@
 import { HyperlanePermissionlessDeployer } from '../src/core/HyperlanePermissionlessDeployer';
+import { logger } from '../src/logger';
 
-async function main() {
-  console.info('Preparing Hyperlane deployer');
+import { run } from './run';
+
+run('Hyperlane deployment', async () => {
+  logger('Preparing Hyperlane deployer');
   const deployer = await HyperlanePermissionlessDeployer.fromArgs();
-  console.info('Beginning Hyperlane deployment');
+  logger('Beginning Hyperlane deployment');
   await deployer.deploy();
-}
-
-main()
-  .then(() => console.info('Hyperlane deployment completed successfully'))
-  .catch((e) => {
-    console.error('Error deploying Hyperlane', e);
-    process.exit(1);
-  });
+});

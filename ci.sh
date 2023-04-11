@@ -21,12 +21,12 @@ for i in "anvil1 anvil2 --no-write-agent-config" "anvil2 anvil1 --write-agent-co
 do
     set -- $i
     echo "Deploying contracts to $1"
-    DEBUG=hyperlane* yarn ts-node scripts/deploy-hyperlane.ts --local $1 --remotes $2 \
+    yarn ts-node scripts/deploy-hyperlane.ts --local $1 --remotes $2 \
     --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 $3
 done
 
 echo "Deploying warp routes"
-DEBUG=hyperlane* yarn ts-node scripts/deploy-warp-routes.ts \
+yarn ts-node scripts/deploy-warp-routes.ts \
   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
 kill $ANVIL_1_PID
@@ -92,11 +92,11 @@ do
 done
 
 echo "Testing message sending"
-DEBUG=hyperlane* yarn ts-node scripts/test-messages.ts --chains anvil1 anvil2 \
+yarn ts-node scripts/test-messages.ts --chains anvil1 anvil2 \
   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --timeout 60
 
 echo "Sending a test warp transfer"
-DEBUG=hyperlane* yarn ts-node scripts/test-warp-transfer.ts \
+yarn ts-node scripts/test-warp-transfer.ts \
   --origin anvil1 --destination anvil2 --wei 1 --recipient 0xac0974bec39a17e36ba4a6b4d238ff944bacb4a5 \
   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --timeout 60
 

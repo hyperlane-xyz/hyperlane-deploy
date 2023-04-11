@@ -36,7 +36,7 @@ This script also deploys the following contracts to all chains, new and existing
 - `TestRecipient`: used to test that interchain messages can be delivered
 
 ```bash
-DEBUG=hyperlane* yarn ts-node script scripts/deploy-hyperlane.ts --local anvil \
+yarn ts-node scripts/deploy-hyperlane.ts --local anvil \
   --remotes goerli sepolia \
   --key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
@@ -48,7 +48,7 @@ This script is used to verify that Hyperlane messages can be sent between specif
 Users should have first deployed `TestRecipient` contracts to each of the specified chains.
 
 ```sh
-DEBUG=hyperlane* yarn ts-node scripts/test-messages.ts \
+yarn ts-node scripts/test-messages.ts \
   --chains anvil goerli sepolia \
   --key 0x6f0311f4a0722954c46050bb9f088c4890999e16b64ad02784d24b5fd6d09061
 ```
@@ -66,14 +66,14 @@ Establishing a warp route requires deployment of `HypERC20` contracts to the des
 The deployment also require details about the existing (collateral) token and the new synthetics that will be created. Ensure there are entries for them in `config/warp_tokens.ts`.
 
 ```sh
-DEBUG=hyperlane* yarn ts-node scripts/deploy-warp-routes.ts \
+yarn ts-node scripts/deploy-warp-routes.ts \
   --key 0x6f0311f4a0722954c46050bb9f088c4890999e16b64ad02784d24b5fd6d09061
 ```
 
 ### Sending a test transfer
 
 ```sh
-DEBUG=hyperlane* yarn ts-node scripts/test-warp-transfer.ts \
+yarn ts-node scripts/test-warp-transfer.ts \
   --origin goerli --destination alfajores --wei 100000000000000 \
   --key 0x6f0311f4a0722954c46050bb9f088c4890999e16b64ad02784d24b5fd6d09061
 ```

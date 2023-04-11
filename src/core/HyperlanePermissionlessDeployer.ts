@@ -28,6 +28,7 @@ import {
   getMultiProvider,
 } from '../config';
 import { mergeJSON, writeJSON } from '../json';
+import { createLogger } from '../logger';
 
 import {
   HyperlaneTestRecipientDeployer,
@@ -77,6 +78,7 @@ export class HyperlanePermissionlessDeployer {
     public readonly local: ChainName,
     public readonly remotes: ChainName[],
     public readonly writeAgentConfig?: boolean,
+    protected readonly logger = createLogger('HyperlanePermissionlessDeployer'),
   ) {}
 
   static async fromArgs(): Promise<HyperlanePermissionlessDeployer> {
@@ -117,10 +119,12 @@ export class HyperlanePermissionlessDeployer {
       coreConfig,
     );
     const coreContracts: HyperlaneContractsMap<CoreFactories> = {};
+    this.logger(`Deploying core contracts to local chain ${this.local}`);
     coreContracts[this.local] = await coreDeployer.deployContracts(
       this.local,
       coreConfig[this.local],
     );
+    this.logger(`Deployment of core contracts complete`);
     contracts = objMerge(contracts, coreContracts);
 
     // Next, deploy MultisigIsms to the remote chains
@@ -130,9 +134,11 @@ export class HyperlanePermissionlessDeployer {
       multisigIsm: coreContracts[this.local].multisigIsm,
     };
     for (const remote of this.remotes) {
+      this.logger(`Deploying multisig ISM to chain ${remote}`);
       isms[remote] = {
         multisigIsm: await coreDeployer.deployLegacyMultisigIsm(remote),
       };
+      this.logger(`Deployment of multisig ISM to chain ${remote} complete`);
     }
     contracts = objMerge(contracts, isms);
 
@@ -143,11 +149,14 @@ export class HyperlanePermissionlessDeployer {
         return { ism: ism.multisigIsm.address };
       },
     );
+
+    this.logger(`Deploying test recipient`);
     const testRecipientDeployer = new HyperlaneTestRecipientDeployer(
       this.multiProvider,
       testRecipientConfig,
     );
     const testRecipients = await testRecipientDeployer.deploy();
+    this.logger(`Test recipient deployment complete`);
     contracts = objMerge(contracts, testRecipients);
 
     // Finally, deploy IGPs to all chains
@@ -159,7 +168,7 @@ export class HyperlanePermissionlessDeployer {
     contracts = objMerge(contracts, igps);
 
     const addresses = serializeContractsMap(contracts);
-    // Write contract address artifacts
+    this.logger(`Writing contract addresses to artifacts/addresses.json`);
     mergeJSON('./artifacts/', 'addresses.json', addresses);
 
     startBlocks[this.local] = await this.multiProvider
@@ -173,7 +182,7 @@ export class HyperlanePermissionlessDeployer {
         startBlocks,
       );
 
-      // Write AgentConfig artifacts
+      this.logger(`Writing agent config to artifacts/agent_config.json`);
       writeJSON('./artifacts/', 'agent_config.json', agentConfig);
     }
   }
