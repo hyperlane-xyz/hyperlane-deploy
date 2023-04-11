@@ -5,7 +5,7 @@ import { logger } from '../src/logger';
 
 import { run } from './run';
 
-run('Hyperlane deployment', async () => {
+run('Seed phrase to private key', async () => {
   const { seed } = await yargs(process.argv.slice(2))
     .describe('seed', 'seed phrase to derive key from')
     .string('seed')
