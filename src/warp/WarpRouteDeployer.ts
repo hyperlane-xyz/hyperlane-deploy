@@ -96,6 +96,9 @@ export class WarpRouteDeployer {
       baseType,
       baseTokenAddr,
     );
+    this.logger(
+      `Using base token metadata: Name: ${baseTokenMetadata.name}, Symbol: ${baseTokenMetadata.symbol}, Decimals: ${baseTokenMetadata.decimals} `,
+    );
     const owner = await this.signer.getAddress();
 
     const configMap: ChainMap<HypERC20Config> = {
@@ -113,6 +116,10 @@ export class WarpRouteDeployer {
             .defaultIsmInterchainGasPaymaster,
       },
     };
+    this.logger(
+      `HypERC20Config config on base chain ${baseChainName}:`,
+      JSON.stringify(configMap[baseChainName]),
+    );
 
     for (const synthetic of synthetics) {
       const sChainName = synthetic.chainName;
@@ -131,6 +138,10 @@ export class WarpRouteDeployer {
           synthetic.interchainGasPaymaster ||
           mergedContractAddresses[sChainName].defaultIsmInterchainGasPaymaster,
       };
+      this.logger(
+        `HypERC20Config config on synthetic chain ${sChainName}:`,
+        JSON.stringify(configMap[sChainName]),
+      );
     }
     return {
       configMap,
@@ -146,7 +157,7 @@ export class WarpRouteDeployer {
     chain: ChainName,
     type: TokenType,
     address: types.Address,
-  ) {
+  ): Promise<TokenMetadata> {
     if (type === TokenType.native) {
       return (
         this.multiProvider.getChainMetadata(chain).nativeToken ||
@@ -226,7 +237,6 @@ export class WarpRouteDeployer {
       name,
       symbol,
       decimals,
-      logoURI: 'SET_IMG_URL_HERE',
       hypCollateralAddress: hypTokenAddr,
     };
 

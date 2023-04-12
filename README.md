@@ -80,4 +80,4 @@ yarn ts-node scripts/test-warp-transfer.ts \
 
 ### Deploying a Warp UI
 
-If you'd like to create a web-based user interface for your warp routes, see the [Warp UI Template repository](https://github.com/hyperlane-xyz/hyperlane-warp-ui-template)
+If you'd like to create a web-based user interface for your warp routes, see the [Warp UI documentation](https://docs.hyperlane.xyz/docs/deploy/deploy-warp-route/deploy-the-ui-for-your-warp-route)
