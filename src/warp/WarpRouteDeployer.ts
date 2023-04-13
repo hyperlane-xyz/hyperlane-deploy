@@ -25,7 +25,7 @@ import {
   getMultiProvider,
   mergedContractAddresses,
 } from '../config';
-import { mergeJSON, tryReadJSON, writeJSON } from '../json';
+import { mergeJSON, tryReadJSON, writeFileAtPath, writeJSON } from '../json';
 import { createLogger } from '../logger';
 
 import { getWarpConfigChains, validateWarpTokenConfig } from './config';
@@ -245,7 +245,7 @@ export class WarpRouteDeployer {
     const serializedTokens = currentTokenList
       .map((t) => JSON.stringify(t))
       .join(',\n');
-    writeJSON(
+    writeFileAtPath(
       './artifacts/',
       'warp-ui-token-list.ts',
       `export const tokenList = [\n${serializedTokens}\n];`,
