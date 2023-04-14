@@ -649,7 +649,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hyperlane-xyz/deploy@workspace:."
   dependencies:
-    "@hyperlane-xyz/hyperlane-token": 1.3.2
+    "@hyperlane-xyz/hyperlane-token": 1.3.2-beta
     "@hyperlane-xyz/sdk": 1.3.2
     "@trivago/prettier-plugin-sort-imports": ^4.1.1
     "@types/coingecko-api": ^1.0.10
@@ -669,21 +669,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hyperlane-xyz/hyperlane-token@portal:/Users/asaoines/hyperlane/hyperlane-token::locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@hyperlane-xyz/hyperlane-token@portal:/Users/asaoines/hyperlane/hyperlane-token::locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A."
+"@hyperlane-xyz/hyperlane-token@npm:1.3.2-beta":
+  version: 1.3.2-beta
+  resolution: "@hyperlane-xyz/hyperlane-token@npm:1.3.2-beta"
   dependencies:
     "@hyperlane-xyz/core": 1.3.2
     "@hyperlane-xyz/sdk": 1.3.2
     "@hyperlane-xyz/utils": 1.3.2
     "@openzeppelin/contracts-upgradeable": ^4.8.0
     ethers: ^5.7.2
+  checksum: 37871d44e24641418fa0c4ac7a0e4a7c0741da3eeee30772816af1f4843c2c37bc015bba2bff56e883952dc336476e222da19d724317bdfa344ef43760ddf256
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@hyperlane-xyz/sdk@portal:/Users/asaoines/hyperlane/hyperlane-monorepo/typescript/sdk::locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@hyperlane-xyz/sdk@portal:/Users/asaoines/hyperlane/hyperlane-monorepo/typescript/sdk::locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A."
+"@hyperlane-xyz/sdk@npm:1.3.2":
+  version: 1.3.2
+  resolution: "@hyperlane-xyz/sdk@npm:1.3.2"
   dependencies:
     "@hyperlane-xyz/core": 1.3.2
     "@hyperlane-xyz/utils": 1.3.2
@@ -695,8 +696,9 @@ __metadata:
     debug: ^4.3.4
     ethers: ^5.7.2
     zod: ^3.21.2
+  checksum: b2e54374eab564505454eaf51ea270758b1b7331c9e879bd0084c28d339e099ae68715b937001092689a526f4b2fa1eb448c2a836e9bfd9923a5fd4cf2564284
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@hyperlane-xyz/utils@npm:1.3.2":
   version: 1.3.2
