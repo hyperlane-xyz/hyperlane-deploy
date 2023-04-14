@@ -25,7 +25,7 @@ import {
   getMultiProvider,
   mergedContractAddresses,
 } from '../config';
-import { mergeJSON, tryReadJSON, writeJSON } from '../json';
+import { mergeJSON, tryReadJSON, writeFileAtPath, writeJSON } from '../json';
 import { createLogger } from '../logger';
 
 import { getWarpConfigChains, validateWarpTokenConfig } from './config';
@@ -224,10 +224,8 @@ export class WarpRouteDeployer {
     this.logger(
       'Writing warp ui token list to artifacts/warp-ui-token-list.json',
     );
-    const currentTokenList = tryReadJSON(
-      './artifacts/',
-      'warp-tokens.json',
-    ) || { tokens: [] };
+    const currentTokenList: ListTokenMetadata[] =
+      tryReadJSON('./artifacts/', 'warp-tokens.json') || [];
 
     const { name, symbol, decimals } = baseTokenMetadata;
     const hypTokenAddr = contracts[baseChain].router.address;
@@ -240,8 +238,18 @@ export class WarpRouteDeployer {
       hypCollateralAddress: hypTokenAddr,
     };
 
-    currentTokenList.tokens.push(newToken);
+    currentTokenList.push(newToken);
+    // Write list as JSON
     writeJSON('./artifacts/', 'warp-ui-token-list.json', currentTokenList);
+    // Also write list as TS
+    const serializedTokens = currentTokenList
+      .map((t) => JSON.stringify(t))
+      .join(',\n');
+    writeFileAtPath(
+      './artifacts/',
+      'warp-ui-token-list.ts',
+      `export const tokenList = [\n${serializedTokens}\n];`,
+    );
   }
 }
 
@@ -249,4 +257,10 @@ interface TokenMetadata {
   name: string;
   symbol: string;
   decimals: number;
+}
+
+interface ListTokenMetadata extends TokenMetadata {
+  chainId: number;
+  address: string;
+  hypCollateralAddress: string;
 }
