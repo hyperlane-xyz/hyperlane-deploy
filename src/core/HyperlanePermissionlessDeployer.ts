@@ -6,6 +6,7 @@ import {
   ChainMap,
   ChainName,
   CoreFactories,
+  HyperlaneAddressesMap,
   HyperlaneContractsMap,
   HyperlaneCoreDeployer,
   HyperlaneIgpDeployer,
@@ -27,7 +28,7 @@ import {
   buildOverriddenAgentConfig,
   getMultiProvider,
 } from '../config';
-import { mergeJSON, writeJSON } from '../json';
+import { mergeJSON, tryReadJSON, writeJSON } from '../json';
 import { createLogger } from '../logger';
 
 import {
@@ -104,8 +105,23 @@ export class HyperlanePermissionlessDeployer {
     return this.remotes.concat([this.local]);
   }
 
+  writeMergedAddresses(
+    aAddresses: HyperlaneAddressesMap<any>,
+    bContracts: HyperlaneContractsMap<any>,
+  ): HyperlaneAddressesMap<any> {
+    const bAddresses = serializeContractsMap(bContracts);
+    const mergedAddresses = objMerge(aAddresses, bAddresses);
+    this.logger(`Writing contract addresses to artifacts/addresses.json`);
+    mergeJSON('./artifacts/', 'addresses.json', mergedAddresses);
+    return mergedAddresses;
+  }
+
   async deploy(): Promise<void> {
-    let contracts: HyperlaneContractsMap<CoreFactories> = {};
+    let addresses =
+      tryReadJSON<HyperlaneContractsMap<any>>(
+        './artifacts',
+        'addresses.json',
+      ) || {};
     const owner = await this.signer.getAddress();
     // First, deploy core contracts to the local chain
     // NB: We create core configs for *all* chains because
@@ -114,18 +130,16 @@ export class HyperlanePermissionlessDeployer {
     // we can just do:
     // const coreContracts = await coreDeployer.deploy();
     const coreConfig = buildCoreConfig(owner, this.chains);
-    const coreDeployer = new HyperlaneCoreDeployer(
-      this.multiProvider,
-      coreConfig,
-    );
+    const coreDeployer = new HyperlaneCoreDeployer(this.multiProvider);
+    coreDeployer.cacheAddressesMap(addresses);
     const coreContracts: HyperlaneContractsMap<CoreFactories> = {};
     this.logger(`Deploying core contracts to local chain ${this.local}`);
     coreContracts[this.local] = await coreDeployer.deployContracts(
       this.local,
       coreConfig[this.local],
     );
-    this.logger(`Deployment of core contracts complete`);
-    contracts = objMerge(contracts, coreContracts);
+    this.logger(`Core deployment complete`);
+    addresses = this.writeMergedAddresses(addresses, coreContracts);
 
     // Next, deploy MultisigIsms to the remote chains
     // TODO: Would be cleaner if using HyperlaneIsmDeployer
@@ -136,11 +150,15 @@ export class HyperlanePermissionlessDeployer {
     for (const remote of this.remotes) {
       this.logger(`Deploying multisig ISM to chain ${remote}`);
       isms[remote] = {
-        multisigIsm: await coreDeployer.deployLegacyMultisigIsm(remote),
+        multisigIsm: await coreDeployer.deployLegacyMultisigIsm(
+          remote,
+          coreConfig[remote].multisigIsm,
+        ),
       };
       this.logger(`Deployment of multisig ISM to chain ${remote} complete`);
     }
-    contracts = objMerge(contracts, isms);
+    this.logger(`ISM deployment complete`);
+    addresses = this.writeMergedAddresses(addresses, isms);
 
     // Next, deploy TestRecipients to all chains
     const testRecipientConfig: ChainMap<TestRecipientConfig> = objMap(
@@ -153,23 +171,22 @@ export class HyperlanePermissionlessDeployer {
     this.logger(`Deploying test recipient`);
     const testRecipientDeployer = new HyperlaneTestRecipientDeployer(
       this.multiProvider,
+    );
+    testRecipientDeployer.cacheAddressesMap(addresses);
+    const testRecipients = await testRecipientDeployer.deploy(
       testRecipientConfig,
     );
-    const testRecipients = await testRecipientDeployer.deploy();
     this.logger(`Test recipient deployment complete`);
-    contracts = objMerge(contracts, testRecipients);
+    addresses = this.writeMergedAddresses(addresses, testRecipients);
 
     // Finally, deploy IGPs to all chains
     // TODO: Reuse ProxyAdmin on local chain... right now *two* ProxyAdmins are deployed
     const igpConfig = buildIgpConfig(owner, this.chains);
-    const igpDeployer = new HyperlaneIgpDeployer(this.multiProvider, igpConfig);
-    const igps = await igpDeployer.deploy();
-
-    contracts = objMerge(contracts, igps);
-
-    const addresses = serializeContractsMap(contracts);
-    this.logger(`Writing contract addresses to artifacts/addresses.json`);
-    mergeJSON('./artifacts/', 'addresses.json', addresses);
+    const igpDeployer = new HyperlaneIgpDeployer(this.multiProvider);
+    igpDeployer.cacheAddressesMap(addresses);
+    const igps = await igpDeployer.deploy(igpConfig);
+    this.logger(`IGP deployment complete`);
+    addresses = this.writeMergedAddresses(addresses, igps);
 
     startBlocks[this.local] = await this.multiProvider
       .getProvider(this.local)

@@ -168,7 +168,10 @@ export function buildOverriddenAgentConfig(
   multiProvider: MultiProvider,
   startBlocks: ChainMap<number>,
 ) {
-  const localAddresses = readJSON('./artifacts', 'addresses.json');
+  const localAddresses = readJSON<HyperlaneAddressesMap<any>>(
+    './artifacts',
+    'addresses.json',
+  );
   const mergedAddresses: HyperlaneAddressesMap<any> = objMerge(
     sdkContractAddresses,
     localAddresses,
