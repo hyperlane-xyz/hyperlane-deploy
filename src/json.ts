@@ -11,17 +11,17 @@ export function readFileAtPath(filepath: string) {
   return fs.readFileSync(filepath, 'utf8');
 }
 
-export function readJSONAtPath(filepath: string) {
-  return JSON.parse(readFileAtPath(filepath));
+export function readJSONAtPath<T>(filepath: string): T {
+  return JSON.parse(readFileAtPath(filepath)) as T;
 }
 
-export function readJSON(directory: string, filename: string) {
+export function readJSON<T>(directory: string, filename: string): T {
   return readJSONAtPath(path.join(directory, filename));
 }
 
-export function tryReadJSON(directory: string, filename: string) {
+export function tryReadJSON<T>(directory: string, filename: string): T | null {
   try {
-    return readJSONAtPath(path.join(directory, filename));
+    return readJSONAtPath(path.join(directory, filename)) as T;
   } catch (error) {
     return null;
   }
@@ -42,9 +42,13 @@ export function writeJSON(directory: string, filename: string, obj: any) {
   writeFileAtPath(directory, filename, JSON.stringify(obj, null, 2) + '\n');
 }
 
-export function mergeJSON(directory: string, filename: string, obj: any) {
+export function mergeJSON<T extends Record<string, any>>(
+  directory: string,
+  filename: string,
+  obj: T,
+) {
   if (fs.existsSync(path.join(directory, filename))) {
-    const previous = readJSON(directory, filename);
+    const previous = readJSON<T>(directory, filename);
     writeJSON(directory, filename, objMerge(previous, obj));
   } else {
     writeJSON(directory, filename, obj);
