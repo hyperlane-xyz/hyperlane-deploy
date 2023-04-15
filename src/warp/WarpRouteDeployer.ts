@@ -3,9 +3,9 @@ import yargs from 'yargs';
 
 import {
   ERC20__factory,
-  HypERC20Config,
   HypERC20Deployer,
   HypERC20Factories,
+  TokenConfig,
   TokenType,
 } from '@hyperlane-xyz/hyperlane-token';
 import {
@@ -13,6 +13,7 @@ import {
   ChainName,
   HyperlaneContractsMap,
   MultiProvider,
+  RouterConfig,
   chainMetadata,
   objMap,
 } from '@hyperlane-xyz/sdk';
@@ -66,12 +67,8 @@ export class WarpRouteDeployer {
     const { configMap, baseToken } = await this.buildHypERC20Config();
 
     this.logger('Initiating HypERC20 deployments');
-    const deployer = new HypERC20Deployer(
-      this.multiProvider,
-      configMap,
-      undefined,
-    );
-    await deployer.deploy();
+    const deployer = new HypERC20Deployer(this.multiProvider);
+    await deployer.deploy(configMap);
     this.logger('HypERC20 deployments complete');
 
     this.writeDeploymentResult(
@@ -101,7 +98,7 @@ export class WarpRouteDeployer {
     );
     const owner = await this.signer.getAddress();
 
-    const configMap: ChainMap<HypERC20Config> = {
+    const configMap: ChainMap<TokenConfig & RouterConfig> = {
       [baseChainName]: {
         type: baseType,
         token: baseTokenAddr,
@@ -180,7 +177,7 @@ export class WarpRouteDeployer {
 
   writeDeploymentResult(
     contracts: HyperlaneContractsMap<HypERC20Factories>,
-    configMap: ChainMap<HypERC20Config>,
+    configMap: ChainMap<TokenConfig & RouterConfig>,
     baseToken: {
       chainName: ChainName;
       address: types.Address;
@@ -197,7 +194,7 @@ export class WarpRouteDeployer {
   }
 
   writeTokenDeploymentArtifacts(
-    tokenConfigs: ChainMap<HypERC20Config>,
+    tokenConfigs: ChainMap<TokenConfig & RouterConfig>,
     contracts: HyperlaneContractsMap<HypERC20Factories>,
   ) {
     this.logger(

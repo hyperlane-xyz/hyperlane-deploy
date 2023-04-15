@@ -2,12 +2,11 @@ import debug from 'debug';
 
 import { TestRecipient, TestRecipient__factory } from '@hyperlane-xyz/core';
 import {
-  ChainMap,
   ChainName,
   HyperlaneDeployer,
   MultiProvider,
 } from '@hyperlane-xyz/sdk';
-import { types } from '@hyperlane-xyz/utils';
+import { types, utils } from '@hyperlane-xyz/utils';
 
 // Maps chain name to ISM address
 export type TestRecipientConfig = {
@@ -30,12 +29,8 @@ export class HyperlaneTestRecipientDeployer extends HyperlaneDeployer<
   TestRecipientConfig,
   typeof testRecipientFactories
 > {
-  constructor(
-    multiProvider: MultiProvider,
-    configMap: ChainMap<TestRecipientConfig>,
-    factoriesOverride = testRecipientFactories,
-  ) {
-    super(multiProvider, configMap, factoriesOverride, {
+  constructor(multiProvider: MultiProvider) {
+    super(multiProvider, testRecipientFactories, {
       logger: debug('hyperlane:TestRecipientDeployer'),
     });
   }
@@ -45,8 +40,11 @@ export class HyperlaneTestRecipientDeployer extends HyperlaneDeployer<
     config: TestRecipientConfig,
   ): Promise<TestRecipientContracts> {
     const testRecipient = await this.deployContract(chain, 'testRecipient', []);
-    const tx = testRecipient.setInterchainSecurityModule(config.ism);
-    await this.multiProvider.handleTx(chain, tx);
+    const ism = await testRecipient.interchainSecurityModule();
+    if (!utils.eqAddress(ism, config.ism)) {
+      const tx = testRecipient.setInterchainSecurityModule(config.ism);
+      await this.multiProvider.handleTx(chain, tx);
+    }
     return {
       testRecipient,
     };
