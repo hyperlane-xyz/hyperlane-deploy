@@ -11,12 +11,15 @@ import {
   HyperlaneIsmFactory,
   HyperlaneIsmFactoryDeployer,
   MultiProvider,
+  attachContractsMap,
+  connectContractsMap,
   defaultMultisigIsmConfigs,
   objMap,
   objMerge,
   promiseObjAll,
   serializeContractsMap,
 } from '@hyperlane-xyz/sdk';
+import { ismFactoryFactories } from '@hyperlane-xyz/sdk/dist/ism/contracts';
 
 import { multisigIsmConfig } from '../../config/multisig_ism';
 import { startBlocks } from '../../config/start_blocks';
@@ -29,6 +32,7 @@ import {
   buildIsmConfig,
   buildOverriddenAgentConfig,
   getMultiProvider,
+  sdkContractAddresses,
 } from '../config';
 import { mergeJSON, tryReadJSON, writeJSON } from '../json';
 import { createLogger } from '../logger';
@@ -103,17 +107,6 @@ export class HyperlanePermissionlessDeployer {
     return this.remotes.concat([this.local]);
   }
 
-  writeMergedAddresses(
-    aAddresses: HyperlaneAddressesMap<any>,
-    bContracts: HyperlaneContractsMap<any>,
-  ): HyperlaneAddressesMap<any> {
-    const bAddresses = serializeContractsMap(bContracts);
-    const mergedAddresses = objMerge(aAddresses, bAddresses);
-    this.logger(`Writing contract addresses to artifacts/addresses.json`);
-    mergeJSON('./artifacts/', 'addresses.json', mergedAddresses);
-    return mergedAddresses;
-  }
-
   async deploy(): Promise<void> {
     let addressesMap =
       tryReadJSON<HyperlaneContractsMap<any>>(
@@ -128,14 +121,22 @@ export class HyperlanePermissionlessDeployer {
     ismDeployer.cacheAddressesMap(addressesMap);
     const ismFactoryContracts = await ismDeployer.deploy([this.local]);
     addressesMap = this.writeMergedAddresses(addressesMap, ismFactoryContracts);
-    const ismFactory = new HyperlaneIsmFactory(
-      ismFactoryContracts,
-      this.multiProvider,
-    );
     this.logger(`ISM factory deployment complete`);
 
     // 2. Deploy core contracts to local chain
     this.logger(`Deploying core contracts to ${this.local}`);
+    // Build an IsmFactory that covers all chains
+    const allIsmFactoryContracts = objMerge(
+      connectContractsMap(
+        attachContractsMap(sdkContractAddresses, ismFactoryFactories),
+        this.multiProvider,
+      ),
+      ismFactoryContracts,
+    );
+    const ismFactory = new HyperlaneIsmFactory(
+      allIsmFactoryContracts,
+      this.multiProvider,
+    );
     const coreDeployer = new HyperlaneCoreDeployer(
       this.multiProvider,
       ismFactory,
@@ -211,5 +212,16 @@ export class HyperlanePermissionlessDeployer {
       this.logger(`Writing agent config to artifacts/agent_config.json`);
       writeJSON('./artifacts/', 'agent_config.json', agentConfig);
     }
+  }
+
+  protected writeMergedAddresses(
+    aAddresses: HyperlaneAddressesMap<any>,
+    bContracts: HyperlaneContractsMap<any>,
+  ): HyperlaneAddressesMap<any> {
+    const bAddresses = serializeContractsMap(bContracts);
+    const mergedAddresses = objMerge(aAddresses, bAddresses);
+    this.logger(`Writing contract addresses to artifacts/addresses.json`);
+    mergeJSON('./artifacts/', 'addresses.json', mergedAddresses);
+    return mergedAddresses;
   }
 }
