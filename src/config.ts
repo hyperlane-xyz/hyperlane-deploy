@@ -7,9 +7,11 @@ import {
   GasOracleContractType,
   HyperlaneAddressesMap,
   HyperlaneAgentAddresses,
+  ModuleType,
   MultiProvider,
   MultisigIsmConfig,
   OverheadIgpConfig,
+  RoutingIsmConfig,
   buildAgentConfig,
   chainMetadata,
   defaultMultisigIsmConfigs,
@@ -100,26 +102,34 @@ export function coerceAddressToBytes32(value: string): string {
   throw new Error(`Invalid value ${value}, must be a 20 or 32 byte hex string`);
 }
 
+export function buildIsmConfig(
+  owner: types.Address,
+  local: ChainName,
+  remotes: ChainName[],
+): RoutingIsmConfig {
+  const mergedMultisigIsmConfig: ChainMap<MultisigIsmConfig> = objMerge(
+    defaultMultisigIsmConfigs,
+    multisigIsmConfig,
+  );
+  return {
+    owner,
+    type: ModuleType.ROUTING,
+    domains: Object.fromEntries(
+      remotes.map((remote) => [remote, mergedMultisigIsmConfig[remote]]),
+    ),
+  };
+}
+
 export function buildCoreConfig(
   owner: types.Address,
-  chains: ChainName[],
+  local: ChainName,
+  remotes: ChainName[],
 ): ChainMap<CoreConfig> {
   const configMap: ChainMap<CoreConfig> = {};
-  for (const local of chains) {
-    const multisigIsmConfigs: ChainMap<MultisigIsmConfig> = {};
-    const mergedMultisigIsmConfig: ChainMap<MultisigIsmConfig> = objMerge(
-      defaultMultisigIsmConfigs,
-      multisigIsmConfig,
-    );
-    for (const remote of chains) {
-      if (local === remote) continue;
-      multisigIsmConfigs[remote] = mergedMultisigIsmConfig[remote];
-    }
-    configMap[local] = {
-      owner,
-      multisigIsm: multisigIsmConfigs,
-    };
-  }
+  configMap[local] = {
+    owner,
+    defaultIsm: buildIsmConfig(owner, local, remotes),
+  };
   return configMap;
 }
 

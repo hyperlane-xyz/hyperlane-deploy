@@ -1,19 +1,20 @@
 import { ethers } from 'ethers';
 import yargs from 'yargs';
 
-import { LegacyMultisigIsm } from '@hyperlane-xyz/core';
 import {
   ChainMap,
   ChainName,
-  CoreFactories,
   HyperlaneAddressesMap,
   HyperlaneContractsMap,
   HyperlaneCoreDeployer,
   HyperlaneIgpDeployer,
+  HyperlaneIsmFactory,
+  HyperlaneIsmFactoryDeployer,
   MultiProvider,
   defaultMultisigIsmConfigs,
   objMap,
   objMerge,
+  promiseObjAll,
   serializeContractsMap,
 } from '@hyperlane-xyz/sdk';
 
@@ -25,6 +26,7 @@ import {
   assertUnique,
   buildCoreConfig,
   buildIgpConfig,
+  buildIsmConfig,
   buildOverriddenAgentConfig,
   getMultiProvider,
 } from '../config';
@@ -67,10 +69,6 @@ export function getArgs(multiProvider: MultiProvider) {
     .default('write-agent-config', true)
     .boolean('write-agent-config').argv;
 }
-
-type MultisigIsmContracts = {
-  multisigIsm: LegacyMultisigIsm;
-};
 
 export class HyperlanePermissionlessDeployer {
   constructor(
@@ -117,76 +115,87 @@ export class HyperlanePermissionlessDeployer {
   }
 
   async deploy(): Promise<void> {
-    let addresses =
+    let addressesMap =
       tryReadJSON<HyperlaneContractsMap<any>>(
         './artifacts',
         'addresses.json',
       ) || {};
     const owner = await this.signer.getAddress();
-    // First, deploy core contracts to the local chain
-    // NB: We create core configs for *all* chains because
-    // we also use coreDeployer to deploy MultisigIsms.
-    // Once we move that out to a HyperlaneIsmDeployer
-    // we can just do:
-    // const coreContracts = await coreDeployer.deploy();
-    const coreConfig = buildCoreConfig(owner, this.chains);
-    const coreDeployer = new HyperlaneCoreDeployer(this.multiProvider);
-    coreDeployer.cacheAddressesMap(addresses);
-    const coreContracts: HyperlaneContractsMap<CoreFactories> = {};
-    this.logger(`Deploying core contracts to local chain ${this.local}`);
-    coreContracts[this.local] = await coreDeployer.deployContracts(
-      this.local,
-      coreConfig[this.local],
+
+    // 1. Deploy ISM factories to the local chain.
+    this.logger(`Deploying ISM factory contracts to ${this.local}`);
+    const ismDeployer = new HyperlaneIsmFactoryDeployer(this.multiProvider);
+    ismDeployer.cacheAddressesMap(addressesMap);
+    const ismFactoryContracts = await ismDeployer.deploy([this.local]);
+    addressesMap = this.writeMergedAddresses(addressesMap, ismFactoryContracts);
+    const ismFactory = new HyperlaneIsmFactory(
+      ismFactoryContracts,
+      this.multiProvider,
     );
+    this.logger(`ISM factory deployment complete`);
+
+    // 2. Deploy core contracts to local chain
+    this.logger(`Deploying core contracts to ${this.local}`);
+    const coreDeployer = new HyperlaneCoreDeployer(
+      this.multiProvider,
+      ismFactory,
+    );
+    coreDeployer.cacheAddressesMap(addressesMap);
+    const coreConfig = buildCoreConfig(owner, this.local, this.remotes);
+    const coreContracts = await coreDeployer.deploy(coreConfig);
+    addressesMap = this.writeMergedAddresses(addressesMap, coreContracts);
     this.logger(`Core deployment complete`);
-    addresses = this.writeMergedAddresses(addresses, coreContracts);
 
-    // Next, deploy MultisigIsms to the remote chains
-    // TODO: Would be cleaner if using HyperlaneIsmDeployer
-    const isms: ChainMap<MultisigIsmContracts> = {};
-    isms[this.local] = {
-      multisigIsm: coreContracts[this.local].multisigIsm,
-    };
-    for (const remote of this.remotes) {
-      this.logger(`Deploying multisig ISM to chain ${remote}`);
-      isms[remote] = {
-        multisigIsm: await coreDeployer.deployLegacyMultisigIsm(
-          remote,
-          coreConfig[remote].multisigIsm,
-        ),
-      };
-      this.logger(`Deployment of multisig ISM to chain ${remote} complete`);
-    }
-    this.logger(`ISM deployment complete`);
-    addresses = this.writeMergedAddresses(addresses, isms);
-
-    // Next, deploy TestRecipients to all chains
-    const testRecipientConfig: ChainMap<TestRecipientConfig> = objMap(
-      isms,
-      (chain, ism) => {
-        return { ism: ism.multisigIsm.address };
-      },
+    // 3. Deploy ISM contracts to remote chains
+    this.logger(`Deploying ISMs to ${this.remotes}`);
+    const ismConfigMap = Object.fromEntries(
+      this.remotes.map((local) => {
+        const remotes = this.remotes.filter((c) => c !== local);
+        remotes.push(this.local);
+        return [local, buildIsmConfig(owner, local, remotes)];
+      }),
     );
+    const ismContracts = await promiseObjAll(
+      objMap(ismConfigMap, async (chain, ismConfig) => {
+        // TODO: Why do I need to cast here?
+        const ism = await ismFactory.deploy(chain as string, ismConfig);
+        return { customIsm: ism };
+      }),
+    );
+    addressesMap = this.writeMergedAddresses(addressesMap, ismContracts);
+    this.logger(`ISM deployment complete`);
 
-    this.logger(`Deploying test recipient`);
+    // 4. Deploy TestRecipients to all chains
+    this.logger(`Deploying test recipient contracts to ${this.chains}`);
+    const testRecipientConfig: ChainMap<TestRecipientConfig> =
+      Object.fromEntries(
+        this.chains.map((c) => {
+          return [
+            c,
+            c === this.local
+              ? ethers.constants.AddressZero
+              : ismContracts[c].customIsm.address,
+          ];
+        }),
+      );
+
     const testRecipientDeployer = new HyperlaneTestRecipientDeployer(
       this.multiProvider,
     );
-    testRecipientDeployer.cacheAddressesMap(addresses);
+    testRecipientDeployer.cacheAddressesMap(addressesMap);
     const testRecipients = await testRecipientDeployer.deploy(
       testRecipientConfig,
     );
+    addressesMap = this.writeMergedAddresses(addressesMap, testRecipients);
     this.logger(`Test recipient deployment complete`);
-    addresses = this.writeMergedAddresses(addresses, testRecipients);
 
-    // Finally, deploy IGPs to all chains
-    // TODO: Reuse ProxyAdmin on local chain... right now *two* ProxyAdmins are deployed
+    // 5. Deploy IGPs to all chains
     const igpConfig = buildIgpConfig(owner, this.chains);
     const igpDeployer = new HyperlaneIgpDeployer(this.multiProvider);
-    igpDeployer.cacheAddressesMap(addresses);
-    const igps = await igpDeployer.deploy(igpConfig);
+    igpDeployer.cacheAddressesMap(addressesMap);
+    const igpContracts = await igpDeployer.deploy(igpConfig);
+    addressesMap = this.writeMergedAddresses(addressesMap, igpContracts);
     this.logger(`IGP deployment complete`);
-    addresses = this.writeMergedAddresses(addresses, igps);
 
     startBlocks[this.local] = await this.multiProvider
       .getProvider(this.local)
