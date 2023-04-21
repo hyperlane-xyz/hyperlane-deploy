@@ -1,5 +1,5 @@
-// TODO get properly exported from hyp-token
 import type { TokenType } from '@hyperlane-xyz/hyperlane-token';
+// TODO get properly exported from hyp-token
 import { ERC20Metadata } from '@hyperlane-xyz/hyperlane-token/dist/config';
 import type { types } from '@hyperlane-xyz/utils';
 
