@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 
+import { Mailbox__factory, OverheadIgp__factory } from '@hyperlane-xyz/core';
 import {
   ChainMap,
   ChainName,
@@ -11,10 +12,12 @@ import {
   MultiProvider,
   MultisigIsmConfig,
   OverheadIgpConfig,
+  RouterConfig,
   RoutingIsmConfig,
   buildAgentConfig,
   chainMetadata,
   defaultMultisigIsmConfigs,
+  filterAddressesMap,
   multisigIsmVerificationCost,
   objFilter,
   objMerge,
@@ -26,6 +29,7 @@ import artifactAddresses from '../artifacts/addresses.json';
 import { chains } from '../config/chains';
 import { multisigIsmConfig } from '../config/multisig_ism';
 
+import { TestRecipientConfig } from './core/TestRecipientDeployer';
 import { readJSON } from './json';
 
 let multiProvider: MultiProvider;
@@ -104,7 +108,6 @@ export function coerceAddressToBytes32(value: string): string {
 
 export function buildIsmConfig(
   owner: types.Address,
-  local: ChainName,
   remotes: ChainName[],
 ): RoutingIsmConfig {
   const mergedMultisigIsmConfig: ChainMap<MultisigIsmConfig> = objMerge(
@@ -120,7 +123,23 @@ export function buildIsmConfig(
   };
 }
 
-export function buildCoreConfig(
+export function buildIsmConfigMap(
+  owner: types.Address,
+  chains: ChainName[],
+  remotes: ChainName[],
+): ChainMap<RoutingIsmConfig> {
+  return Object.fromEntries(
+    chains.map((chain) => {
+      const ismConfig = buildIsmConfig(
+        owner,
+        remotes.filter((r) => r !== chain),
+      );
+      return [chain, ismConfig];
+    }),
+  );
+}
+
+export function buildCoreConfigMap(
   owner: types.Address,
   local: ChainName,
   remotes: ChainName[],
@@ -128,12 +147,52 @@ export function buildCoreConfig(
   const configMap: ChainMap<CoreConfig> = {};
   configMap[local] = {
     owner,
-    defaultIsm: buildIsmConfig(owner, local, remotes),
+    defaultIsm: buildIsmConfig(owner, remotes),
   };
   return configMap;
 }
 
-export function buildIgpConfig(
+export function buildRouterConfigMap(
+  owner: types.Address,
+  chains: ChainName[],
+  addressesMap: HyperlaneAddressesMap<any>,
+): ChainMap<RouterConfig> {
+  const routerConfigFactories = {
+    mailbox: new Mailbox__factory(),
+    defaultIsmInterchainGasPaymaster: new OverheadIgp__factory(),
+  };
+  const filteredAddressesMap = filterAddressesMap(
+    addressesMap,
+    routerConfigFactories,
+  );
+  return Object.fromEntries(
+    chains.map((chain) => {
+      const routerConfig: RouterConfig = {
+        owner,
+        mailbox: filteredAddressesMap[chain].mailbox,
+        interchainGasPaymaster:
+          filteredAddressesMap[chain].defaultIsmInterchainGasPaymaster,
+      };
+      return [chain, routerConfig];
+    }),
+  );
+}
+
+export function buildTestRecipientConfigMap(
+  chains: ChainName[],
+  addressesMap: HyperlaneAddressesMap<any>,
+): ChainMap<TestRecipientConfig> {
+  return Object.fromEntries(
+    chains.map((chain) => {
+      const interchainSecurityModule =
+        addressesMap[chain].interchainSecurityModule ??
+        ethers.constants.AddressZero;
+      return [chain, { interchainSecurityModule }];
+    }),
+  );
+}
+
+export function buildIgpConfigMap(
   owner: types.Address,
   chains: ChainName[],
 ): ChainMap<OverheadIgpConfig> {

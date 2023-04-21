@@ -10,7 +10,7 @@ import { types, utils } from '@hyperlane-xyz/utils';
 
 // Maps chain name to ISM address
 export type TestRecipientConfig = {
-  ism: types.Address;
+  interchainSecurityModule: types.Address;
 };
 
 export type TestRecipientContracts = {
@@ -41,8 +41,8 @@ export class HyperlaneTestRecipientDeployer extends HyperlaneDeployer<
   ): Promise<TestRecipientContracts> {
     const testRecipient = await this.deployContract(chain, 'testRecipient', []);
     const ism = await testRecipient.interchainSecurityModule();
-    if (!utils.eqAddress(ism, config.ism)) {
-      const tx = testRecipient.setInterchainSecurityModule(config.ism);
+    if (!utils.eqAddress(ism, config.interchainSecurityModule)) {
+      const tx = testRecipient.setInterchainSecurityModule(ism);
       await this.multiProvider.handleTx(chain, tx);
     }
     return {
