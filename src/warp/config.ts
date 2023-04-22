@@ -30,7 +30,7 @@ export type WarpBaseTokenConfig =
 
 export interface WarpRouteConfig {
   base: WarpBaseTokenConfig;
-  synthetics: [WarpSyntheticTokenConfig];
+  synthetics: WarpSyntheticTokenConfig[];
 }
 
 // Zod schema for Warp Route config validation validation
