@@ -214,7 +214,7 @@ export class WarpRouteDeployer {
     >['baseToken'],
   ) {
     this.logger(
-      'Writing warp ui token list to artifacts/warp-ui-token-list.json',
+      'Writing warp ui token list to artifacts/warp-ui-token-list.json and artifacts/warp-ui-token-list.ts',
     );
     const currentTokenList: WarpUITokenConfig[] =
       tryReadJSON('./artifacts/', 'warp-ui-token-list.json') || [];
