@@ -15,12 +15,8 @@ import {
 } from '@hyperlane-xyz/hyperlane-token';
 import {
   ChainMap,
-  CoreFactories,
-  HyperlaneAddressesMap,
-  HyperlaneApp,
   HyperlaneCore,
   MultiProvider,
-  coreFactories,
   objMap,
 } from '@hyperlane-xyz/sdk';
 import { utils } from '@hyperlane-xyz/utils';
@@ -40,18 +36,6 @@ import { run } from './run';
 
 const logger = createLogger('WarpTransferTest');
 const error = createLogger('WarpTransferTest', true);
-
-function coreFromAddressesMap(
-  addressesMap: HyperlaneAddressesMap<CoreFactories>,
-  _multiProvider: MultiProvider,
-): HyperlaneCore {
-  const { contractsMap, multiProvider } = HyperlaneApp.fromAddressesMap(
-    addressesMap,
-    coreFactories,
-    _multiProvider,
-  );
-  return new HyperlaneCore(contractsMap, multiProvider);
-}
 
 function getArgs(multiProvider: MultiProvider) {
   // Only accept chains for which we have both a connection and contract addresses
@@ -153,7 +137,10 @@ run('Warp transfer test', async () => {
   };
   const balanceBefore = await getDestinationBalance();
 
-  const core = coreFromAddressesMap(mergedContractAddresses, multiProvider);
+  const core = HyperlaneCore.fromAddressesMap(
+    mergedContractAddresses,
+    multiProvider,
+  );
 
   let receipt: ContractReceipt;
   switch (artifacts[origin].tokenType) {

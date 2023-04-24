@@ -2,19 +2,11 @@ import { ethers } from 'ethers';
 import yargs from 'yargs';
 
 import {
-  CoreFactories,
   DispatchedMessage,
-  HyperlaneAddressesMap,
-  HyperlaneApp,
   HyperlaneCore,
   HyperlaneIgp,
   MultiProvider,
-  coreFactories,
 } from '@hyperlane-xyz/sdk';
-import {
-  IgpFactories,
-  igpFactories,
-} from '@hyperlane-xyz/sdk/dist/gas/contracts';
 import { utils } from '@hyperlane-xyz/utils';
 import { sleep } from '@hyperlane-xyz/utils/dist/src/utils';
 
@@ -53,30 +45,6 @@ function getArgs(multiProvider: MultiProvider) {
     .middleware(assertBalances(multiProvider, (argv) => argv.chains)).argv;
 }
 
-function coreFromAddressesMap(
-  addressesMap: HyperlaneAddressesMap<CoreFactories>,
-  _multiProvider: MultiProvider,
-): HyperlaneCore {
-  const { contractsMap, multiProvider } = HyperlaneApp.fromAddressesMap(
-    addressesMap,
-    coreFactories,
-    _multiProvider,
-  );
-  return new HyperlaneCore(contractsMap, multiProvider);
-}
-
-function igpFromAddressesMap(
-  addressesMap: HyperlaneAddressesMap<IgpFactories>,
-  _multiProvider: MultiProvider,
-): HyperlaneIgp {
-  const { contractsMap, multiProvider } = HyperlaneApp.fromAddressesMap(
-    addressesMap,
-    igpFactories,
-    _multiProvider,
-  );
-  return new HyperlaneIgp(contractsMap, multiProvider);
-}
-
 run('Message delivery test', async () => {
   let timedOut = false;
   const multiProvider = getMultiProvider();
@@ -86,8 +54,14 @@ run('Message delivery test', async () => {
   }, timeout * 1000);
   const signer = new ethers.Wallet(key);
   multiProvider.setSharedSigner(signer);
-  const core = coreFromAddressesMap(mergedContractAddresses, multiProvider);
-  const igp = igpFromAddressesMap(mergedContractAddresses, multiProvider);
+  const core = HyperlaneCore.fromAddressesMap(
+    mergedContractAddresses,
+    multiProvider,
+  );
+  const igp = HyperlaneIgp.fromAddressesMap(
+    mergedContractAddresses,
+    multiProvider,
+  );
   const messages: Set<DispatchedMessage> = new Set();
   for (const origin of chains) {
     const mailbox = core.getContracts(origin).mailbox;
