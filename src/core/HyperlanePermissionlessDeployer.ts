@@ -12,11 +12,13 @@ import {
   InterchainAccountDeployer,
   MultiProvider,
   defaultMultisigIsmConfigs,
+  filterAddressesMap,
   objMap,
   objMerge,
   promiseObjAll,
   serializeContractsMap,
 } from '@hyperlane-xyz/sdk';
+import { ismFactoryFactories } from '@hyperlane-xyz/sdk/dist/ism/contracts';
 
 import { multisigIsmConfig } from '../../config/multisig_ism';
 import { startBlocks } from '../../config/start_blocks';
@@ -111,10 +113,9 @@ export class HyperlanePermissionlessDeployer {
     const owner = await this.signer.getAddress();
 
     // 1. Deploy ISM factories to all chains that don't have them.
-    const chainsWithIsmFactories = HyperlaneIsmFactory.fromAddressesMap(
-      addressesMap,
-      this.multiProvider,
-    ).chains();
+    const chainsWithIsmFactories = Object.keys(
+      filterAddressesMap(addressesMap, ismFactoryFactories),
+    );
     const chainsWithoutIsmFactories = this.chains.filter(
       (chain) => !chainsWithIsmFactories.includes(chain),
     );
