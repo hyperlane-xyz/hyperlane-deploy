@@ -110,11 +110,22 @@ export class HyperlanePermissionlessDeployer {
       ) || {};
     const owner = await this.signer.getAddress();
 
-    // 1. Deploy ISM factories to the local chain.
-    this.logger(`Deploying ISM factory contracts to ${this.local}`);
+    // 1. Deploy ISM factories to all chains that don't have them.
+    const chainsWithIsmFactories = HyperlaneIsmFactory.fromAddressesMap(
+      addressesMap,
+      this.multiProvider,
+    ).chains();
+    const chainsWithoutIsmFactories = this.chains.filter(
+      (chain) => !chainsWithIsmFactories.includes(chain),
+    );
+    this.logger(
+      `Deploying ISM factory contracts to ${chainsWithoutIsmFactories}`,
+    );
     const ismDeployer = new HyperlaneIsmFactoryDeployer(this.multiProvider);
     ismDeployer.cacheAddressesMap(addressesMap);
-    const ismFactoryContracts = await ismDeployer.deploy([this.local]);
+    const ismFactoryContracts = await ismDeployer.deploy(
+      chainsWithoutIsmFactories,
+    );
     addressesMap = this.writeMergedAddresses(addressesMap, ismFactoryContracts);
     this.logger(`ISM factory deployment complete`);
 
