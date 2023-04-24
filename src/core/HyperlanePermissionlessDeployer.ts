@@ -153,6 +153,7 @@ export class HyperlanePermissionlessDeployer {
     const icaDeployer = new InterchainAccountDeployer(this.multiProvider);
     icaDeployer.cacheAddressesMap(addressesMap);
     const icaConfig = buildRouterConfigMap(owner, [this.local], addressesMap);
+    console.log(icaConfig);
     const icaContracts = await icaDeployer.deploy(icaConfig);
     addressesMap = this.writeMergedAddresses(addressesMap, icaContracts);
     this.logger(`ICA deployment complete`);

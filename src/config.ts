@@ -165,6 +165,7 @@ export function buildRouterConfigMap(
     addressesMap,
     routerConfigFactories,
   );
+  console.log(filteredAddressesMap);
   return Object.fromEntries(
     chains.map((chain) => {
       const routerConfig: RouterConfig = {
