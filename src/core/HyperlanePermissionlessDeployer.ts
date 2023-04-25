@@ -9,7 +9,6 @@ import {
   HyperlaneIgpDeployer,
   HyperlaneIsmFactory,
   HyperlaneIsmFactoryDeployer,
-  InterchainAccountDeployer,
   MultiProvider,
   defaultMultisigIsmConfigs,
   objMap,
@@ -28,7 +27,6 @@ import {
   buildIgpConfigMap,
   buildIsmConfigMap,
   buildOverriddenAgentConfig,
-  buildRouterConfigMap,
   buildTestRecipientConfigMap,
   getMultiProvider,
 } from '../config';
@@ -147,20 +145,7 @@ export class HyperlanePermissionlessDeployer {
     addressesMap = this.writeMergedAddresses(addressesMap, coreContracts);
     this.logger(`Core deployment complete`);
 
-    // 4. Deploy ICA router to the local chain
-    this.logger(`Deploying ICA routers`);
-    const icaDeployer = new InterchainAccountDeployer(this.multiProvider);
-    icaDeployer.cacheAddressesMap(addressesMap);
-    // We configure the ICA deployer for every chain so that router addresses
-    // get enrolled. The cached addresses map will prevent us from deploying
-    // to chains on which ICAs are already deployed.
-    const icaConfig = buildRouterConfigMap(owner, this.chains, addressesMap);
-    const icaContracts = await icaDeployer.deploy(icaConfig);
-    icaDeployer.cacheAddressesMap(addressesMap);
-    addressesMap = this.writeMergedAddresses(addressesMap, icaContracts);
-    this.logger(`ICA deployment complete`);
-
-    // 5. Deploy ISM contracts to remote chains
+    // 4. Deploy ISM contracts to remote chains
     this.logger(`Deploying ISMs to ${this.remotes}`);
     const ismConfig = buildIsmConfigMap(owner, this.remotes, this.chains);
     const ismContracts = await promiseObjAll(
@@ -173,7 +158,7 @@ export class HyperlanePermissionlessDeployer {
     addressesMap = this.writeMergedAddresses(addressesMap, ismContracts);
     this.logger(`ISM deployment complete`);
 
-    // 6. Deploy TestRecipients to all chains
+    // 5. Deploy TestRecipients to all chains
     this.logger(`Deploying test recipient contracts`);
     const testRecipientConfig = buildTestRecipientConfigMap(
       this.chains,
