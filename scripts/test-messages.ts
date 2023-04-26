@@ -6,16 +6,18 @@ import {
   HyperlaneCore,
   HyperlaneIgp,
   MultiProvider,
+  objMerge,
 } from '@hyperlane-xyz/sdk';
 import { utils } from '@hyperlane-xyz/utils';
 import { sleep } from '@hyperlane-xyz/utils/dist/src/utils';
 
 import {
+  artifactsAddressesMap,
   assertBalances,
   assertBytes32,
   assertUnique,
   getMultiProvider,
-  mergedContractAddresses,
+  sdkContractAddressesMap,
 } from '../src/config';
 import { createLogger } from '../src/logger';
 
@@ -23,6 +25,10 @@ import { run } from './run';
 
 const logger = createLogger('MessageDeliveryTest');
 const error = createLogger('MessageDeliveryTest', true);
+const mergedContractAddresses = objMerge(
+  sdkContractAddressesMap,
+  artifactsAddressesMap(),
+);
 
 function getArgs(multiProvider: MultiProvider) {
   // Only accept chains for which we have both a connection and contract addresses
