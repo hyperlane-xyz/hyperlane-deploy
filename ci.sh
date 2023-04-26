@@ -1,6 +1,11 @@
 DEPLOYER_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 DEPLOYER_ADDRESS=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
 
+RELAYER_KEY=0xdbda1821b80551c9d65939329250298aa3472ba22feea921c0cf5d620ea67b97
+RELAYER_ADDRESS=0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f
+
+VALIDATOR_KEY=0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6
+
 GOERLI_RPC_PORT=8555
 GOERLI_RPC_URL=http://127.0.0.1:$GOERLI_RPC_PORT
 
@@ -19,10 +24,11 @@ do
 done
 
 anvil -p $GOERLI_RPC_PORT --state /tmp/goerli/state --fork-url https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161 > /dev/null &
-sleep 3
-# The deployer will need goerli funds
-cast rpc --rpc-url $GOERLI_RPC_URL hardhat_setBalance "$DEPLOYER_ADDRESS" "1000000000000000000"
 GOERLI_PID=$!
+sleep 3
+# The deployer and relayer will need goerli eth
+cast rpc --rpc-url $GOERLI_RPC_URL hardhat_setBalance "$DEPLOYER_ADDRESS" "1000000000000000000"
+cast rpc --rpc-url $GOERLI_RPC_URL hardhat_setBalance "$RELAYER_ADDRESS" "1000000000000000000"
 
 anvil -p $ANVIL_RPC_PORT --state /tmp/anvil/state --chain-id 31337 > /dev/null &
 ANVIL_PID=$!
@@ -35,6 +41,8 @@ echo "Deploying hyperlane to anvil"
 GOERLI_RPC_URL_OVERRIDE=$GOERLI_RPC_URL \
   yarn ts-node scripts/deploy-hyperlane.ts --local anvil --remotes goerli \
   --key $DEPLOYER_KEY
+
+cat artifacts/addresses.json
 
 echo "Deploying warp routes"
 GOERLI_RPC_URL_OVERRIDE=$GOERLI_RPC_URL \
@@ -49,7 +57,7 @@ docker run --mount type=bind,source="$(pwd)/artifacts",target=/config \
   -e HYP_VALIDATOR_REORGPERIOD=0 -e HYP_VALIDATOR_INTERVAL=1 \
   -e HYP_BASE_CHAINS_ANVIL_CONNECTION_URL=$ANVIL_RPC_URL \
   -e HYP_VALIDATOR_VALIDATOR_TYPE=hexKey \
-  -e HYP_VALIDATOR_VALIDATOR_KEY=0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6 \
+  -e HYP_VALIDATOR_VALIDATOR_KEY=$VALIDATOR_KEY \
   -e HYP_VALIDATOR_CHECKPOINTSYNCER_TYPE=localStorage \
   -e HYP_VALIDATOR_CHECKPOINTSYNCER_PATH=/data/anvil/validator \
   -e HYP_BASE_TRACING_LEVEL=info -e HYP_BASE_TRACING_FMT=pretty \
@@ -64,7 +72,7 @@ SIGNATURE=$(cat /tmp/anvil/validator/announcement.json | jq -r '.serialized_sign
 cast send $VALIDATOR_ANNOUNCE_ADDRESS  \
   "announce(address, string calldata, bytes calldata)(bool)" \
   $VALIDATOR $STORAGE_LOCATION $SIGNATURE --rpc-url $ANVIL_RPC_URL \
-  --private-key 0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba
+  --private-key $DEPLOYER_KEY
 
 
 for i in "goerli anvil ANVIL" "anvil goerli GOERLI"
@@ -81,7 +89,7 @@ do
       -e HYP_RELAYER_ALLOWLOCALCHECKPOINTSYNCERS=true -e HYP_RELAYER_DB=/data/$1/relayer \
       -e HYP_RELAYER_GASPAYMENTENFORCEMENT='[{"type":"none"}]' \
       -e HYP_BASE_CHAINS_${3}_SIGNER_TYPE=hexKey \
-      -e HYP_BASE_CHAINS_${3}_SIGNER_KEY=0xdbda1821b80551c9d65939329250298aa3472ba22feea921c0cf5d620ea67b97 \
+      -e HYP_BASE_CHAINS_${3}_SIGNER_KEY=$RELAYER_KEY \
       $AGENT_IMAGE ./relayer &
 done
 
