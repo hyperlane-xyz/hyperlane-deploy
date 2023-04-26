@@ -20,6 +20,7 @@ import {
 import { multisigIsmConfig } from '../../config/multisig_ism';
 import { startBlocks } from '../../config/start_blocks';
 import {
+  artifactsAddressesMap,
   assertBalances,
   assertBytes32,
   assertUnique,
@@ -29,8 +30,9 @@ import {
   buildOverriddenAgentConfig,
   buildTestRecipientConfigMap,
   getMultiProvider,
+  sdkContractAddressesMap,
 } from '../config';
-import { mergeJSON, tryReadJSON, writeJSON } from '../json';
+import { mergeJSON, writeJSON } from '../json';
 import { createLogger } from '../logger';
 
 import { HyperlaneTestRecipientDeployer } from './TestRecipientDeployer';
@@ -101,20 +103,14 @@ export class HyperlanePermissionlessDeployer {
   }
 
   async deploy(): Promise<void> {
-    let addressesMap =
-      tryReadJSON<HyperlaneContractsMap<any>>(
-        './artifacts',
-        'addresses.json',
-      ) || {};
+    let addressesMap = artifactsAddressesMap();
     const owner = await this.signer.getAddress();
 
     // 1. Deploy ISM factories to all chains that don't have them.
     this.logger('Deploying ISM factory contracts');
     const ismDeployer = new HyperlaneIsmFactoryDeployer(this.multiProvider);
     ismDeployer.cacheAddressesMap(addressesMap);
-    // Configure to deploy to all chains, cached addresses will prevent us from
-    // deploying to chains on which factories are already deployed.
-    const ismFactoryContracts = await ismDeployer.deploy(this.chains);
+    const ismFactoryContracts = await ismDeployer.deploy([this.local]);
     addressesMap = this.writeMergedAddresses(addressesMap, ismFactoryContracts);
     this.logger(`ISM factory deployment complete`);
 
@@ -132,7 +128,7 @@ export class HyperlanePermissionlessDeployer {
     // Build an IsmFactory that covers all chains so that we can
     // use it later to deploy ISMs to remote chains.
     const ismFactory = HyperlaneIsmFactory.fromAddressesMap(
-      addressesMap,
+      objMerge(sdkContractAddressesMap, addressesMap),
       this.multiProvider,
     );
     const coreDeployer = new HyperlaneCoreDeployer(

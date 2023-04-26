@@ -3,11 +3,13 @@ import { ethers } from 'ethers';
 import { Mailbox__factory, OverheadIgp__factory } from '@hyperlane-xyz/core';
 import {
   ChainMap,
+  ChainMetadata,
   ChainName,
   CoreConfig,
   GasOracleContractType,
   HyperlaneAddressesMap,
   HyperlaneAgentAddresses,
+  HyperlaneContractsMap,
   ModuleType,
   MultiProvider,
   MultisigIsmConfig,
@@ -20,24 +22,38 @@ import {
   filterAddressesMap,
   multisigIsmVerificationCost,
   objFilter,
+  objMap,
   objMerge,
 } from '@hyperlane-xyz/sdk';
 import { hyperlaneEnvironments } from '@hyperlane-xyz/sdk/dist/consts/environments';
 import { types, utils } from '@hyperlane-xyz/utils';
 
-import artifactAddresses from '../artifacts/addresses.json';
 import { chains } from '../config/chains';
 import { multisigIsmConfig } from '../config/multisig_ism';
 
 import { TestRecipientConfig } from './core/TestRecipientDeployer';
-import { readJSON } from './json';
+import { tryReadJSON } from './json';
 
 let multiProvider: MultiProvider;
 
 export function getMultiProvider() {
   if (!multiProvider) {
     const chainConfigs = { ...chainMetadata, ...chains };
-    multiProvider = new MultiProvider(chainConfigs);
+    // Allow overriding of RPC URLs via ENV var. Used primarily
+    // in E2E testing where we want to test using a local
+    // goerli fork.
+    const overriddenChainConfigs = objMap(
+      chainConfigs,
+      (chain: ChainName, config: ChainMetadata) => {
+        const override = process.env[`${chain.toUpperCase()}_RPC_URL_OVERRIDE`];
+        if (override) {
+          return { ...config, publicRpcUrls: [{ http: override }] };
+        } else {
+          return config;
+        }
+      },
+    );
+    multiProvider = new MultiProvider(overriddenChainConfigs);
   }
   return multiProvider;
 }
@@ -222,31 +238,29 @@ export function buildIgpConfigMap(
   return configMap;
 }
 
-export const sdkContractAddresses = {
+export const sdkContractAddressesMap = {
   ...hyperlaneEnvironments.testnet,
   ...hyperlaneEnvironments.mainnet,
 };
 
-export const mergedContractAddresses = objMerge(
-  sdkContractAddresses,
-  artifactAddresses,
-);
+export function artifactsAddressesMap(): HyperlaneContractsMap<any> {
+  return (
+    tryReadJSON<HyperlaneContractsMap<any>>('./artifacts', 'addresses.json') ||
+    {}
+  );
+}
 
 export function buildOverriddenAgentConfig(
   chains: ChainName[],
   multiProvider: MultiProvider,
   startBlocks: ChainMap<number>,
 ) {
-  const localAddresses = readJSON<HyperlaneAddressesMap<any>>(
-    './artifacts',
-    'addresses.json',
+  const mergedAddressesMap: HyperlaneAddressesMap<any> = objMerge(
+    sdkContractAddressesMap,
+    artifactsAddressesMap(),
   );
-  const mergedAddresses: HyperlaneAddressesMap<any> = objMerge(
-    sdkContractAddresses,
-    localAddresses,
-  );
-  const filteredAddresses: ChainMap<HyperlaneAgentAddresses> = objFilter(
-    mergedAddresses,
+  const filteredAddressesMap: ChainMap<HyperlaneAgentAddresses> = objFilter(
+    mergedAddressesMap,
     (chain, v): v is HyperlaneAgentAddresses =>
       chains.includes(chain) &&
       !!v.mailbox &&
@@ -257,7 +271,7 @@ export function buildOverriddenAgentConfig(
   return buildAgentConfig(
     chains,
     multiProvider,
-    filteredAddresses,
+    filteredAddressesMap,
     startBlocks,
   );
 }

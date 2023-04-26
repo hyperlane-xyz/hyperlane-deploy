@@ -7,16 +7,9 @@ export const chains: ChainMap<ChainMetadata> = {
     name: 'anvil',
     // anvil default chain id
     chainId: 31337,
-    // Used to configure a Warp Route to bridge anvil1 ETH
-    // to anvil2 in CI tests.
-    nativeToken: {
-      name: 'ether',
-      symbol: 'ETH',
-      decimals: 18,
-    },
     publicRpcUrls: [
       {
-        http: 'http://127.0.0.1:8555',
+        http: 'http://127.0.0.1:8545',
       },
     ],
   },

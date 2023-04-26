@@ -16,15 +16,17 @@ import {
   RouterConfig,
   chainMetadata,
   objMap,
+  objMerge,
 } from '@hyperlane-xyz/sdk';
 import { types } from '@hyperlane-xyz/utils';
 
 import { warpRouteConfig } from '../../config/warp_tokens';
 import {
+  artifactsAddressesMap,
   assertBalances,
   assertBytes32,
   getMultiProvider,
-  mergedContractAddresses,
+  sdkContractAddressesMap,
 } from '../config';
 import { mergeJSON, tryReadJSON, writeFileAtPath, writeJSON } from '../json';
 import { createLogger } from '../logger';
@@ -68,6 +70,7 @@ export class WarpRouteDeployer {
 
     this.logger('Initiating HypERC20 deployments');
     const deployer = new HypERC20Deployer(this.multiProvider);
+
     await deployer.deploy(configMap);
     this.logger('HypERC20 deployments complete');
 
@@ -97,6 +100,11 @@ export class WarpRouteDeployer {
       `Using base token metadata: Name: ${baseTokenMetadata.name}, Symbol: ${baseTokenMetadata.symbol}, Decimals: ${baseTokenMetadata.decimals} `,
     );
     const owner = await this.signer.getAddress();
+
+    const mergedContractAddresses = objMerge(
+      sdkContractAddressesMap,
+      artifactsAddressesMap(),
+    );
 
     const configMap: ChainMap<TokenConfig & RouterConfig> = {
       [baseChainName]: {
