@@ -3,7 +3,6 @@ import { ethers } from 'ethers';
 import { Mailbox__factory, OverheadIgp__factory } from '@hyperlane-xyz/core';
 import {
   ChainMap,
-  ChainMetadata,
   ChainName,
   CoreConfig,
   GasOracleContractType,
@@ -22,7 +21,6 @@ import {
   filterAddressesMap,
   multisigIsmVerificationCost,
   objFilter,
-  objMap,
   objMerge,
 } from '@hyperlane-xyz/sdk';
 import { hyperlaneEnvironments } from '@hyperlane-xyz/sdk/dist/consts/environments';
@@ -39,21 +37,7 @@ let multiProvider: MultiProvider;
 export function getMultiProvider() {
   if (!multiProvider) {
     const chainConfigs = { ...chainMetadata, ...chains };
-    // Allow overriding of RPC URLs via ENV var. Used primarily
-    // in E2E testing where we want to test using a local
-    // goerli fork.
-    const overriddenChainConfigs = objMap(
-      chainConfigs,
-      (chain: ChainName, config: ChainMetadata) => {
-        const override = process.env[`${chain.toUpperCase()}_RPC_URL_OVERRIDE`];
-        if (override) {
-          return { ...config, publicRpcUrls: [{ http: override }] };
-        } else {
-          return config;
-        }
-      },
-    );
-    multiProvider = new MultiProvider(overriddenChainConfigs);
+    multiProvider = new MultiProvider(chainConfigs);
   }
   return multiProvider;
 }
