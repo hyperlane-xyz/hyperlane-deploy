@@ -3,6 +3,7 @@ import yargs from 'yargs';
 
 import {
   ChainName,
+  HyperlaneAddresses,
   HyperlaneAddressesMap,
   HyperlaneContractsMap,
   HyperlaneCoreDeployer,
@@ -11,6 +12,7 @@ import {
   HyperlaneIsmFactoryDeployer,
   MultiProvider,
   defaultMultisigIsmConfigs,
+  objFilter,
   objMap,
   objMerge,
   promiseObjAll,
@@ -109,8 +111,10 @@ export class HyperlanePermissionlessDeployer {
     // 1. Deploy ISM factories to all chains that don't have them.
     this.logger('Deploying ISM factory contracts');
     const ismDeployer = new HyperlaneIsmFactoryDeployer(this.multiProvider);
-    ismDeployer.cacheAddressesMap(addressesMap);
-    const ismFactoryContracts = await ismDeployer.deploy([this.local]);
+    ismDeployer.cacheAddressesMap(
+      objMerge(sdkContractAddressesMap, addressesMap),
+    );
+    const ismFactoryContracts = await ismDeployer.deploy(this.chains);
     addressesMap = this.writeMergedAddresses(addressesMap, ismFactoryContracts);
     this.logger(`ISM factory deployment complete`);
 
@@ -190,10 +194,27 @@ export class HyperlanePermissionlessDeployer {
     aAddresses: HyperlaneAddressesMap<any>,
     bContracts: HyperlaneContractsMap<any>,
   ): HyperlaneAddressesMap<any> {
+    // Only write addresses that aren't present in the SDK
     const bAddresses = serializeContractsMap(bContracts);
     const mergedAddresses = objMerge(aAddresses, bAddresses);
+    const filteredAddresses = objMap(
+      mergedAddresses,
+      (chain: string, addresses) =>
+        objFilter(addresses, (contract, address): address is string => {
+          // @ts-ignore
+          const chainAddresses = sdkContractAddressesMap[chain];
+          return !chainAddresses || chainAddresses[contract] !== address;
+        }),
+    );
     this.logger(`Writing contract addresses to artifacts/addresses.json`);
-    mergeJSON('./artifacts/', 'addresses.json', mergedAddresses);
+    mergeJSON(
+      './artifacts/',
+      'addresses.json',
+      objFilter(
+        filteredAddresses,
+        (_, value): value is HyperlaneAddresses<any> => !!value,
+      ),
+    );
     return mergedAddresses;
   }
 }
