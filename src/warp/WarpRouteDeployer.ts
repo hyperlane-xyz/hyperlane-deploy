@@ -5,6 +5,9 @@ import {
   ERC20__factory,
   HypERC20Deployer,
   HypERC20Factories,
+  ERC721__factory,
+  HypERC721Deployer,
+  HypERC721Factories,
   TokenConfig,
   TokenType,
 } from '@hyperlane-xyz/hyperlane-token';
@@ -65,21 +68,38 @@ export class WarpRouteDeployer {
   }
 
   async deploy(): Promise<void> {
-    const { configMap, baseToken } = await this.buildHypERC20Config();
-
-    this.logger('Initiating HypERC20 deployments');
-    const deployer = new HypERC20Deployer(this.multiProvider);
-    await deployer.deploy(configMap);
-    this.logger('HypERC20 deployments complete');
-
-    this.writeDeploymentResult(
-      deployer.deployedContracts,
-      configMap,
-      baseToken,
-    );
+    validateWarpTokenConfig(warpRouteConfig);
+    const { base } = warpRouteConfig;
+    const { type: baseType } = base;
+    const baseIsERC721 =
+      baseType === TokenType.collateral
+        ? base.isERC721
+        : false;
+    const { configMap, baseToken } = await this.buildHypERCConfig();
+    if ( baseIsERC721 ) {
+      this.logger(`Initiating HypERC721 deployments`);
+      const deployer = new HypERC721Deployer(this.multiProvider);
+      await deployer.deploy(configMap);
+      this.logger('HypERC721 deployments complete');
+      this.writeDeploymentResult(
+        deployer.deployedContracts,
+        configMap,
+        baseToken,
+      );
+    } else {
+      this.logger(`Initiating HypERC20 deployments`);
+      const deployer = new HypERC20Deployer(this.multiProvider);
+      await deployer.deploy(configMap);
+      this.logger('HypERC20 deployments complete');
+      this.writeDeploymentResult(
+        deployer.deployedContracts,
+        configMap,
+        baseToken,
+      );
+    }
   }
 
-  async buildHypERC20Config() {
+  async buildHypERCConfig() {
     validateWarpTokenConfig(warpRouteConfig);
     const { base, synthetics } = warpRouteConfig;
     const { type: baseType, chainName: baseChainName } = base;
@@ -89,13 +109,19 @@ export class WarpRouteDeployer {
         ? base.address
         : ethers.constants.AddressZero;
 
+    const baseIsERC721 =
+      baseType === TokenType.collateral
+        ? base.isERC721
+        : false;
+
     const baseTokenMetadata = await this.getTokenMetadata(
       baseChainName,
       baseType,
       baseTokenAddr,
+      baseIsERC721
     );
     this.logger(
-      `Using base token metadata: Name: ${baseTokenMetadata.name}, Symbol: ${baseTokenMetadata.symbol}, Decimals: ${baseTokenMetadata.decimals} `,
+      `Using base token metadata: Name: ${baseTokenMetadata.name}, Symbol: ${baseTokenMetadata.symbol}, ${!baseIsERC721 && 'Decimals: ' + baseTokenMetadata.decimals } `,
     );
     const owner = await this.signer.getAddress();
 
@@ -115,7 +141,7 @@ export class WarpRouteDeployer {
       },
     };
     this.logger(
-      `HypERC20Config config on base chain ${baseChainName}:`,
+      `${baseIsERC721 ? 'HypERC721Config' : 'HypERC20Config'} config on base chain ${baseChainName}:`,
       JSON.stringify(configMap[baseChainName]),
     );
 
@@ -137,7 +163,7 @@ export class WarpRouteDeployer {
           mergedContractAddresses[sChainName].defaultIsmInterchainGasPaymaster,
       };
       this.logger(
-        `HypERC20Config config on synthetic chain ${sChainName}:`,
+        `${baseIsERC721 ? 'HypERC721Config' : 'HypERC20Config'} config on synthetic chain ${sChainName}:`,
         JSON.stringify(configMap[sChainName]),
       );
     }
@@ -156,6 +182,7 @@ export class WarpRouteDeployer {
     chain: ChainName,
     type: TokenType,
     address: types.Address,
+    isERC721: boolean
   ): Promise<TokenMetadata> {
     if (type === TokenType.native) {
       return (
@@ -165,23 +192,32 @@ export class WarpRouteDeployer {
     } else if (type === TokenType.collateral || type === TokenType.synthetic) {
       this.logger(`Fetching token metadata for ${address} on ${chain}}`);
       const provider = this.multiProvider.getProvider(chain);
-      const erc20Contract = ERC20__factory.connect(address, provider);
-      const [name, symbol, decimals] = await Promise.all([
-        erc20Contract.name(),
-        erc20Contract.symbol(),
-        erc20Contract.decimals(),
-      ]);
-      return { name, symbol, decimals };
+      if( isERC721 ){
+        const erc721Contract = ERC721__factory.connect(address, provider);
+        const [name, symbol] = await Promise.all([
+          erc721Contract.name(),
+          erc721Contract.symbol(),
+        ]);
+        return { name, symbol };
+      } else {
+        const erc20Contract = ERC20__factory.connect(address, provider);
+        const [name, symbol, decimals] = await Promise.all([
+          erc20Contract.name(),
+          erc20Contract.symbol(),
+          erc20Contract.decimals(),
+        ]);
+        return { name, symbol, decimals };
+      }
     } else {
       throw new Error(`Unsupported token type: ${type}`);
     }
   }
 
   writeDeploymentResult(
-    contracts: HyperlaneContractsMap<HypERC20Factories>,
+    contracts: HyperlaneContractsMap<HypERC20Factories | HypERC721Factories>,
     configMap: ChainMap<TokenConfig & RouterConfig>,
     baseToken: Awaited<
-      ReturnType<typeof this.buildHypERC20Config>
+      ReturnType<typeof this.buildHypERCConfig>
     >['baseToken'],
   ) {
     this.writeTokenDeploymentArtifacts(contracts, configMap);
@@ -189,7 +225,7 @@ export class WarpRouteDeployer {
   }
 
   writeTokenDeploymentArtifacts(
-    contracts: HyperlaneContractsMap<HypERC20Factories>,
+    contracts: HyperlaneContractsMap<HypERC20Factories | HypERC721Factories>,
     configMap: ChainMap<TokenConfig & RouterConfig>,
   ) {
     this.logger(
@@ -208,9 +244,9 @@ export class WarpRouteDeployer {
   }
 
   writeWarpUiTokenList(
-    contracts: HyperlaneContractsMap<HypERC20Factories>,
+    contracts: HyperlaneContractsMap<HypERC20Factories | HypERC721Factories>,
     baseToken: Awaited<
-      ReturnType<typeof this.buildHypERC20Config>
+      ReturnType<typeof this.buildHypERCConfig>
     >['baseToken'],
   ) {
     this.logger(

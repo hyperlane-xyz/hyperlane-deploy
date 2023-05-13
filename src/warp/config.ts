@@ -15,6 +15,7 @@ export interface WarpNativeTokenConfig extends WarpBaseToken {
 export interface WarpCollateralTokenConfig extends WarpBaseToken {
   type: TokenType.collateral;
   address: string;
+  isERC721: boolean;
 }
 
 export type WarpSyntheticTokenConfig = {

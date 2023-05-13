@@ -1,9 +1,14 @@
 import type { TokenType } from '@hyperlane-xyz/hyperlane-token';
 // TODO get properly exported from hyp-token
-import { ERC20Metadata } from '@hyperlane-xyz/hyperlane-token/dist/config';
 import type { types } from '@hyperlane-xyz/utils';
+import { ethers } from 'ethers';
 
-export type TokenMetadata = Omit<ERC20Metadata, 'totalSupply'>;
+export type TokenMetadata = {
+  name: string;
+  symbol: string;
+  totalSupply?: ethers.BigNumberish;
+  decimals?: number;
+};
 
 // Types below must match the warp ui token config schema
 // https://github.com/hyperlane-xyz/hyperlane-warp-ui-template/blob/main/src/features/tokens/types.ts
