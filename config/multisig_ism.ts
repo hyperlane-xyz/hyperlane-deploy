@@ -16,4 +16,9 @@ export const multisigIsmConfig: ChainMap<MultisigIsmConfig> = {
       '0xa0ee7a142d267c1f36714e4a8f75612f20a79720',
     ],
   },
+  coston2: {
+    threshold: 1,
+    // this is random address taken from explorer
+    validators: ['0x2F79Dce2375571207a7976148D4468195F89a73e'],
+  },
 };

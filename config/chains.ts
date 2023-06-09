@@ -29,4 +29,20 @@ export const chains: ChainMap<ChainMetadata> = {
       },
     ],
   },
+
+  coston2: {
+    name: 'coston2',
+    chainId: 114,
+    nativeToken: {
+      name: 'Coston2Flare',
+      symbol: 'C2FLR',
+      decimals: 18,
+    },
+    isTestnet: true,
+    publicRpcUrls: [
+      {
+        http: 'https://coston2-api.flare.network/ext/C/rpc',
+      },
+    ],
+  },
 };
