@@ -634,14 +634,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hyperlane-xyz/core@npm:1.3.3":
-  version: 1.3.3
-  resolution: "@hyperlane-xyz/core@npm:1.3.3"
+"@hyperlane-xyz/core@file:///Users/trevor/abacus-monorepo/solidity::locator=%40hyperlane-xyz%2Fhyperlane-token%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%3A%3Ahash%3Ded5d06%26locator%3D%2540hyperlane-xyz%252Fdeploy%2540workspace%253A.":
+  version: 1.3.4
+  resolution: "@hyperlane-xyz/core@file:///Users/trevor/abacus-monorepo/solidity#///Users/trevor/abacus-monorepo/solidity::hash=df4167&locator=%40hyperlane-xyz%2Fhyperlane-token%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%3A%3Ahash%3Ded5d06%26locator%3D%2540hyperlane-xyz%252Fdeploy%2540workspace%253A."
   dependencies:
-    "@hyperlane-xyz/utils": 1.3.3
+    "@hyperlane-xyz/utils": 1.3.4
     "@openzeppelin/contracts": ^4.8.0
     "@openzeppelin/contracts-upgradeable": ^4.8.0
-  checksum: d21ede2e49e1152c518c7c89ff1c19811ae3eb78aaacf02dd7db028cbcc436b25bc39c77e2c93d7a08790dd32f5f9f921de4e0e0fccf0a1c8b8a7285cab18e01
+  checksum: bb2693f0d520cad82184dedc9c230cb1d9a7338c67e05eb8ff7c7d14d3a3cf095970f38bd01439a61e9b6783a0389819da056f126010253e86f2bfa964d50fb3
+  languageName: node
+  linkType: hard
+
+"@hyperlane-xyz/core@file:///Users/trevor/abacus-monorepo/solidity::locator=%40hyperlane-xyz%2Fsdk%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%3A%3Ahash%3Dbf37dc%26locator%3D%2540hyperlane-xyz%252Fdeploy%2540workspace%253A.":
+  version: 1.3.4
+  resolution: "@hyperlane-xyz/core@file:///Users/trevor/abacus-monorepo/solidity#///Users/trevor/abacus-monorepo/solidity::hash=df4167&locator=%40hyperlane-xyz%2Fsdk%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%3A%3Ahash%3Dbf37dc%26locator%3D%2540hyperlane-xyz%252Fdeploy%2540workspace%253A."
+  dependencies:
+    "@hyperlane-xyz/utils": 1.3.4
+    "@openzeppelin/contracts": ^4.8.0
+    "@openzeppelin/contracts-upgradeable": ^4.8.0
+  checksum: bb2693f0d520cad82184dedc9c230cb1d9a7338c67e05eb8ff7c7d14d3a3cf095970f38bd01439a61e9b6783a0389819da056f126010253e86f2bfa964d50fb3
+  languageName: node
+  linkType: hard
+
+"@hyperlane-xyz/core@file:///Users/trevor/abacus-monorepo/solidity::locator=%40hyperlane-xyz%2Fsdk%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%3A%3Ahash%3Dbf37dc%26locator%3D%2540hyperlane-xyz%252Fhyperlane-token%2540file%253A%252F%252F%252FUsers%252Ftrevor%252Fabacus-monorepo%252Ftypescript%252Ftoken%2523%252F%252F%252FUsers%252Ftrevor%252Fabacus-monorepo%252Ftypescript%252Ftoken%253A%253Ahash%253Ded5d06%2526locator%253D%252540hyperlane-xyz%25252Fdeploy%252540workspace%25253A.":
+  version: 1.3.4
+  resolution: "@hyperlane-xyz/core@file:///Users/trevor/abacus-monorepo/solidity#///Users/trevor/abacus-monorepo/solidity::hash=df4167&locator=%40hyperlane-xyz%2Fsdk%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%3A%3Ahash%3Dbf37dc%26locator%3D%2540hyperlane-xyz%252Fhyperlane-token%2540file%253A%252F%252F%252FUsers%252Ftrevor%252Fabacus-monorepo%252Ftypescript%252Ftoken%2523%252F%252F%252FUsers%252Ftrevor%252Fabacus-monorepo%252Ftypescript%252Ftoken%253A%253Ahash%253Ded5d06%2526locator%253D%252540hyperlane-xyz%25252Fdeploy%252540workspace%25253A."
+  dependencies:
+    "@hyperlane-xyz/utils": 1.3.4
+    "@openzeppelin/contracts": ^4.8.0
+    "@openzeppelin/contracts-upgradeable": ^4.8.0
+  checksum: bb2693f0d520cad82184dedc9c230cb1d9a7338c67e05eb8ff7c7d14d3a3cf095970f38bd01439a61e9b6783a0389819da056f126010253e86f2bfa964d50fb3
   languageName: node
   linkType: hard
 
@@ -649,8 +671,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hyperlane-xyz/deploy@workspace:."
   dependencies:
-    "@hyperlane-xyz/hyperlane-token": 1.3.3
-    "@hyperlane-xyz/sdk": 1.3.3
+    "@hyperlane-xyz/hyperlane-token": "file:///Users/trevor/abacus-monorepo/typescript/token"
+    "@hyperlane-xyz/sdk": "file:///Users/trevor/abacus-monorepo/typescript/sdk"
     "@trivago/prettier-plugin-sort-imports": ^4.1.1
     "@types/node": ^18.14.5
     "@types/yargs": ^17.0.22
@@ -667,25 +689,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hyperlane-xyz/hyperlane-token@npm:1.3.3":
-  version: 1.3.3
-  resolution: "@hyperlane-xyz/hyperlane-token@npm:1.3.3"
+"@hyperlane-xyz/hyperlane-token@file:///Users/trevor/abacus-monorepo/typescript/token::locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A.":
+  version: 1.3.4
+  resolution: "@hyperlane-xyz/hyperlane-token@file:///Users/trevor/abacus-monorepo/typescript/token#///Users/trevor/abacus-monorepo/typescript/token::hash=ed5d06&locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A."
   dependencies:
-    "@hyperlane-xyz/core": 1.3.3
-    "@hyperlane-xyz/sdk": 1.3.3
-    "@hyperlane-xyz/utils": 1.3.3
+    "@hyperlane-xyz/core": "file:///Users/trevor/abacus-monorepo/solidity"
+    "@hyperlane-xyz/sdk": "file:///Users/trevor/abacus-monorepo/typescript/sdk"
+    "@hyperlane-xyz/utils": "file:///Users/trevor/abacus-monorepo/typescript/utils"
     "@openzeppelin/contracts-upgradeable": ^4.8.0
     ethers: ^5.7.2
-  checksum: 7314c2a853f11303f4fb671f1f57beba450a6f55700e08efca0b951b748b01408ab6cffab1596cff8281a44c7c8467b881eed8b794f5466a1d7b128c1b9d96e8
+  checksum: 9eba9669c5a33087908bccb0c9486ed680849a06f8ca7d124ef4665f47c2d6ccfd31ce5c564560c47d4c6b001f367230000bf5e9aa197e33cf96d12308f89213
   languageName: node
   linkType: hard
 
-"@hyperlane-xyz/sdk@npm:1.3.3":
-  version: 1.3.3
-  resolution: "@hyperlane-xyz/sdk@npm:1.3.3"
+"@hyperlane-xyz/sdk@file:///Users/trevor/abacus-monorepo/typescript/sdk::locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A.":
+  version: 1.3.4
+  resolution: "@hyperlane-xyz/sdk@file:///Users/trevor/abacus-monorepo/typescript/sdk#///Users/trevor/abacus-monorepo/typescript/sdk::hash=bf37dc&locator=%40hyperlane-xyz%2Fdeploy%40workspace%3A."
   dependencies:
-    "@hyperlane-xyz/core": 1.3.3
-    "@hyperlane-xyz/utils": 1.3.3
+    "@hyperlane-xyz/core": "file:///Users/trevor/abacus-monorepo/solidity"
+    "@hyperlane-xyz/utils": "file:///Users/trevor/abacus-monorepo/typescript/utils"
     "@types/coingecko-api": ^1.0.10
     "@types/debug": ^4.1.7
     "@wagmi/chains": ^0.2.6
@@ -694,16 +716,61 @@ __metadata:
     debug: ^4.3.4
     ethers: ^5.7.2
     zod: ^3.21.2
-  checksum: c54f9fc6b6ae93f00651d345591cf2945b8a3516b15b6f7a649b210abc1ed3c0725bbc80a0d2d5240cbe988bb21b10f7bb1f0c13348d3d3e2c4c1e2fe856c093
+  checksum: 3dd3ab6dd0ff024447dc88756a70ae86bcba98b273171a8756ea5cae7efaedfaaf8459597549ba8c315cba0265d9a7bd6fe2f5b0ddc1813f8787bebe5c26074d
   languageName: node
   linkType: hard
 
-"@hyperlane-xyz/utils@npm:1.3.3":
-  version: 1.3.3
-  resolution: "@hyperlane-xyz/utils@npm:1.3.3"
+"@hyperlane-xyz/sdk@file:///Users/trevor/abacus-monorepo/typescript/sdk::locator=%40hyperlane-xyz%2Fhyperlane-token%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%3A%3Ahash%3Ded5d06%26locator%3D%2540hyperlane-xyz%252Fdeploy%2540workspace%253A.":
+  version: 1.3.4
+  resolution: "@hyperlane-xyz/sdk@file:///Users/trevor/abacus-monorepo/typescript/sdk#///Users/trevor/abacus-monorepo/typescript/sdk::hash=bf37dc&locator=%40hyperlane-xyz%2Fhyperlane-token%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%3A%3Ahash%3Ded5d06%26locator%3D%2540hyperlane-xyz%252Fdeploy%2540workspace%253A."
+  dependencies:
+    "@hyperlane-xyz/core": "file:///Users/trevor/abacus-monorepo/solidity"
+    "@hyperlane-xyz/utils": "file:///Users/trevor/abacus-monorepo/typescript/utils"
+    "@types/coingecko-api": ^1.0.10
+    "@types/debug": ^4.1.7
+    "@wagmi/chains": ^0.2.6
+    coingecko-api: ^1.0.10
+    cross-fetch: ^3.1.5
+    debug: ^4.3.4
+    ethers: ^5.7.2
+    zod: ^3.21.2
+  checksum: 3dd3ab6dd0ff024447dc88756a70ae86bcba98b273171a8756ea5cae7efaedfaaf8459597549ba8c315cba0265d9a7bd6fe2f5b0ddc1813f8787bebe5c26074d
+  languageName: node
+  linkType: hard
+
+"@hyperlane-xyz/utils@file:///Users/trevor/abacus-monorepo/typescript/utils::locator=%40hyperlane-xyz%2Fhyperlane-token%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%3A%3Ahash%3Ded5d06%26locator%3D%2540hyperlane-xyz%252Fdeploy%2540workspace%253A.":
+  version: 1.3.4
+  resolution: "@hyperlane-xyz/utils@file:///Users/trevor/abacus-monorepo/typescript/utils#///Users/trevor/abacus-monorepo/typescript/utils::hash=5e1b4b&locator=%40hyperlane-xyz%2Fhyperlane-token%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Ftoken%3A%3Ahash%3Ded5d06%26locator%3D%2540hyperlane-xyz%252Fdeploy%2540workspace%253A."
   dependencies:
     ethers: ^5.7.2
-  checksum: 1141ff5f8c7559f8727c63782b37cf0f9444942e3f48059fad7dde533b160137a15bcfcc9f590ae3ee56faf33b1da4f7c99f8d32134792acd94c41fc235f19c1
+  checksum: 1345f31fea814afd63eebe8edb91a3552161cd0066e775655303ffe08686cd1d69aa011d70772d90e66d6a9a1c16affafb96b824c24c0c751b7260859cc537be
+  languageName: node
+  linkType: hard
+
+"@hyperlane-xyz/utils@file:///Users/trevor/abacus-monorepo/typescript/utils::locator=%40hyperlane-xyz%2Fsdk%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%3A%3Ahash%3Dbf37dc%26locator%3D%2540hyperlane-xyz%252Fdeploy%2540workspace%253A.":
+  version: 1.3.4
+  resolution: "@hyperlane-xyz/utils@file:///Users/trevor/abacus-monorepo/typescript/utils#///Users/trevor/abacus-monorepo/typescript/utils::hash=5e1b4b&locator=%40hyperlane-xyz%2Fsdk%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%3A%3Ahash%3Dbf37dc%26locator%3D%2540hyperlane-xyz%252Fdeploy%2540workspace%253A."
+  dependencies:
+    ethers: ^5.7.2
+  checksum: 1345f31fea814afd63eebe8edb91a3552161cd0066e775655303ffe08686cd1d69aa011d70772d90e66d6a9a1c16affafb96b824c24c0c751b7260859cc537be
+  languageName: node
+  linkType: hard
+
+"@hyperlane-xyz/utils@file:///Users/trevor/abacus-monorepo/typescript/utils::locator=%40hyperlane-xyz%2Fsdk%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%3A%3Ahash%3Dbf37dc%26locator%3D%2540hyperlane-xyz%252Fhyperlane-token%2540file%253A%252F%252F%252FUsers%252Ftrevor%252Fabacus-monorepo%252Ftypescript%252Ftoken%2523%252F%252F%252FUsers%252Ftrevor%252Fabacus-monorepo%252Ftypescript%252Ftoken%253A%253Ahash%253Ded5d06%2526locator%253D%252540hyperlane-xyz%25252Fdeploy%252540workspace%25253A.":
+  version: 1.3.4
+  resolution: "@hyperlane-xyz/utils@file:///Users/trevor/abacus-monorepo/typescript/utils#///Users/trevor/abacus-monorepo/typescript/utils::hash=5e1b4b&locator=%40hyperlane-xyz%2Fsdk%40file%3A%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%23%2F%2F%2FUsers%2Ftrevor%2Fabacus-monorepo%2Ftypescript%2Fsdk%3A%3Ahash%3Dbf37dc%26locator%3D%2540hyperlane-xyz%252Fhyperlane-token%2540file%253A%252F%252F%252FUsers%252Ftrevor%252Fabacus-monorepo%252Ftypescript%252Ftoken%2523%252F%252F%252FUsers%252Ftrevor%252Fabacus-monorepo%252Ftypescript%252Ftoken%253A%253Ahash%253Ded5d06%2526locator%253D%252540hyperlane-xyz%25252Fdeploy%252540workspace%25253A."
+  dependencies:
+    ethers: ^5.7.2
+  checksum: 1345f31fea814afd63eebe8edb91a3552161cd0066e775655303ffe08686cd1d69aa011d70772d90e66d6a9a1c16affafb96b824c24c0c751b7260859cc537be
+  languageName: node
+  linkType: hard
+
+"@hyperlane-xyz/utils@npm:1.3.4":
+  version: 1.3.4
+  resolution: "@hyperlane-xyz/utils@npm:1.3.4"
+  dependencies:
+    ethers: ^5.7.2
+  checksum: 7bed3465604dd3e20d31ebc2b4d101cfe6a934df9d0625a11e9fb5dfa39dbd009c1fc4ad269a32662d4c4a3abadacf5195f53462be021494ba15896036a53f7a
   languageName: node
   linkType: hard
 

@@ -14,6 +14,10 @@ export const warpRouteConfig: WarpRouteConfig = {
 
     // Optionally, specify owner, mailbox, and interchainGasPaymaster addresses
     // If not specified, the Permissionless Deployment artifacts or the SDK's defaults will be used
+    existingDeployment: '0xff00000000000000000000000000000000000011',
+    mailbox: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+    interchainGasPaymaster: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+    interchainSecurityModule: '0x0000000000000000000000000000000000000000',
   },
   synthetics: [
     {
@@ -24,6 +28,9 @@ export const warpRouteConfig: WarpRouteConfig = {
 
       // Optionally, specify owner, mailbox, and interchainGasPaymaster addresses
       // If not specified, the Permissionless Deployment artifacts or the SDK's defaults will be used
+      mailbox: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+      interchainGasPaymaster: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+      interchainSecurityModule: '0x0000000000000000000000000000000000000000',
     },
   ],
 };

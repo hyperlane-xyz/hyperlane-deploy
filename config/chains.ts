@@ -23,6 +23,11 @@ export const chains: ChainMap<ChainMetadata> = {
   anvil2: {
     name: 'anvil2',
     chainId: 31338,
+    nativeToken: {
+      name: 'ether',
+      symbol: 'ETH',
+      decimals: 18,
+    },
     publicRpcUrls: [
       {
         http: 'http://127.0.0.1:8555',
