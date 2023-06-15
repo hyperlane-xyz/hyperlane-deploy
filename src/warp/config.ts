@@ -12,7 +12,8 @@ export type TokenMetadata = {
 type WarpBaseToken = {
   type: TokenType.native | TokenType.collateral;
   chainName: string;
-} & Partial<RouterConfig> & Partial<TokenMetadata>;
+} & Partial<RouterConfig> &
+  Partial<TokenMetadata>;
 
 export interface WarpNativeTokenConfig extends WarpBaseToken {
   type: TokenType.native;
@@ -26,7 +27,8 @@ export interface WarpCollateralTokenConfig extends WarpBaseToken {
 export type WarpSyntheticTokenConfig = {
   chainName: string;
   totalSupply?: number;
-} & Partial<RouterConfig> & Partial<TokenMetadata>;
+} & Partial<RouterConfig> &
+  Partial<TokenMetadata>;
 
 export type WarpBaseTokenConfig =
   | WarpNativeTokenConfig

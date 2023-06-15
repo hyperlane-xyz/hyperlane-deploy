@@ -68,7 +68,12 @@ export function getArgs(multiProvider: MultiProvider) {
     )
     .describe('write-agent-config', 'Whether or not to write agent config')
     .default('write-agent-config', true)
-    .boolean('write-agent-config').argv;
+    .boolean('write-agent-config')
+    .describe('skip-deploy-to', 'Chains to skip deploying directly to')
+    .default('skip-deploy-to', [])
+    .choices('skip-deploy-to', intersection)
+    .array('skip-deploy-to')
+    .demandOption('skip-deploy-to').argv;
 }
 
 export class HyperlanePermissionlessDeployer {
@@ -77,15 +82,15 @@ export class HyperlanePermissionlessDeployer {
     public readonly signer: ethers.Signer,
     public readonly local: ChainName,
     public readonly remotes: ChainName[],
+    public readonly skipDeployTo: ChainName[],
     public readonly writeAgentConfig?: boolean,
     protected readonly logger = createLogger('HyperlanePermissionlessDeployer'),
   ) {}
 
   static async fromArgs(): Promise<HyperlanePermissionlessDeployer> {
     const multiProvider = getMultiProvider();
-    const { local, remotes, key, writeAgentConfig } = await getArgs(
-      multiProvider,
-    );
+    const { local, remotes, key, writeAgentConfig, skipDeployTo } =
+      await getArgs(multiProvider);
     if (remotes.includes(local))
       throw new Error('Local and remotes must be distinct');
     const signer = new ethers.Wallet(key);
@@ -96,11 +101,26 @@ export class HyperlanePermissionlessDeployer {
       signer,
       local,
       remotes as unknown as string[],
+      skipDeployTo,
       writeAgentConfig,
     );
   }
 
-  get chains(): ChainName[] {
+  get skipLocalDeploy(): boolean {
+    return this.skipDeployTo.includes(this.local);
+  }
+
+  get remoteDeployChains(): ChainName[] {
+    return this.remotes.filter((chain) => !this.skipDeployTo.includes(chain));
+  }
+
+  get deployChains(): ChainName[] {
+    return this.remotes
+      .concat([this.local])
+      .filter((chain) => !this.skipDeployTo.includes(chain));
+  }
+
+  get allChains(): ChainName[] {
     return this.remotes.concat([this.local]);
   }
 
@@ -114,40 +134,53 @@ export class HyperlanePermissionlessDeployer {
     ismDeployer.cacheAddressesMap(
       objMerge(sdkContractAddressesMap, addressesMap),
     );
-    const ismFactoryContracts = await ismDeployer.deploy(this.chains);
+    const ismFactoryContracts = await ismDeployer.deploy(this.deployChains);
     addressesMap = this.writeMergedAddresses(addressesMap, ismFactoryContracts);
     this.logger(`ISM factory deployment complete`);
 
     // 2. Deploy IGPs to all chains
     this.logger(`Deploying IGP contracts`);
-    const igpConfig = buildIgpConfigMap(owner, this.chains);
+    const igpConfig = buildIgpConfigMap(
+      owner,
+      this.deployChains,
+      this.allChains,
+    );
     const igpDeployer = new HyperlaneIgpDeployer(this.multiProvider);
     igpDeployer.cacheAddressesMap(addressesMap);
     const igpContracts = await igpDeployer.deploy(igpConfig);
     addressesMap = this.writeMergedAddresses(addressesMap, igpContracts);
     this.logger(`IGP deployment complete`);
 
-    // 3. Deploy core contracts to local chain
-    this.logger(`Deploying core contracts to ${this.local}`);
     // Build an IsmFactory that covers all chains so that we can
     // use it later to deploy ISMs to remote chains.
     const ismFactory = HyperlaneIsmFactory.fromAddressesMap(
       objMerge(sdkContractAddressesMap, addressesMap),
       this.multiProvider,
     );
-    const coreDeployer = new HyperlaneCoreDeployer(
-      this.multiProvider,
-      ismFactory,
-    );
-    coreDeployer.cacheAddressesMap(addressesMap);
-    const coreConfig = buildCoreConfigMap(owner, this.local, this.remotes);
-    const coreContracts = await coreDeployer.deploy(coreConfig);
-    addressesMap = this.writeMergedAddresses(addressesMap, coreContracts);
-    this.logger(`Core deployment complete`);
+
+    // 3. Deploy core contracts to local chain
+    if (!this.skipLocalDeploy) {
+      this.logger(`Deploying core contracts to ${this.local}`);
+      const coreDeployer = new HyperlaneCoreDeployer(
+        this.multiProvider,
+        ismFactory,
+      );
+      coreDeployer.cacheAddressesMap(addressesMap);
+      const coreConfig = buildCoreConfigMap(owner, this.local, this.remotes);
+      const coreContracts = await coreDeployer.deploy(coreConfig);
+      addressesMap = this.writeMergedAddresses(addressesMap, coreContracts);
+      this.logger(`Core deployment complete`);
+    } else {
+      this.logger(`Skipping core deployment to local ${this.local}`);
+    }
 
     // 4. Deploy ISM contracts to remote chains
     this.logger(`Deploying ISMs to ${this.remotes}`);
-    const ismConfig = buildIsmConfigMap(owner, this.remotes, this.chains);
+    const ismConfig = buildIsmConfigMap(
+      owner,
+      this.remoteDeployChains,
+      this.allChains,
+    );
     const ismContracts = await promiseObjAll(
       objMap(ismConfig, async (chain, config) => {
         return {
@@ -161,7 +194,7 @@ export class HyperlanePermissionlessDeployer {
     // 5. Deploy TestRecipients to all chains
     this.logger(`Deploying test recipient contracts`);
     const testRecipientConfig = buildTestRecipientConfigMap(
-      this.chains,
+      this.deployChains,
       addressesMap,
     );
     const testRecipientDeployer = new HyperlaneTestRecipientDeployer(
@@ -180,7 +213,7 @@ export class HyperlanePermissionlessDeployer {
 
     if (this.writeAgentConfig) {
       const agentConfig = buildOverriddenAgentConfig(
-        this.chains,
+        this.deployChains,
         this.multiProvider,
         startBlocks,
       );

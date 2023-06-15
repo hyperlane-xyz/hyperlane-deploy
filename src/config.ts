@@ -194,17 +194,18 @@ export function buildTestRecipientConfigMap(
 
 export function buildIgpConfigMap(
   owner: types.Address,
-  chains: ChainName[],
+  deployChains: ChainName[],
+  allChains: ChainName[],
 ): ChainMap<OverheadIgpConfig> {
   const mergedMultisigIsmConfig: ChainMap<MultisigIsmConfig> = objMerge(
     defaultMultisigIsmConfigs,
     multisigIsmConfig,
   );
   const configMap: ChainMap<OverheadIgpConfig> = {};
-  for (const local of chains) {
+  for (const local of deployChains) {
     const overhead: ChainMap<number> = {};
     const gasOracleType: ChainMap<GasOracleContractType> = {};
-    for (const remote of chains) {
+    for (const remote of allChains) {
       if (local === remote) continue;
       overhead[remote] = multisigIsmVerificationCost(
         mergedMultisigIsmConfig[remote].threshold,

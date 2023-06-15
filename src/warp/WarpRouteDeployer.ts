@@ -30,7 +30,11 @@ import {
 import { mergeJSON, tryReadJSON, writeFileAtPath, writeJSON } from '../json';
 import { createLogger } from '../logger';
 
-import { WarpBaseTokenConfig, getWarpConfigChains, validateWarpTokenConfig } from './config';
+import {
+  WarpBaseTokenConfig,
+  getWarpConfigChains,
+  validateWarpTokenConfig,
+} from './config';
 import { TokenMetadata, WarpUITokenConfig } from './types';
 
 export async function getArgs(multiProvider: MultiProvider) {
@@ -119,9 +123,7 @@ export class WarpRouteDeployer {
       JSON.stringify(configMap[baseChainName]),
     );
 
-    const baseTokenMetadata = await this.getBaseTokenMetadata(
-      base,
-    );
+    const baseTokenMetadata = await this.getBaseTokenMetadata(base);
     this.logger(
       `Using base token metadata: Name: ${baseTokenMetadata.name}, Symbol: ${baseTokenMetadata.symbol}, Decimals: ${baseTokenMetadata.decimals} `,
     );
@@ -177,7 +179,9 @@ export class WarpRouteDeployer {
         chainMetadata.ethereum.nativeToken!
       );
     } else if (base.type === TokenType.collateral) {
-      this.logger(`Fetching token metadata for ${base.address} on ${base.chainName}}`);
+      this.logger(
+        `Fetching token metadata for ${base.address} on ${base.chainName}}`,
+      );
       const provider = this.multiProvider.getProvider(base.chainName);
       const erc20Contract = ERC20__factory.connect(base.address, provider);
       const [name, symbol, decimals] = await Promise.all([
@@ -236,9 +240,13 @@ export class WarpRouteDeployer {
 
     const { type, address, chainName, metadata } = baseToken;
     const { name, symbol, decimals } = metadata;
-    const hypTokenAddr = contracts[chainName]?.router?.address || configMap[chainName]?.existingDeployment;
+    const hypTokenAddr =
+      contracts[chainName]?.router?.address ||
+      configMap[chainName]?.existingDeployment;
     if (!hypTokenAddr) {
-      throw Error('No base Hyperlane token address deployed or existing deployment specified');
+      throw Error(
+        'No base Hyperlane token address deployed or existing deployment specified',
+      );
     }
     const commonFields = {
       chainId: this.multiProvider.getChainId(chainName),

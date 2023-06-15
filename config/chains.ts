@@ -6,7 +6,7 @@ export const chains: ChainMap<ChainMetadata> = {
   anvil1: {
     name: 'anvil1',
     // anvil default chain id
-    chainId: 31337,
+    chainId: 13375,
     // Used to configure a Warp Route to bridge anvil1 ETH
     // to anvil2 in CI tests.
     nativeToken: {
@@ -22,7 +22,7 @@ export const chains: ChainMap<ChainMetadata> = {
   },
   anvil2: {
     name: 'anvil2',
-    chainId: 31338,
+    chainId: 13376,
     nativeToken: {
       name: 'ether',
       symbol: 'ETH',
