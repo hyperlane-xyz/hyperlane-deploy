@@ -115,7 +115,7 @@ export class WarpRouteDeployer {
           base.interchainGasPaymaster ||
           mergedContractAddresses[baseChainName]
             .defaultIsmInterchainGasPaymaster,
-        existingDeployment: base.existingDeployment,
+        foreignDeployment: base.foreignDeployment,
       },
     };
     this.logger(
@@ -140,11 +140,12 @@ export class WarpRouteDeployer {
           synthetic.mailbox || mergedContractAddresses[sChainName].mailbox,
         interchainSecurityModule:
           synthetic.interchainSecurityModule ||
+          mergedContractAddresses[sChainName].interchainSecurityModule ||
           mergedContractAddresses[sChainName].multisigIsm,
         interchainGasPaymaster:
           synthetic.interchainGasPaymaster ||
           mergedContractAddresses[sChainName].defaultIsmInterchainGasPaymaster,
-        existingDeployment: synthetic.existingDeployment,
+        foreignDeployment: synthetic.foreignDeployment,
       };
       this.logger(
         `HypERC20Config config on synthetic chain ${sChainName}:`,
@@ -242,7 +243,7 @@ export class WarpRouteDeployer {
     const { name, symbol, decimals } = metadata;
     const hypTokenAddr =
       contracts[chainName]?.router?.address ||
-      configMap[chainName]?.existingDeployment;
+      configMap[chainName]?.foreignDeployment;
     if (!hypTokenAddr) {
       throw Error(
         'No base Hyperlane token address deployed or existing deployment specified',

@@ -64,7 +64,7 @@ export function getArgs(multiProvider: MultiProvider) {
     .coerce('key', assertBytes32)
     .demandOption('key')
     .middleware(
-      assertBalances(multiProvider, (argv) => argv.remotes.concat(argv.local)),
+      assertBalances(multiProvider, (argv) => argv.remotes.concat(argv.local).filter((chain: string) => !argv.skipDeployTo.includes(chain))),
     )
     .describe('write-agent-config', 'Whether or not to write agent config')
     .default('write-agent-config', true)
@@ -175,7 +175,7 @@ export class HyperlanePermissionlessDeployer {
     }
 
     // 4. Deploy ISM contracts to remote chains
-    this.logger(`Deploying ISMs to ${this.remotes}`);
+    this.logger(`Deploying ISMs to ${this.remoteDeployChains}`);
     const ismConfig = buildIsmConfigMap(
       owner,
       this.remoteDeployChains,
@@ -207,9 +207,11 @@ export class HyperlanePermissionlessDeployer {
     addressesMap = this.writeMergedAddresses(addressesMap, testRecipients);
     this.logger(`Test recipient deployment complete`);
 
-    startBlocks[this.local] = await this.multiProvider
-      .getProvider(this.local)
-      .getBlockNumber();
+    if (!this.skipLocalDeploy) {
+      startBlocks[this.local] = await this.multiProvider
+        .getProvider(this.local)
+        .getBlockNumber();
+    }
 
     if (this.writeAgentConfig) {
       const agentConfig = buildOverriddenAgentConfig(
