@@ -64,7 +64,11 @@ export function getArgs(multiProvider: MultiProvider) {
     .coerce('key', assertBytes32)
     .demandOption('key')
     .middleware(
-      assertBalances(multiProvider, (argv) => argv.remotes.concat(argv.local).filter((chain: string) => !argv.skipDeployTo.includes(chain))),
+      assertBalances(multiProvider, (argv) =>
+        argv.remotes
+          .concat(argv.local)
+          .filter((chain: string) => !argv.skipDeployTo.includes(chain)),
+      ),
     )
     .describe('write-agent-config', 'Whether or not to write agent config')
     .default('write-agent-config', true)
@@ -128,7 +132,7 @@ export class HyperlanePermissionlessDeployer {
     let addressesMap = artifactsAddressesMap();
     const owner = await this.signer.getAddress();
 
-    // 1. Deploy ISM factories to all chains that don't have them.
+    // 1. Deploy ISM factories to all deploy chains that don't have them.
     this.logger('Deploying ISM factory contracts');
     const ismDeployer = new HyperlaneIsmFactoryDeployer(this.multiProvider);
     ismDeployer.cacheAddressesMap(
@@ -138,7 +142,7 @@ export class HyperlanePermissionlessDeployer {
     addressesMap = this.writeMergedAddresses(addressesMap, ismFactoryContracts);
     this.logger(`ISM factory deployment complete`);
 
-    // 2. Deploy IGPs to all chains
+    // 2. Deploy IGPs to all deploy chains.
     this.logger(`Deploying IGP contracts`);
     const igpConfig = buildIgpConfigMap(
       owner,
@@ -174,7 +178,7 @@ export class HyperlanePermissionlessDeployer {
       this.logger(`Skipping core deployment to local ${this.local}`);
     }
 
-    // 4. Deploy ISM contracts to remote chains
+    // 4. Deploy ISM contracts to remote deploy chains
     this.logger(`Deploying ISMs to ${this.remoteDeployChains}`);
     const ismConfig = buildIsmConfigMap(
       owner,
@@ -191,7 +195,7 @@ export class HyperlanePermissionlessDeployer {
     addressesMap = this.writeMergedAddresses(addressesMap, ismContracts);
     this.logger(`ISM deployment complete`);
 
-    // 5. Deploy TestRecipients to all chains
+    // 5. Deploy TestRecipients to all deploy chains
     this.logger(`Deploying test recipient contracts`);
     const testRecipientConfig = buildTestRecipientConfigMap(
       this.deployChains,

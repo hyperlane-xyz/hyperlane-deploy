@@ -244,10 +244,8 @@ export function buildOverriddenAgentConfig(
     sdkContractAddressesMap,
     artifactsAddressesMap(),
   );
-  // @ts-ignore
   const filteredAddressesMap: ChainMap<HyperlaneAgentAddresses> = objFilter(
-    mergedAddressesMap,
-    // @ts-ignore
+    mergedAddressesMap as unknown as ChainMap<HyperlaneAgentAddresses>,
     (chain, v): v is HyperlaneAgentAddresses =>
       chains.includes(chain) &&
       !!v.mailbox &&

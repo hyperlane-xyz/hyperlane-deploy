@@ -78,5 +78,7 @@ export function validateWarpTokenConfig(data: WarpRouteConfig) {
 
 export function getWarpConfigChains(config: WarpRouteConfig) {
   const { base, synthetics } = config;
-  return [base, ...synthetics].filter(c => !c.foreignDeployment).map((token) => token.chainName);
+  return [base, ...synthetics]
+    .filter((c) => !c.foreignDeployment)
+    .map((token) => token.chainName);
 }
