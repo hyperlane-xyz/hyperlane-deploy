@@ -3,33 +3,29 @@ import { ChainMap, ChainMetadata } from '@hyperlane-xyz/sdk';
 // A map of chain names to ChainMetadata
 export const chains: ChainMap<ChainMetadata> = {
   // ----------- Add your chains here -----------------
-  "solana-devnet": {
-    name: 'solana-devnet',
-    chainId: 13375,
+  anvil1: {
+    name: 'anvil1',
+    // anvil default chain id
+    chainId: 31337,
+    // Used to configure a Warp Route to bridge anvil1 ETH
+    // to anvil2 in CI tests.
     nativeToken: {
-      name: 'Solana',
-      symbol: 'SOL',
-      decimals: 9,
+      name: 'ether',
+      symbol: 'ETH',
+      decimals: 18,
     },
     publicRpcUrls: [
       {
-        // Bogus, not used
-        http: 'http://localhost:6969',
+        http: 'http://127.0.0.1:8545',
       },
     ],
   },
-  "solana-devnet-1": {
-    name: 'solana-devnet-1',
-    chainId: 13376,
-    nativeToken: {
-      name: 'Solana',
-      symbol: 'SOL',
-      decimals: 9,
-    },
+  anvil2: {
+    name: 'anvil2',
+    chainId: 31338,
     publicRpcUrls: [
       {
-        // Bogus, not used
-        http: 'http://localhost:6969',
+        http: 'http://127.0.0.1:8555',
       },
     ],
   },
