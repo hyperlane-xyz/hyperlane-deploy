@@ -5,7 +5,7 @@ import type { WarpRouteConfig } from '../src/warp/config';
 // A config for deploying Warp Routes to a set of chains
 // Not required for Hyperlane core deployments
 export const warpRouteConfig: WarpRouteConfig = {
-  // votable: true, use this option if you want to deploy an ERC20 synthetic with votable options needed for DAOs
+  // votable:true  You can enable this config if you want to make your synthetic ERC20 tokens votable
   base: {
     // Chain name must be in the Hyperlane SDK or in the chains.ts config
     chainName: 'anvil1',

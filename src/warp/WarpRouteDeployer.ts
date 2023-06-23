@@ -4,7 +4,6 @@ import yargs from 'yargs';
 import {
   ERC20__factory,
   HypERC20Deployer,
-  HypERC20VotableDeployer,
   HypERC20Factories,
   TokenConfig,
   TokenType,
@@ -67,33 +66,20 @@ export class WarpRouteDeployer {
 
   async deploy(): Promise<void> {
     const { configMap, baseToken } = await this.buildHypERC20Config();
-    const {votable} = warpRouteConfig;
-    if(votable === true){
-      this.logger('Initiating HypERC20Votable deployments');
-      const deployer = new HypERC20VotableDeployer(this.multiProvider);
-      await deployer.deploy(configMap);
-      this.logger('HypERC20Votable deployments complete');
-      this.writeDeploymentResult(
-        deployer.deployedContracts,
-        configMap,
-        baseToken,
-      );
-    }else{
-      this.logger('Initiating HypERC20 deployments');
-      const deployer = new HypERC20Deployer(this.multiProvider);
-      await deployer.deploy(configMap);
-      this.logger('HypERC20 deployments complete');
-      this.writeDeploymentResult(
-        deployer.deployedContracts,
-        configMap,
-        baseToken,
-      );
-    }
+    this.logger('Initiating HypERC20 deployments');
+    const deployer = new HypERC20Deployer(this.multiProvider);
+    await deployer.deploy(configMap);
+    this.logger('HypERC20 deployments complete');
+    this.writeDeploymentResult(
+      deployer.deployedContracts,
+      configMap,
+      baseToken,
+    );
   }
 
   async buildHypERC20Config() {
     validateWarpTokenConfig(warpRouteConfig);
-    const { base, synthetics } = warpRouteConfig;
+    const { votable, base, synthetics } = warpRouteConfig;
     const { type: baseType, chainName: baseChainName } = base;
 
     const baseTokenAddr =
@@ -131,9 +117,12 @@ export class WarpRouteDeployer {
       JSON.stringify(configMap[baseChainName]),
     );
 
+
+
     for (const synthetic of synthetics) {
       const sChainName = synthetic.chainName;
       configMap[sChainName] = {
+        votable: votable,
         type: TokenType.synthetic,
         name: synthetic.name || baseTokenMetadata.name,
         symbol: synthetic.symbol || baseTokenMetadata.symbol,
