@@ -133,32 +133,22 @@ export class HyperlanePermissionlessDeployer {
     const coreDeployer = new HyperlaneCoreDeployer(this.multiProvider);
     coreDeployer.cacheAddressesMap(addresses);
     const coreContracts: HyperlaneContractsMap<CoreFactories> = {};
-    this.logger(`Deploying core contracts to local chain ${this.local}`);
-    coreContracts[this.local] = await coreDeployer.deployContracts(
-      this.local,
-      coreConfig[this.local],
-    );
-    this.logger(`Core deployment complete`);
-    addresses = this.writeMergedAddresses(addresses, coreContracts);
-
-    // Next, deploy MultisigIsms to the remote chains
-    // TODO: Would be cleaner if using HyperlaneIsmDeployer
-    const isms: ChainMap<MultisigIsmContracts> = {};
-    isms[this.local] = {
-      multisigIsm: coreContracts[this.local].multisigIsm,
-    };
-    for (const remote of this.remotes) {
-      this.logger(`Deploying multisig ISM to chain ${remote}`);
-      isms[remote] = {
-        multisigIsm: await coreDeployer.deployLegacyMultisigIsm(
-          remote,
-          coreConfig[remote].multisigIsm,
-        ),
-      };
-      this.logger(`Deployment of multisig ISM to chain ${remote} complete`);
+    for (const chain of this.chains) {
+      this.logger(`Deploying core contracts to chain ${chain}`);
+      coreContracts[chain] = await coreDeployer.deployContracts(
+        chain,
+        coreConfig[chain],
+      );
+      this.logger(`Core deployment complete`);
+      console.log("address: ", addresses)
+      addresses = this.writeMergedAddresses(addresses, coreContracts);
     }
-    this.logger(`ISM deployment complete`);
-    addresses = this.writeMergedAddresses(addresses, isms);
+    const isms: ChainMap<MultisigIsmContracts> = {};
+    for (const chain of this.chains) {
+      isms[chain] = {
+        multisigIsm: coreContracts[chain].multisigIsm,
+      };
+    }
 
     // Next, deploy TestRecipients to all chains
     const testRecipientConfig: ChainMap<TestRecipientConfig> = objMap(
