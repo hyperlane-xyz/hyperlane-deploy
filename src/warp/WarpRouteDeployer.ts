@@ -4,6 +4,7 @@ import yargs from 'yargs';
 import {
   ERC20__factory,
   HypERC20Deployer,
+  HypERC20VotableDeployer,
   HypERC20Factories,
   TokenConfig,
   TokenType,
@@ -66,17 +67,28 @@ export class WarpRouteDeployer {
 
   async deploy(): Promise<void> {
     const { configMap, baseToken } = await this.buildHypERC20Config();
-
-    this.logger('Initiating HypERC20 deployments');
-    const deployer = new HypERC20Deployer(this.multiProvider);
-    await deployer.deploy(configMap);
-    this.logger('HypERC20 deployments complete');
-
-    this.writeDeploymentResult(
-      deployer.deployedContracts,
-      configMap,
-      baseToken,
-    );
+    const {votable} = warpRouteConfig;
+    if(votable === true){
+      this.logger('Initiating HypERC20Votable deployments');
+      const deployer = new HypERC20VotableDeployer(this.multiProvider);
+      await deployer.deploy(configMap);
+      this.logger('HypERC20Votable deployments complete');
+      this.writeDeploymentResult(
+        deployer.deployedContracts,
+        configMap,
+        baseToken,
+      );
+    }else{
+      this.logger('Initiating HypERC20 deployments');
+      const deployer = new HypERC20Deployer(this.multiProvider);
+      await deployer.deploy(configMap);
+      this.logger('HypERC20 deployments complete');
+      this.writeDeploymentResult(
+        deployer.deployedContracts,
+        configMap,
+        baseToken,
+      );
+    }
   }
 
   async buildHypERC20Config() {

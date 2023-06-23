@@ -29,6 +29,7 @@ export type WarpBaseTokenConfig =
   | WarpCollateralTokenConfig;
 
 export interface WarpRouteConfig {
+  votable?: boolean;
   base: WarpBaseTokenConfig;
   synthetics: WarpSyntheticTokenConfig[];
 }
