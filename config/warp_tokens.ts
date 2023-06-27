@@ -5,7 +5,6 @@ import type { WarpRouteConfig } from '../src/warp/config';
 // A config for deploying Warp Routes to a set of chains
 // Not required for Hyperlane core deployments
 export const warpRouteConfig: WarpRouteConfig = {
-  // votable:true  You can enable this config if you want to make your synthetic ERC20 tokens votable
   base: {
     // Chain name must be in the Hyperlane SDK or in the chains.ts config
     chainName: 'anvil1',
@@ -15,6 +14,8 @@ export const warpRouteConfig: WarpRouteConfig = {
 
     // Optionally, specify owner, mailbox, and interchainGasPaymaster addresses
     // If not specified, the Permissionless Deployment artifacts or the SDK's defaults will be used
+    //votable:true, if you enable this option you will be able to delegate the voting power of the locked tokens
+
   },
   synthetics: [
     {
@@ -25,6 +26,7 @@ export const warpRouteConfig: WarpRouteConfig = {
 
       // Optionally, specify owner, mailbox, and interchainGasPaymaster addresses
       // If not specified, the Permissionless Deployment artifacts or the SDK's defaults will be used
+      //votable:true, if you enable this option then ERC20 votable synthetic token will be deployed
     },
   ],
 };

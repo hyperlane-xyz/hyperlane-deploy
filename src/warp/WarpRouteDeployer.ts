@@ -79,7 +79,7 @@ export class WarpRouteDeployer {
 
   async buildHypERC20Config() {
     validateWarpTokenConfig(warpRouteConfig);
-    const { votable, base, synthetics } = warpRouteConfig;
+    const { base, synthetics } = warpRouteConfig;
     const { type: baseType, chainName: baseChainName } = base;
 
     const baseTokenAddr =
@@ -99,6 +99,7 @@ export class WarpRouteDeployer {
 
     const configMap: ChainMap<TokenConfig & RouterConfig> = {
       [baseChainName]: {
+        votable: base.votable,
         type: baseType,
         token: baseTokenAddr,
         owner,
@@ -122,7 +123,7 @@ export class WarpRouteDeployer {
     for (const synthetic of synthetics) {
       const sChainName = synthetic.chainName;
       configMap[sChainName] = {
-        votable: votable,
+        votable: synthetic.votable,
         type: TokenType.synthetic,
         name: synthetic.name || baseTokenMetadata.name,
         symbol: synthetic.symbol || baseTokenMetadata.symbol,

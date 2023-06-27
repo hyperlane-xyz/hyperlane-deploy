@@ -9,15 +9,18 @@ type WarpBaseToken = {
 } & Partial<ConnectionClientConfig>;
 
 export interface WarpNativeTokenConfig extends WarpBaseToken {
+  votable?: boolean;
   type: TokenType.native;
 }
 
 export interface WarpCollateralTokenConfig extends WarpBaseToken {
+  votable?: boolean;
   type: TokenType.collateral;
   address: string;
 }
 
 export type WarpSyntheticTokenConfig = {
+  votable?:boolean;
   chainName: string;
   name?: string;
   symbol?: string;
@@ -29,7 +32,6 @@ export type WarpBaseTokenConfig =
   | WarpCollateralTokenConfig;
 
 export interface WarpRouteConfig {
-  votable?: boolean;
   base: WarpBaseTokenConfig;
   synthetics: WarpSyntheticTokenConfig[];
 }
