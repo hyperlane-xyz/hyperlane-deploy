@@ -1,10 +1,11 @@
-import { ChainMap, ChainMetadata } from '@hyperlane-xyz/sdk';
+import { ChainMap, ChainMetadata, ProtocolType } from '@hyperlane-xyz/sdk';
 
 // A map of chain names to ChainMetadata
 export const chains: ChainMap<ChainMetadata> = {
   // ----------- Add your chains here -----------------
   anvil1: {
     name: 'anvil1',
+    protocol: ProtocolType.Ethereum,
     // anvil default chain id
     chainId: 31337,
     // Used to configure a Warp Route to bridge anvil1 ETH
@@ -22,6 +23,7 @@ export const chains: ChainMap<ChainMetadata> = {
   },
   anvil2: {
     name: 'anvil2',
+    protocol: ProtocolType.Ethereum,
     chainId: 31338,
     publicRpcUrls: [
       {

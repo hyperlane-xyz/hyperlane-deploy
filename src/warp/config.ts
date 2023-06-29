@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { TokenType } from '@hyperlane-xyz/hyperlane-token';
 import { RouterConfig } from '@hyperlane-xyz/sdk/dist/router/types';
+// import { ERC20Metadata } from '@hyperlane-xyz/hyperlane-token/dist/config';
 
 export type TokenMetadata = {
   name: string;

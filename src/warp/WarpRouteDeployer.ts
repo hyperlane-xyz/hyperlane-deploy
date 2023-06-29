@@ -116,6 +116,9 @@ export class WarpRouteDeployer {
           mergedContractAddresses[baseChainName]
             .defaultIsmInterchainGasPaymaster,
         foreignDeployment: base.foreignDeployment,
+        name: base.name,
+        symbol: base.symbol,
+        ...(baseType == TokenType.native ? undefined : {decimals: base.decimals} ),
       },
     };
     this.logger(
