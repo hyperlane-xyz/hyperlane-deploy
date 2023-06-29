@@ -68,7 +68,11 @@ export function getArgs(multiProvider: MultiProvider) {
       assertBalances(multiProvider, (argv) =>
         argv.remotes
           .concat(argv.local)
-          .filter((chain: string) => !argv.skipDeployTo.includes(chain)),
+          .filter(
+            (chain: string) =>
+              multiProvider.getChainMetadata(chain).protocol ===
+              ProtocolType.Ethereum,
+          ),
       ),
     )
     .describe('write-agent-config', 'Whether or not to write agent config')
