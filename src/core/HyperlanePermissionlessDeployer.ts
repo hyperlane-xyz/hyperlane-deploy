@@ -11,6 +11,7 @@ import {
   HyperlaneIsmFactory,
   HyperlaneIsmFactoryDeployer,
   MultiProvider,
+  ProtocolType,
   defaultMultisigIsmConfigs,
   objFilter,
   objMap,
@@ -72,12 +73,7 @@ export function getArgs(multiProvider: MultiProvider) {
     )
     .describe('write-agent-config', 'Whether or not to write agent config')
     .default('write-agent-config', true)
-    .boolean('write-agent-config')
-    .describe('skip-deploy-to', 'Chains to skip deploying directly to')
-    .default('skip-deploy-to', [])
-    .choices('skip-deploy-to', intersection)
-    .array('skip-deploy-to')
-    .demandOption('skip-deploy-to').argv;
+    .boolean('write-agent-config').argv;
 }
 
 export class HyperlanePermissionlessDeployer {
@@ -86,15 +82,15 @@ export class HyperlanePermissionlessDeployer {
     public readonly signer: ethers.Signer,
     public readonly local: ChainName,
     public readonly remotes: ChainName[],
-    public readonly skipDeployTo: ChainName[],
     public readonly writeAgentConfig?: boolean,
     protected readonly logger = createLogger('HyperlanePermissionlessDeployer'),
   ) {}
 
   static async fromArgs(): Promise<HyperlanePermissionlessDeployer> {
     const multiProvider = getMultiProvider();
-    const { local, remotes, key, writeAgentConfig, skipDeployTo } =
-      await getArgs(multiProvider);
+    const { local, remotes, key, writeAgentConfig } = await getArgs(
+      multiProvider,
+    );
     if (remotes.includes(local))
       throw new Error('Local and remotes must be distinct');
     const signer = new ethers.Wallet(key);
@@ -105,23 +101,22 @@ export class HyperlanePermissionlessDeployer {
       signer,
       local,
       remotes as unknown as string[],
-      skipDeployTo,
       writeAgentConfig,
     );
   }
 
   get skipLocalDeploy(): boolean {
-    return this.skipDeployTo.includes(this.local);
+    return !this.isDeployChain(this.local);
   }
 
   get remoteDeployChains(): ChainName[] {
-    return this.remotes.filter((chain) => !this.skipDeployTo.includes(chain));
+    return this.remotes.filter((chain) => this.isDeployChain(chain));
   }
 
   get deployChains(): ChainName[] {
     return this.remotes
       .concat([this.local])
-      .filter((chain) => !this.skipDeployTo.includes(chain));
+      .filter((chain) => this.isDeployChain(chain));
   }
 
   get allChains(): ChainName[] {
@@ -255,5 +250,12 @@ export class HyperlanePermissionlessDeployer {
       ),
     );
     return mergedAddresses;
+  }
+
+  isDeployChain(chain: ChainName): boolean {
+    return (
+      this.multiProvider.getChainMetadata(chain).protocol ===
+      ProtocolType.Ethereum
+    );
   }
 }
