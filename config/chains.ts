@@ -42,5 +42,5 @@ export const chains: ChainMap<ChainMetadata> = {
   //       http: 'my.custom.rpc.url',
   //     }
   //   ],
-  }
+  // }
 };
