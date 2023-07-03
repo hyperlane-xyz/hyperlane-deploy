@@ -6,6 +6,7 @@ import {
   ChainName,
   CoreConfig,
   GasOracleContractType,
+  HyperlaneAddresses,
   HyperlaneAddressesMap,
   HyperlaneAgentAddresses,
   HyperlaneContractsMap,
@@ -244,14 +245,14 @@ export function buildOverriddenAgentConfig(
     sdkContractAddressesMap,
     artifactsAddressesMap(),
   );
-  const filteredAddressesMap: ChainMap<HyperlaneAgentAddresses> = objFilter(
-    mergedAddressesMap as unknown as ChainMap<HyperlaneAgentAddresses>,
-    (chain, v): v is HyperlaneAgentAddresses =>
+  const filteredAddressesMap = objFilter(
+    mergedAddressesMap,
+    (chain, v): v is HyperlaneAddresses<any> =>
       chains.includes(chain) &&
       !!v.mailbox &&
       !!v.interchainGasPaymaster &&
       !!v.validatorAnnounce,
-  );
+  ) as unknown as ChainMap<HyperlaneAgentAddresses>;
 
   return buildAgentConfig(
     chains,

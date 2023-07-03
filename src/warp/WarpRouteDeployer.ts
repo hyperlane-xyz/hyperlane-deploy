@@ -251,7 +251,7 @@ export class WarpRouteDeployer {
       configMap[chainName]?.foreignDeployment;
     if (!hypTokenAddr) {
       throw Error(
-        'No base Hyperlane token address deployed or foreign deployment specified',
+        'No base Hyperlane token address deployed and no foreign deployment specified',
       );
     }
     const commonFields = {
