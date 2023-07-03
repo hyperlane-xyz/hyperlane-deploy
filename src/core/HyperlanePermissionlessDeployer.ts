@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import yargs from 'yargs';
 
 import {
+  ChainMap,
   ChainName,
   HyperlaneAddresses,
   HyperlaneAddressesMap,
@@ -15,9 +16,9 @@ import {
   objFilter,
   objMap,
   objMerge,
-  promiseObjAll,
   serializeContractsMap,
 } from '@hyperlane-xyz/sdk';
+import type { DeployedIsm } from '@hyperlane-xyz/sdk/dist/ism/types';
 
 import { multisigIsmConfig } from '../../config/multisig_ism';
 import { startBlocks } from '../../config/start_blocks';
@@ -146,15 +147,16 @@ export class HyperlanePermissionlessDeployer {
     this.logger(`Core deployment complete`);
 
     // 4. Deploy ISM contracts to remote chains
-    this.logger(`Deploying ISMs to ${this.remotes}`);
-    const ismConfig = buildIsmConfigMap(owner, this.remotes, this.chains);
-    const ismContracts = await promiseObjAll(
-      objMap(ismConfig, async (chain, config) => {
-        return {
-          interchainSecurityModule: await ismFactory.deploy(chain, config),
-        };
-      }),
-    );
+    this.logger(`Deploying ISMs to chains: ${this.remotes}`);
+    const ismConfigs = buildIsmConfigMap(owner, this.remotes, this.chains);
+    const ismContracts: ChainMap<{ interchainSecurityModule: DeployedIsm }> =
+      {};
+    for (const [ismChain, ismConfig] of Object.entries(ismConfigs)) {
+      this.logger(`Deploying ISM to ${ismChain}`);
+      ismContracts[ismChain] = {
+        interchainSecurityModule: await ismFactory.deploy(ismChain, ismConfig),
+      };
+    }
     addressesMap = this.writeMergedAddresses(addressesMap, ismContracts);
     this.logger(`ISM deployment complete`);
 
