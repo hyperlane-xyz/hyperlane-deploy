@@ -1,8 +1,9 @@
-import { ChainMap, MultisigIsmConfig } from '@hyperlane-xyz/sdk';
+import { ChainMap, ModuleType, MultisigIsmConfig } from '@hyperlane-xyz/sdk';
 
 export const multisigIsmConfig: ChainMap<MultisigIsmConfig> = {
   // ----------- Your chains here -----------------
   anvil1: {
+    type: ModuleType.MULTISIG,
     threshold: 1,
     validators: [
       // Last anvil address
@@ -10,6 +11,7 @@ export const multisigIsmConfig: ChainMap<MultisigIsmConfig> = {
     ],
   },
   anvil2: {
+    type: ModuleType.MULTISIG,
     threshold: 1,
     validators: [
       // Last anvil address

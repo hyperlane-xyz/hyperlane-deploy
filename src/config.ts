@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 
+import { Mailbox__factory, OverheadIgp__factory } from '@hyperlane-xyz/core';
 import {
   ChainMap,
   ChainName,
@@ -7,12 +8,17 @@ import {
   GasOracleContractType,
   HyperlaneAddressesMap,
   HyperlaneAgentAddresses,
+  HyperlaneContractsMap,
+  ModuleType,
   MultiProvider,
   MultisigIsmConfig,
   OverheadIgpConfig,
+  RouterConfig,
+  RoutingIsmConfig,
   buildAgentConfig,
   chainMetadata,
   defaultMultisigIsmConfigs,
+  filterAddressesMap,
   multisigIsmVerificationCost,
   objFilter,
   objMerge,
@@ -20,11 +26,11 @@ import {
 import { hyperlaneEnvironments } from '@hyperlane-xyz/sdk/dist/consts/environments';
 import { types, utils } from '@hyperlane-xyz/utils';
 
-import artifactAddresses from '../artifacts/addresses.json';
 import { chains } from '../config/chains';
 import { multisigIsmConfig } from '../config/multisig_ism';
 
-import { readJSON } from './json';
+import { TestRecipientConfig } from './core/TestRecipientDeployer';
+import { tryReadJSON } from './json';
 
 let multiProvider: MultiProvider;
 
@@ -100,30 +106,93 @@ export function coerceAddressToBytes32(value: string): string {
   throw new Error(`Invalid value ${value}, must be a 20 or 32 byte hex string`);
 }
 
-export function buildCoreConfig(
+export function buildIsmConfig(
+  owner: types.Address,
+  remotes: ChainName[],
+): RoutingIsmConfig {
+  const mergedMultisigIsmConfig: ChainMap<MultisigIsmConfig> = objMerge(
+    defaultMultisigIsmConfigs,
+    multisigIsmConfig,
+  );
+  return {
+    owner,
+    type: ModuleType.ROUTING,
+    domains: Object.fromEntries(
+      remotes.map((remote) => [remote, mergedMultisigIsmConfig[remote]]),
+    ),
+  };
+}
+
+export function buildIsmConfigMap(
   owner: types.Address,
   chains: ChainName[],
+  remotes: ChainName[],
+): ChainMap<RoutingIsmConfig> {
+  return Object.fromEntries(
+    chains.map((chain) => {
+      const ismConfig = buildIsmConfig(
+        owner,
+        remotes.filter((r) => r !== chain),
+      );
+      return [chain, ismConfig];
+    }),
+  );
+}
+
+export function buildCoreConfigMap(
+  owner: types.Address,
+  local: ChainName,
+  remotes: ChainName[],
 ): ChainMap<CoreConfig> {
   const configMap: ChainMap<CoreConfig> = {};
-  for (const local of chains) {
-    const multisigIsmConfigs: ChainMap<MultisigIsmConfig> = {};
-    const mergedMultisigIsmConfig: ChainMap<MultisigIsmConfig> = objMerge(
-      defaultMultisigIsmConfigs,
-      multisigIsmConfig,
-    );
-    for (const remote of chains) {
-      if (local === remote) continue;
-      multisigIsmConfigs[remote] = mergedMultisigIsmConfig[remote];
-    }
-    configMap[local] = {
-      owner,
-      multisigIsm: multisigIsmConfigs,
-    };
-  }
+  configMap[local] = {
+    owner,
+    defaultIsm: buildIsmConfig(owner, remotes),
+  };
   return configMap;
 }
 
-export function buildIgpConfig(
+export function buildRouterConfigMap(
+  owner: types.Address,
+  chains: ChainName[],
+  addressesMap: HyperlaneAddressesMap<any>,
+): ChainMap<RouterConfig> {
+  const routerConfigFactories = {
+    mailbox: new Mailbox__factory(),
+    defaultIsmInterchainGasPaymaster: new OverheadIgp__factory(),
+  };
+  const filteredAddressesMap = filterAddressesMap(
+    addressesMap,
+    routerConfigFactories,
+  );
+  return Object.fromEntries(
+    chains.map((chain) => {
+      const routerConfig: RouterConfig = {
+        owner,
+        mailbox: filteredAddressesMap[chain].mailbox,
+        interchainGasPaymaster:
+          filteredAddressesMap[chain].defaultIsmInterchainGasPaymaster,
+      };
+      return [chain, routerConfig];
+    }),
+  );
+}
+
+export function buildTestRecipientConfigMap(
+  chains: ChainName[],
+  addressesMap: HyperlaneAddressesMap<any>,
+): ChainMap<TestRecipientConfig> {
+  return Object.fromEntries(
+    chains.map((chain) => {
+      const interchainSecurityModule =
+        addressesMap[chain].interchainSecurityModule ??
+        ethers.constants.AddressZero;
+      return [chain, { interchainSecurityModule }];
+    }),
+  );
+}
+
+export function buildIgpConfigMap(
   owner: types.Address,
   chains: ChainName[],
 ): ChainMap<OverheadIgpConfig> {
@@ -153,31 +222,29 @@ export function buildIgpConfig(
   return configMap;
 }
 
-export const sdkContractAddresses = {
+export const sdkContractAddressesMap = {
   ...hyperlaneEnvironments.testnet,
   ...hyperlaneEnvironments.mainnet,
 };
 
-export const mergedContractAddresses = objMerge(
-  sdkContractAddresses,
-  artifactAddresses,
-);
+export function artifactsAddressesMap(): HyperlaneContractsMap<any> {
+  return (
+    tryReadJSON<HyperlaneContractsMap<any>>('./artifacts', 'addresses.json') ||
+    {}
+  );
+}
 
 export function buildOverriddenAgentConfig(
   chains: ChainName[],
   multiProvider: MultiProvider,
   startBlocks: ChainMap<number>,
 ) {
-  const localAddresses = readJSON<HyperlaneAddressesMap<any>>(
-    './artifacts',
-    'addresses.json',
+  const mergedAddressesMap: HyperlaneAddressesMap<any> = objMerge(
+    sdkContractAddressesMap,
+    artifactsAddressesMap(),
   );
-  const mergedAddresses: HyperlaneAddressesMap<any> = objMerge(
-    sdkContractAddresses,
-    localAddresses,
-  );
-  const filteredAddresses: ChainMap<HyperlaneAgentAddresses> = objFilter(
-    mergedAddresses,
+  const filteredAddressesMap: ChainMap<HyperlaneAgentAddresses> = objFilter(
+    mergedAddressesMap,
     (chain, v): v is HyperlaneAgentAddresses =>
       chains.includes(chain) &&
       !!v.mailbox &&
@@ -188,7 +255,7 @@ export function buildOverriddenAgentConfig(
   return buildAgentConfig(
     chains,
     multiProvider,
-    filteredAddresses,
+    filteredAddressesMap,
     startBlocks,
   );
 }
