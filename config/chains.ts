@@ -1,5 +1,6 @@
 import { ChainMap, ChainMetadata, ProtocolType } from '@hyperlane-xyz/sdk';
 
+// import { chainMetadata } from '@hyperlane-xyz/sdk';
 // A map of chain names to ChainMetadata
 export const chains: ChainMap<ChainMetadata> = {
   // ----------- Add your chains here -----------------
@@ -20,6 +21,10 @@ export const chains: ChainMap<ChainMetadata> = {
         http: 'http://127.0.0.1:8545',
       },
     ],
+    // You can set overrides for transaction fields here
+    // transactionOverrides: {
+    //   gasLimit: 1000000
+    // },
   },
   anvil2: {
     name: 'anvil2',
@@ -31,4 +36,14 @@ export const chains: ChainMap<ChainMetadata> = {
       },
     ],
   },
+  // --------------------------------------------------
+  // You can also override the default chain metadata (completely)
+  // ethereum: {
+  //   ...chainMetadata.ethereum,
+  //   publicRpcUrls: [
+  //     {
+  //       http: 'my.custom.rpc.url',
+  //     }
+  //   ],
+  // }
 };
