@@ -3,17 +3,13 @@ import { z } from 'zod';
 import { TokenType } from '@hyperlane-xyz/hyperlane-token';
 import { RouterConfig } from '@hyperlane-xyz/sdk/dist/router/types';
 
-export type TokenMetadata = {
-  name: string;
-  symbol: string;
-  decimals: number;
-};
+import { MinimumTokenMetadata } from './types';
 
 type WarpBaseToken = {
   type: TokenType.native | TokenType.collateral;
   chainName: string;
 } & Partial<RouterConfig> &
-  Partial<TokenMetadata>;
+  Partial<MinimumTokenMetadata>;
 
 export interface WarpNativeTokenConfig extends WarpBaseToken {
   type: TokenType.native;
@@ -22,13 +18,14 @@ export interface WarpNativeTokenConfig extends WarpBaseToken {
 export interface WarpCollateralTokenConfig extends WarpBaseToken {
   type: TokenType.collateral;
   address: string;
+  isNft?: boolean;
 }
 
 export type WarpSyntheticTokenConfig = {
   chainName: string;
   totalSupply?: number;
 } & Partial<RouterConfig> &
-  Partial<TokenMetadata>;
+  Partial<MinimumTokenMetadata>;
 
 export type WarpBaseTokenConfig =
   | WarpNativeTokenConfig
@@ -51,6 +48,7 @@ export const WarpTokenConfigSchema = z.object({
     type: z.literal(TokenType.native).or(z.literal(TokenType.collateral)),
     chainName: z.string(),
     address: z.string().optional(),
+    isNft: z.boolean().optional(),
     ...ConnectionConfigSchema,
   }),
   synthetics: z
