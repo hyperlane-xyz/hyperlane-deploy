@@ -118,9 +118,7 @@ export class WarpRouteDeployer {
         foreignDeployment: base.foreignDeployment,
         name: base.name,
         symbol: base.symbol,
-        ...(baseType == TokenType.native
-          ? undefined
-          : { decimals: base.decimals }),
+        decimals: base.decimals,
       },
     };
     this.logger(
