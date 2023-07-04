@@ -6,6 +6,7 @@ import {
   ChainName,
   CoreConfig,
   GasOracleContractType,
+  HyperlaneAddresses,
   HyperlaneAddressesMap,
   HyperlaneAgentAddresses,
   HyperlaneContractsMap,
@@ -194,17 +195,18 @@ export function buildTestRecipientConfigMap(
 
 export function buildIgpConfigMap(
   owner: types.Address,
-  chains: ChainName[],
+  deployChains: ChainName[],
+  allChains: ChainName[],
 ): ChainMap<OverheadIgpConfig> {
   const mergedMultisigIsmConfig: ChainMap<MultisigIsmConfig> = objMerge(
     defaultMultisigIsmConfigs,
     multisigIsmConfig,
   );
   const configMap: ChainMap<OverheadIgpConfig> = {};
-  for (const local of chains) {
+  for (const local of deployChains) {
     const overhead: ChainMap<number> = {};
     const gasOracleType: ChainMap<GasOracleContractType> = {};
-    for (const remote of chains) {
+    for (const remote of allChains) {
       if (local === remote) continue;
       overhead[remote] = multisigIsmVerificationCost(
         mergedMultisigIsmConfig[remote].threshold,
@@ -243,14 +245,14 @@ export function buildOverriddenAgentConfig(
     sdkContractAddressesMap,
     artifactsAddressesMap(),
   );
-  const filteredAddressesMap: ChainMap<HyperlaneAgentAddresses> = objFilter(
+  const filteredAddressesMap = objFilter(
     mergedAddressesMap,
-    (chain, v): v is HyperlaneAgentAddresses =>
+    (chain, v): v is HyperlaneAddresses<any> =>
       chains.includes(chain) &&
       !!v.mailbox &&
       !!v.interchainGasPaymaster &&
       !!v.validatorAnnounce,
-  );
+  ) as unknown as ChainMap<HyperlaneAgentAddresses>;
 
   return buildAgentConfig(
     chains,

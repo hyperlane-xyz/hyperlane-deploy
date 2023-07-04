@@ -1,12 +1,19 @@
 import { z } from 'zod';
 
 import { TokenType } from '@hyperlane-xyz/hyperlane-token';
-import { ConnectionClientConfig } from '@hyperlane-xyz/sdk/dist/router/types';
+import { RouterConfig } from '@hyperlane-xyz/sdk/dist/router/types';
+
+export type TokenMetadata = {
+  name: string;
+  symbol: string;
+  decimals: number;
+};
 
 type WarpBaseToken = {
   type: TokenType.native | TokenType.collateral;
   chainName: string;
-} & Partial<ConnectionClientConfig>;
+} & Partial<RouterConfig> &
+  Partial<TokenMetadata>;
 
 export interface WarpNativeTokenConfig extends WarpBaseToken {
   type: TokenType.native;
@@ -19,10 +26,9 @@ export interface WarpCollateralTokenConfig extends WarpBaseToken {
 
 export type WarpSyntheticTokenConfig = {
   chainName: string;
-  name?: string;
-  symbol?: string;
   totalSupply?: number;
-} & Partial<ConnectionClientConfig>;
+} & Partial<RouterConfig> &
+  Partial<TokenMetadata>;
 
 export type WarpBaseTokenConfig =
   | WarpNativeTokenConfig
@@ -72,5 +78,7 @@ export function validateWarpTokenConfig(data: WarpRouteConfig) {
 
 export function getWarpConfigChains(config: WarpRouteConfig) {
   const { base, synthetics } = config;
-  return [base, ...synthetics].map((token) => token.chainName);
+  return [base, ...synthetics]
+    .filter((c) => !c.foreignDeployment)
+    .map((token) => token.chainName);
 }

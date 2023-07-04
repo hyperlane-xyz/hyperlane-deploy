@@ -10,7 +10,6 @@ import {
 } from '@hyperlane-xyz/hyperlane-token';
 import {
   ChainMap,
-  ChainName,
   HyperlaneContractsMap,
   MultiProvider,
   RouterConfig,
@@ -31,7 +30,11 @@ import {
 import { mergeJSON, tryReadJSON, writeFileAtPath, writeJSON } from '../json';
 import { createLogger } from '../logger';
 
-import { getWarpConfigChains, validateWarpTokenConfig } from './config';
+import {
+  WarpBaseTokenConfig,
+  getWarpConfigChains,
+  validateWarpTokenConfig,
+} from './config';
 import { TokenMetadata, WarpUITokenConfig } from './types';
 
 export async function getArgs(multiProvider: MultiProvider) {
@@ -92,14 +95,6 @@ export class WarpRouteDeployer {
         ? base.address
         : ethers.constants.AddressZero;
 
-    const baseTokenMetadata = await this.getTokenMetadata(
-      baseChainName,
-      baseType,
-      baseTokenAddr,
-    );
-    this.logger(
-      `Using base token metadata: Name: ${baseTokenMetadata.name}, Symbol: ${baseTokenMetadata.symbol}, Decimals: ${baseTokenMetadata.decimals} `,
-    );
     const owner = await this.signer.getAddress();
 
     const mergedContractAddresses = objMerge(
@@ -120,11 +115,20 @@ export class WarpRouteDeployer {
           base.interchainGasPaymaster ||
           mergedContractAddresses[baseChainName]
             .defaultIsmInterchainGasPaymaster,
+        foreignDeployment: base.foreignDeployment,
+        name: base.name,
+        symbol: base.symbol,
+        decimals: base.decimals,
       },
     };
     this.logger(
       `HypERC20Config config on base chain ${baseChainName}:`,
       JSON.stringify(configMap[baseChainName]),
+    );
+
+    const baseTokenMetadata = await this.getBaseTokenMetadata(base);
+    this.logger(
+      `Using base token metadata: Name: ${baseTokenMetadata.name}, Symbol: ${baseTokenMetadata.symbol}, Decimals: ${baseTokenMetadata.decimals} `,
     );
 
     for (const synthetic of synthetics) {
@@ -139,10 +143,12 @@ export class WarpRouteDeployer {
           synthetic.mailbox || mergedContractAddresses[sChainName].mailbox,
         interchainSecurityModule:
           synthetic.interchainSecurityModule ||
+          mergedContractAddresses[sChainName].interchainSecurityModule ||
           mergedContractAddresses[sChainName].multisigIsm,
         interchainGasPaymaster:
           synthetic.interchainGasPaymaster ||
           mergedContractAddresses[sChainName].defaultIsmInterchainGasPaymaster,
+        foreignDeployment: synthetic.foreignDeployment,
       };
       this.logger(
         `HypERC20Config config on synthetic chain ${sChainName}:`,
@@ -160,20 +166,28 @@ export class WarpRouteDeployer {
     };
   }
 
-  async getTokenMetadata(
-    chain: ChainName,
-    type: TokenType,
-    address: types.Address,
+  async getBaseTokenMetadata(
+    base: WarpBaseTokenConfig,
   ): Promise<TokenMetadata> {
-    if (type === TokenType.native) {
+    if (base.name && base.symbol && base.decimals) {
+      return {
+        name: base.name,
+        symbol: base.symbol,
+        decimals: base.decimals,
+      };
+    }
+
+    if (base.type === TokenType.native) {
       return (
-        this.multiProvider.getChainMetadata(chain).nativeToken ||
+        this.multiProvider.getChainMetadata(base.chainName).nativeToken ||
         chainMetadata.ethereum.nativeToken!
       );
-    } else if (type === TokenType.collateral || type === TokenType.synthetic) {
-      this.logger(`Fetching token metadata for ${address} on ${chain}}`);
-      const provider = this.multiProvider.getProvider(chain);
-      const erc20Contract = ERC20__factory.connect(address, provider);
+    } else if (base.type === TokenType.collateral) {
+      this.logger(
+        `Fetching token metadata for ${base.address} on ${base.chainName}}`,
+      );
+      const provider = this.multiProvider.getProvider(base.chainName);
+      const erc20Contract = ERC20__factory.connect(base.address, provider);
       const [name, symbol, decimals] = await Promise.all([
         erc20Contract.name(),
         erc20Contract.symbol(),
@@ -181,7 +195,7 @@ export class WarpRouteDeployer {
       ]);
       return { name, symbol, decimals };
     } else {
-      throw new Error(`Unsupported token type: ${type}`);
+      throw new Error(`Unsupported token type: ${base}`);
     }
   }
 
@@ -193,7 +207,7 @@ export class WarpRouteDeployer {
     >['baseToken'],
   ) {
     this.writeTokenDeploymentArtifacts(contracts, configMap);
-    this.writeWarpUiTokenList(contracts, baseToken);
+    this.writeWarpUiTokenList(contracts, baseToken, configMap);
   }
 
   writeTokenDeploymentArtifacts(
@@ -220,6 +234,7 @@ export class WarpRouteDeployer {
     baseToken: Awaited<
       ReturnType<typeof this.buildHypERC20Config>
     >['baseToken'],
+    configMap: ChainMap<TokenConfig & RouterConfig>,
   ) {
     this.logger(
       'Writing warp ui token list to artifacts/warp-ui-token-list.json and artifacts/warp-ui-token-list.ts',
@@ -229,7 +244,14 @@ export class WarpRouteDeployer {
 
     const { type, address, chainName, metadata } = baseToken;
     const { name, symbol, decimals } = metadata;
-    const hypTokenAddr = contracts[chainName].router.address;
+    const hypTokenAddr =
+      contracts[chainName]?.router?.address ||
+      configMap[chainName]?.foreignDeployment;
+    if (!hypTokenAddr) {
+      throw Error(
+        'No base Hyperlane token address deployed and no foreign deployment specified',
+      );
+    }
     const commonFields = {
       chainId: this.multiProvider.getChainId(chainName),
       name,
