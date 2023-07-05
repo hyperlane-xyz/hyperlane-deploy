@@ -71,13 +71,11 @@ export class WarpRouteDeployer {
 
   async deploy(): Promise<void> {
     const { configMap, baseToken } = await this.buildHypERC20Config();
-
     this.logger('Initiating HypERC20 deployments');
     const deployer = new HypERC20Deployer(this.multiProvider);
 
     await deployer.deploy(configMap);
     this.logger('HypERC20 deployments complete');
-
     this.writeDeploymentResult(
       deployer.deployedContracts,
       configMap,
@@ -104,6 +102,7 @@ export class WarpRouteDeployer {
 
     const configMap: ChainMap<TokenConfig & RouterConfig> = {
       [baseChainName]: {
+        votable: base.votable,
         type: baseType,
         token: baseTokenAddr,
         owner,
@@ -134,6 +133,7 @@ export class WarpRouteDeployer {
     for (const synthetic of synthetics) {
       const sChainName = synthetic.chainName;
       configMap[sChainName] = {
+        votable: synthetic.votable,
         type: TokenType.synthetic,
         name: synthetic.name || baseTokenMetadata.name,
         symbol: synthetic.symbol || baseTokenMetadata.symbol,

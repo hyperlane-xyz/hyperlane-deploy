@@ -16,15 +16,18 @@ type WarpBaseToken = {
   Partial<TokenMetadata>;
 
 export interface WarpNativeTokenConfig extends WarpBaseToken {
+  votable?: boolean;
   type: TokenType.native;
 }
 
 export interface WarpCollateralTokenConfig extends WarpBaseToken {
+  votable?: boolean;
   type: TokenType.collateral;
   address: string;
 }
 
 export type WarpSyntheticTokenConfig = {
+  votable?:boolean;
   chainName: string;
   totalSupply?: number;
 } & Partial<RouterConfig> &
