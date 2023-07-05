@@ -118,8 +118,6 @@ export class WarpRouteDeployer {
       JSON.stringify(configMap[baseChainName]),
     );
 
-
-
     for (const synthetic of synthetics) {
       const sChainName = synthetic.chainName;
       configMap[sChainName] = {

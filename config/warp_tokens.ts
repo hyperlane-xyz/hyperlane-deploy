@@ -11,7 +11,6 @@ export const warpRouteConfig: WarpRouteConfig = {
     type: TokenType.native, //  TokenType.native or TokenType.collateral
     // If type is collateral, a token address is required:
     // address: '0x123...'
-
     // Optionally, specify owner, mailbox, and interchainGasPaymaster addresses
     // If not specified, the Permissionless Deployment artifacts or the SDK's defaults will be used
     //votable:true, if you enable this option you will be able to delegate the voting power of the locked tokens
@@ -20,10 +19,8 @@ export const warpRouteConfig: WarpRouteConfig = {
   synthetics: [
     {
       chainName: 'anvil2',
-
       // Optionally specify a name, symbol, and totalSupply
       // If not specified, the base token's properties will be used
-
       // Optionally, specify owner, mailbox, and interchainGasPaymaster addresses
       // If not specified, the Permissionless Deployment artifacts or the SDK's defaults will be used
       //votable:true, if you enable this option then ERC20 votable synthetic token will be deployed
