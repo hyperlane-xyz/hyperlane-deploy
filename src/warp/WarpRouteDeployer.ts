@@ -5,12 +5,11 @@ import {
   ERC20__factory,
   ERC721__factory,
   HypERC20Deployer,
-  HypERC20Factories,
   HypERC721Deployer,
-  HypERC721Factories,
   TokenConfig,
   TokenType,
 } from '@hyperlane-xyz/hyperlane-token';
+import type { TokenFactories } from '@hyperlane-xyz/hyperlane-token/dist/contracts';
 import {
   ChainMap,
   HyperlaneContractsMap,
@@ -38,7 +37,7 @@ import {
   getWarpConfigChains,
   validateWarpTokenConfig,
 } from './config';
-import { MinimumTokenMetadata, WarpUITokenConfig } from './types';
+import { MinimalTokenMetadata, WarpUITokenConfig } from './types';
 
 export async function getArgs(multiProvider: MultiProvider) {
   const args = await yargs(process.argv.slice(2))
@@ -175,7 +174,7 @@ export class WarpRouteDeployer {
 
   async getBaseTokenMetadata(
     base: WarpBaseTokenConfig,
-  ): Promise<MinimumTokenMetadata> {
+  ): Promise<MinimalTokenMetadata> {
     // Skip fetching metadata if it's already provided in the config
     if (base.name && base.symbol && base.decimals) {
       return {
@@ -217,7 +216,7 @@ export class WarpRouteDeployer {
   }
 
   writeDeploymentResult(
-    contracts: HyperlaneContractsMap<HypERC20Factories | HypERC721Factories>,
+    contracts: HyperlaneContractsMap<TokenFactories>,
     configMap: ChainMap<TokenConfig & RouterConfig>,
     baseToken: Awaited<
       ReturnType<typeof this.buildHypTokenConfig>
@@ -228,7 +227,7 @@ export class WarpRouteDeployer {
   }
 
   writeTokenDeploymentArtifacts(
-    contracts: HyperlaneContractsMap<HypERC20Factories | HypERC721Factories>,
+    contracts: HyperlaneContractsMap<TokenFactories>,
     configMap: ChainMap<TokenConfig & RouterConfig>,
   ) {
     this.logger(
@@ -247,7 +246,7 @@ export class WarpRouteDeployer {
   }
 
   writeWarpUiTokenList(
-    contracts: HyperlaneContractsMap<HypERC20Factories | HypERC721Factories>,
+    contracts: HyperlaneContractsMap<TokenFactories>,
     baseToken: Awaited<
       ReturnType<typeof this.buildHypTokenConfig>
     >['baseToken'],

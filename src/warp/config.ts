@@ -3,13 +3,13 @@ import { z } from 'zod';
 import { TokenType } from '@hyperlane-xyz/hyperlane-token';
 import { RouterConfig } from '@hyperlane-xyz/sdk/dist/router/types';
 
-import { MinimumTokenMetadata } from './types';
+import { MinimalTokenMetadata } from './types';
 
 type WarpBaseToken = {
   type: TokenType.native | TokenType.collateral;
   chainName: string;
 } & Partial<RouterConfig> &
-  Partial<MinimumTokenMetadata>;
+  Partial<MinimalTokenMetadata>;
 
 export interface WarpNativeTokenConfig extends WarpBaseToken {
   type: TokenType.native;
@@ -25,7 +25,7 @@ export type WarpSyntheticTokenConfig = {
   chainName: string;
   totalSupply?: number;
 } & Partial<RouterConfig> &
-  Partial<MinimumTokenMetadata>;
+  Partial<MinimalTokenMetadata>;
 
 export type WarpBaseTokenConfig =
   | WarpNativeTokenConfig
