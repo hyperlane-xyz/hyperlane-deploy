@@ -8,8 +8,8 @@ import {
   GasOracleContractType,
   HyperlaneAddresses,
   HyperlaneAddressesMap,
-  HyperlaneAgentAddresses,
   HyperlaneContractsMap,
+  HyperlaneDeploymentArtifacts,
   ModuleType,
   MultiProvider,
   MultisigIsmConfig,
@@ -252,7 +252,7 @@ export function buildOverriddenAgentConfig(
       !!v.mailbox &&
       !!v.interchainGasPaymaster &&
       !!v.validatorAnnounce,
-  ) as unknown as ChainMap<HyperlaneAgentAddresses>;
+  ) as unknown as ChainMap<HyperlaneDeploymentArtifacts>;
 
   return buildAgentConfig(
     chains,

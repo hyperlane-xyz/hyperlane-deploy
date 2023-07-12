@@ -1,0 +1,23 @@
+{
+  "chains": {
+    "foochain": {
+      "name": "foochain",
+      "domain": "31337",
+      "finalityBlocks": "POPULATE_ME",
+      "addresses": {
+        "interchainGasPaymaster": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+        "validatorAnnounce": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+        "mailbox": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788"
+      },
+      "connection": {
+        "url": "",
+        "type": "http"
+      },
+      "index": {
+        "from": "0"
+      },
+      "rpcStyle": "ethereum",
+      "protocol": "ethereum"
+    }
+  }
+}

@@ -16,7 +16,7 @@ export const chains: ChainMap<ChainMetadata> = {
       symbol: 'ETH',
       decimals: 18,
     },
-    publicRpcUrls: [
+    rpcUrls: [
       {
         http: 'http://127.0.0.1:8545',
       },
@@ -30,7 +30,7 @@ export const chains: ChainMap<ChainMetadata> = {
     name: 'anvil2',
     protocol: ProtocolType.Ethereum,
     chainId: 31338,
-    publicRpcUrls: [
+    rpcUrls: [
       {
         http: 'http://127.0.0.1:8555',
       },
