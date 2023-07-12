@@ -16,7 +16,7 @@ import {
   OverheadIgpConfig,
   RouterConfig,
   RoutingIsmConfig,
-  buildAgentConfig,
+  buildAgentConfigDeprecated,
   chainMetadata,
   defaultMultisigIsmConfigs,
   filterAddressesMap,
@@ -254,7 +254,7 @@ export function buildOverriddenAgentConfig(
       !!v.validatorAnnounce,
   ) as unknown as ChainMap<HyperlaneDeploymentArtifacts>;
 
-  return buildAgentConfig(
+  return buildAgentConfigDeprecated(
     chains,
     multiProvider,
     filteredAddressesMap,
