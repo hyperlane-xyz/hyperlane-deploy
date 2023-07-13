@@ -8,7 +8,7 @@ export const chains: ChainMap<ChainMetadata> = {
     name: 'anvil1',
     protocol: ProtocolType.Ethereum,
     // anvil default chain id
-    chainId: 31337,
+    chainId: 31338,
     // Used to configure a Warp Route to bridge anvil1 ETH
     // to anvil2 in CI tests.
     nativeToken: {
@@ -29,7 +29,7 @@ export const chains: ChainMap<ChainMetadata> = {
   anvil2: {
     name: 'anvil2',
     protocol: ProtocolType.Ethereum,
-    chainId: 31338,
+    chainId: 31339,
     rpcUrls: [
       {
         http: 'http://127.0.0.1:8547',
