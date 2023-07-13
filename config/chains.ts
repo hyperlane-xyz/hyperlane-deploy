@@ -18,7 +18,7 @@ export const chains: ChainMap<ChainMetadata> = {
     },
     rpcUrls: [
       {
-        http: 'http://127.0.0.1:8545',
+        http: 'http://127.0.0.1:8546',
       },
     ],
     // You can set overrides for transaction fields here
@@ -32,7 +32,7 @@ export const chains: ChainMap<ChainMetadata> = {
     chainId: 31338,
     rpcUrls: [
       {
-        http: 'http://127.0.0.1:8555',
+        http: 'http://127.0.0.1:8547',
       },
     ],
   },
