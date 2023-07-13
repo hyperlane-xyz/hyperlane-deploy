@@ -7,7 +7,7 @@ export const multisigIsmConfig: ChainMap<MultisigIsmConfig> = {
     threshold: 1,
     validators: [
       // Last anvil address
-      '0xa0ee7a142d267c1f36714e4a8f75612f20a79720',
+      '0x26bd6c9FE7765A796F33A190a480272ea14eeab0',
     ],
   },
   anvil2: {
@@ -15,7 +15,7 @@ export const multisigIsmConfig: ChainMap<MultisigIsmConfig> = {
     threshold: 1,
     validators: [
       // Last anvil address
-      '0xa0ee7a142d267c1f36714e4a8f75612f20a79720',
+      '0x26bd6c9FE7765A796F33A190a480272ea14eeab0',
     ],
   },
 };
