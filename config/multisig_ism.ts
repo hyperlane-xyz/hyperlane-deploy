@@ -5,7 +5,10 @@ export const multisigIsmConfig: ChainMap<MultisigIsmConfig> = {
   mitosis: {
     type: ModuleType.LEGACY_MULTISIG,
     threshold: 1,
-    validators: ['0x594D0C5F2ba861214C74314eF4b0927A5E6f0Cb9'],
+    validators: [
+      // '0x594D0C5F2ba861214C74314eF4b0927A5E6f0Cb9'
+      '0x4B0a1a38A14BbB74AE6a63d7eff65470557a498d',
+    ],
   },
   anvil1: {
     type: ModuleType.LEGACY_MULTISIG,
