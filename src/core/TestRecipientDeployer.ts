@@ -43,7 +43,7 @@ export class HyperlaneTestRecipientDeployer extends HyperlaneDeployer<
     const ism = await testRecipient.interchainSecurityModule();
     if (!utils.eqAddress(ism, config.interchainSecurityModule)) {
       const tx = testRecipient.setInterchainSecurityModule(
-        config.interchainSecurityModule
+        config.interchainSecurityModule,
       );
       await this.multiProvider.handleTx(chain, tx);
     }
