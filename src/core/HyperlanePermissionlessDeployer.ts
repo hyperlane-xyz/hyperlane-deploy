@@ -180,7 +180,7 @@ export class HyperlanePermissionlessDeployer {
     }
 
     // 4. Deploy ISM contracts to remote deployable chains
-    this.logger(`Deploying ISMs to ${this.remoteDeployableChains}`);
+    this.logger(`Deploying ISMs to ${remoteDeployableChains}`);
     const ismConfigs = buildIsmConfigMap(
       owner,
       remoteDeployableChains,
