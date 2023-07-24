@@ -115,6 +115,7 @@ export class WarpRouteDeployer {
         mailbox: base.mailbox || mergedContractAddresses[baseChainName].mailbox,
         interchainSecurityModule:
           base.interchainSecurityModule ||
+          mergedContractAddresses[baseChainName].interchainSecurityModule ||
           mergedContractAddresses[baseChainName].multisigIsm,
         interchainGasPaymaster:
           base.interchainGasPaymaster ||
