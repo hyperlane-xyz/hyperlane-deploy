@@ -20,6 +20,10 @@ export const warpRouteConfig: WarpRouteConfig = {
   synthetics: [
     {
       chainName: 'anvil2',
+      // Typescript expects a non-native warp route type here, but just ts-ignore it
+      // and set native. TODO: fix Typescript typing to support this
+      // @ts-ignore
+      type: TokenType.native,
 
       // Optionally specify a name, symbol, and totalSupply
       // If not specified, the base token's properties will be used

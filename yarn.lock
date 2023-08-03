@@ -634,14 +634,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hyperlane-xyz/core@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@hyperlane-xyz/core@npm:1.4.2"
+"@hyperlane-xyz/core@npm:1.4.2-beta69":
+  version: 1.4.2-beta69
+  resolution: "@hyperlane-xyz/core@npm:1.4.2-beta69"
   dependencies:
-    "@hyperlane-xyz/utils": 1.4.2
+    "@hyperlane-xyz/utils": 1.4.2-beta69
     "@openzeppelin/contracts": ^4.8.0
     "@openzeppelin/contracts-upgradeable": ^4.8.0
-  checksum: 2c85c752cdaae1603a7f5a6879dbd9477aee6c7a480f91d1649056fa13d14e4a6830dcc488ee398b8c0575cd752f7d6d6701805cd4d978e22425b282eac03431
+  checksum: 23b9c622090b56ad5297553762defd26a7b3125b0a768b5d54d9db06ce6066c274862b3158293da7c38f2eafdeb2b730e7af87cc616f11e865e2300399caf737
   languageName: node
   linkType: hard
 
@@ -649,8 +649,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hyperlane-xyz/deploy@workspace:."
   dependencies:
-    "@hyperlane-xyz/hyperlane-token": 1.4.2
-    "@hyperlane-xyz/sdk": 1.4.2
+    "@hyperlane-xyz/hyperlane-token": 1.4.2-beta69
+    "@hyperlane-xyz/sdk": 1.4.2-beta69
     "@trivago/prettier-plugin-sort-imports": ^4.1.1
     "@types/node": ^18.14.5
     "@types/yargs": ^17.0.22
@@ -667,25 +667,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hyperlane-xyz/hyperlane-token@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@hyperlane-xyz/hyperlane-token@npm:1.4.2"
+"@hyperlane-xyz/hyperlane-token@npm:1.4.2-beta69":
+  version: 1.4.2-beta69
+  resolution: "@hyperlane-xyz/hyperlane-token@npm:1.4.2-beta69"
   dependencies:
-    "@hyperlane-xyz/core": 1.4.2
-    "@hyperlane-xyz/sdk": 1.4.2
-    "@hyperlane-xyz/utils": 1.4.2
+    "@hyperlane-xyz/core": 1.4.2-beta69
+    "@hyperlane-xyz/sdk": 1.4.2-beta69
+    "@hyperlane-xyz/utils": 1.4.2-beta69
     "@openzeppelin/contracts-upgradeable": ^4.8.0
     ethers: ^5.7.2
-  checksum: dffdf248090fac08b1d5a34915d32fb57307a7e61a29bce440be700cf585a98dc8d02389141af28bf1e321e6367dc85736a7530a6e7ad1a305d4fdf0af916b29
+  checksum: 3baf78b5a5a9ae86aab1b05304071fee83eeed7a13971dfe936bb07724c26b23751505d784e2eee9e6a88a339b260398cd62e16e95e554cb5eb9937e2e9c54e6
   languageName: node
   linkType: hard
 
-"@hyperlane-xyz/sdk@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@hyperlane-xyz/sdk@npm:1.4.2"
+"@hyperlane-xyz/sdk@npm:1.4.2-beta69":
+  version: 1.4.2-beta69
+  resolution: "@hyperlane-xyz/sdk@npm:1.4.2-beta69"
   dependencies:
-    "@hyperlane-xyz/core": 1.4.2
-    "@hyperlane-xyz/utils": 1.4.2
+    "@hyperlane-xyz/core": 1.4.2-beta69
+    "@hyperlane-xyz/utils": 1.4.2-beta69
     "@types/coingecko-api": ^1.0.10
     "@types/debug": ^4.1.7
     "@wagmi/chains": ^0.2.6
@@ -694,16 +694,16 @@ __metadata:
     debug: ^4.3.4
     ethers: ^5.7.2
     zod: ^3.21.2
-  checksum: 1ba8d77d17da78bcde8a2e3c85d7a4024d5ab812c8c0caf25ab0316d27a34c32712944e94babf81ac3a2d0b1bf06eb200902919a0e5e456cc0ab3f3ceea42dd3
+  checksum: a444262e618918ddeda2b64151682a56384b29080b72ec1c2d4f880c9fb19af5d1303fedff0afbacd3936645d5fc3e0dc768b679fe7d572b4c2dc4f03faf21f2
   languageName: node
   linkType: hard
 
-"@hyperlane-xyz/utils@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@hyperlane-xyz/utils@npm:1.4.2"
+"@hyperlane-xyz/utils@npm:1.4.2-beta69":
+  version: 1.4.2-beta69
+  resolution: "@hyperlane-xyz/utils@npm:1.4.2-beta69"
   dependencies:
     ethers: ^5.7.2
-  checksum: e91d2684856d803824beba912d4d65e21009f6e402571adcc7dd0f0b8f43b11eaa8448f1b11958ffa76178f48794017d4d466bdf909dd9d3698b9eee45df9116
+  checksum: 3eadbc12889bb5a2e38e648be5a2fb330e7f91087dd88d3c6b0200ec6ca7e4273b457b97e9c34348b393cfd7b74edeca9a1a349c49d8843428021b1e1bd91e25
   languageName: node
   linkType: hard
 
