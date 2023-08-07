@@ -139,11 +139,13 @@ export class WarpRouteDeployer {
 
     for (const synthetic of synthetics) {
       const sChainName = synthetic.chainName;
+
       configMap[sChainName] = {
-        type: TokenType.synthetic,
+        type: synthetic.type,
         name: synthetic.name || baseTokenMetadata.name,
         symbol: synthetic.symbol || baseTokenMetadata.symbol,
         totalSupply: synthetic.totalSupply || 0,
+        token: (synthetic.type == TokenType.collateral ? synthetic.address : baseTokenAddr),
         owner,
         mailbox:
           synthetic.mailbox || mergedContractAddresses[sChainName].mailbox,
