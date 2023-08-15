@@ -2,22 +2,22 @@ import { ChainMap, ModuleType, MultisigIsmConfig } from '@hyperlane-xyz/sdk';
 
 export const multisigIsmConfig: ChainMap<MultisigIsmConfig> = {
   // ----------- Your chains here -----------------
-  proteustestnet: {
+  solana: {
     type: ModuleType.LEGACY_MULTISIG,
     threshold: 2,
     validators: [
-      '0x79fc73656abb9eeaa5ee853c4569124f5bdaf9d8',
-      '0x72840388d5ab57323bc4f6e6d3ddedfd5cc911f0',
-      '0xd4b2a50c53fc6614bb3cd3198e0fdc03f5da973f',
+      '0x3cd1a081f38874bbb075bf10b62adcb858db864c',
+      '0x28aa072634dd41d19471640237852e807bd9901f',
+      '0x8a93ba04f4e30064660670cb581d9aa10df78929',
     ],
   },
-  solanadevnet: {
+  nautilus: {
     type: ModuleType.LEGACY_MULTISIG,
     threshold: 2,
     validators: [
-      '0xec0f73dbc5b1962a20f7dcbe07c98414025b0c43',
-      '0x9c20a149dfa09ea9f77f5a7ca09ed44f9c025133',
-      '0x967c5ecdf2625ae86580bd203b630abaaf85cd62',
+      '0x9c920af9467595a23cb3433adefc3854d498a437',
+      '0x12b583ce1623b7de3fc727ccccda24dcab1fe022',
+      '0xc8b996a421ff1e203070c709c1af93944c049cc0',
     ],
   },
 };
