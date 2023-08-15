@@ -7,10 +7,10 @@ import type { WarpRouteConfig } from '../src/warp/config';
 export const warpRouteConfig: WarpRouteConfig = {
   base: {
     // Chain name must be in the Hyperlane SDK or in the chains.ts config
-    chainName: 'bsctestnet',
+    chainName: 'bsc',
     type: TokenType.collateral, //  TokenType.native or TokenType.collateral
     // If type is collateral, a token address is required:
-    address: '0x64544969ed7ebf5f083679233325356ebe738930',
+    address: '0x37a56cdcD83Dce2868f721De58cB3830C44C6303',
     // If the token is an NFT (ERC721), set to true:
     // isNft: boolean
 
@@ -19,9 +19,9 @@ export const warpRouteConfig: WarpRouteConfig = {
   },
   synthetics: [
     {
-      chainName: 'proteustestnet',
-
+      chainName: 'nautilus',
       type: TokenType.native,
+      scale: 10**9,
 
       // Optionally specify a name, symbol, and totalSupply
       // If not specified, the base token's properties will be used
@@ -30,13 +30,13 @@ export const warpRouteConfig: WarpRouteConfig = {
       // If not specified, the Permissionless Deployment artifacts or the SDK's defaults will be used
     },
     {
-      chainName: 'solanadevnet',
+      chainName: 'solana',
       type: TokenType.collateral,
-      address: '0x64544969ed7ebf5f083679233325356ebe738930',
-      name: 'DUMMY',
-      symbol: 'DUMMY',
-      decimals: 6,
-      foreignDeployment: '0x05b6502b1d91c60ca0c0d0ab20a16ec40c66f2559becc7888a4fc3c0cefff9a5',
+      address: '0x0000000000000000000000000000000000000000',
+      name: 'Zebec',
+      symbol: 'ZBC',
+      decimals: 9,
+      foreignDeployment: '0xd6d38f335e9f8bc4c7339d52275a502fc42caeaaf9370b9d47aa92de4bb2adcc',
     }
   ],
 };

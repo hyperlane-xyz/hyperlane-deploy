@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Utilities for deploying Hyperlane",
   "dependencies": {
-    "@hyperlane-xyz/hyperlane-token": "1.4.2-beta69",
-    "@hyperlane-xyz/sdk": "1.4.2-beta69",
+    "@hyperlane-xyz/hyperlane-token": "1.4.2-beta70",
+    "@hyperlane-xyz/sdk": "1.4.2-beta70",
     "ethers": "^5.7.2",
     "yargs": "^17.7.1",
     "zod": "^3.21.4"
