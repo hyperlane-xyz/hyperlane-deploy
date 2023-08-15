@@ -4,37 +4,38 @@ import { ChainMap, ChainMetadata, ProtocolType } from '@hyperlane-xyz/sdk';
 // A map of chain names to ChainMetadata
 export const chains: ChainMap<ChainMetadata> = {
   // ----------- Add your chains here -----------------
-  anvil1: {
-    name: 'anvil1',
+  proteustestnet: {
+    chainId: 88002,
+    domainId: 88002,
+    name: 'proteustestnet',
     protocol: ProtocolType.Ethereum,
-    // anvil default chain id
-    chainId: 31337,
-    // Used to configure a Warp Route to bridge anvil1 ETH
-    // to anvil2 in CI tests.
+    displayName: 'Proteus Testnet',
     nativeToken: {
-      name: 'ether',
-      symbol: 'ETH',
+      name: 'Zebec',
+      symbol: 'ZBC',
       decimals: 18,
     },
     rpcUrls: [
       {
-        http: 'http://127.0.0.1:8545',
+        http: 'https://api.proteus.nautchain.xyz/solana',
       },
     ],
-    // You can set overrides for transaction fields here
-    // transactionOverrides: {
-    //   gasLimit: 1000000
-    // },
-  },
-  anvil2: {
-    name: 'anvil2',
-    protocol: ProtocolType.Ethereum,
-    chainId: 31338,
-    rpcUrls: [
-      {
-        http: 'http://127.0.0.1:8555',
-      },
-    ],
+    // blockExplorers: [
+    //   {
+    //     name: 'GnosisScan',
+    //     url: 'https://gnosisscan.io',
+    //     apiUrl: 'https://api.gnosisscan.io/api',
+    //     family: ExplorerFamily.Etherscan,
+    //   },
+    // ],
+    blocks: {
+      confirmations: 1,
+      reorgPeriod: 1,
+      estimateBlockTime: 1,
+    },
+    // gasCurrencyCoinGeckoId: 'xdai',
+    // gnosisSafeTransactionServiceUrl:
+    //   'https://safe-transaction-gnosis-chain.safe.global/',
   },
   // --------------------------------------------------
   // You can also override the default chain metadata (completely)

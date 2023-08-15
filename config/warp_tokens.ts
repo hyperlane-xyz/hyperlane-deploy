@@ -7,10 +7,10 @@ import type { WarpRouteConfig } from '../src/warp/config';
 export const warpRouteConfig: WarpRouteConfig = {
   base: {
     // Chain name must be in the Hyperlane SDK or in the chains.ts config
-    chainName: 'fuji',
-    type: TokenType.native, //  TokenType.native or TokenType.collateral
+    chainName: 'bsctestnet',
+    type: TokenType.collateral, //  TokenType.native or TokenType.collateral
     // If type is collateral, a token address is required:
-    // address: '0x123...'
+    address: '0x64544969ed7ebf5f083679233325356ebe738930',
     // If the token is an NFT (ERC721), set to true:
     // isNft: boolean
 
@@ -19,7 +19,7 @@ export const warpRouteConfig: WarpRouteConfig = {
   },
   synthetics: [
     {
-      chainName: 'anvil1',
+      chainName: 'proteustestnet',
 
       type: TokenType.native,
 
@@ -29,5 +29,14 @@ export const warpRouteConfig: WarpRouteConfig = {
       // Optionally, specify owner, mailbox, and interchainGasPaymaster addresses
       // If not specified, the Permissionless Deployment artifacts or the SDK's defaults will be used
     },
+    {
+      chainName: 'solanadevnet',
+      type: TokenType.collateral,
+      address: '0x64544969ed7ebf5f083679233325356ebe738930',
+      name: 'DUMMY',
+      symbol: 'DUMMY',
+      decimals: 6,
+      foreignDeployment: '0x05b6502b1d91c60ca0c0d0ab20a16ec40c66f2559becc7888a4fc3c0cefff9a5',
+    }
   ],
 };

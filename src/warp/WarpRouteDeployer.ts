@@ -157,6 +157,7 @@ export class WarpRouteDeployer {
           synthetic.interchainGasPaymaster ||
           mergedContractAddresses[sChainName].defaultIsmInterchainGasPaymaster,
         foreignDeployment: synthetic.foreignDeployment,
+        decimals: synthetic.decimals || baseTokenMetadata.decimals,
       };
       this.logger(
         `Hyp token config on synthetic chain ${sChainName}:`,
