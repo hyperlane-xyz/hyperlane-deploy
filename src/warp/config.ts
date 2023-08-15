@@ -1,19 +1,16 @@
 import { z } from 'zod';
 
-import { TokenType } from '@hyperlane-xyz/hyperlane-token';
+import { NativeConfig, TokenType } from '@hyperlane-xyz/hyperlane-token';
 import { RouterConfig } from '@hyperlane-xyz/sdk/dist/router/types';
 
 import { MinimalTokenMetadata } from './types';
 
 type WarpBaseToken = {
-  type: TokenType.native | TokenType.collateral;
   chainName: string;
 } & Partial<RouterConfig> &
   Partial<MinimalTokenMetadata>;
 
-export interface WarpNativeTokenConfig extends WarpBaseToken {
-  type: TokenType.native;
-}
+export interface WarpNativeTokenConfig extends WarpBaseToken, NativeConfig {}
 
 export interface WarpCollateralTokenConfig extends WarpBaseToken {
   type: TokenType.collateral;
@@ -33,7 +30,7 @@ export type WarpBaseTokenConfig =
 
 export interface WarpRouteConfig {
   base: WarpBaseTokenConfig;
-  synthetics: WarpSyntheticTokenConfig[];
+  synthetics: (WarpSyntheticTokenConfig | WarpNativeTokenConfig)[];
 }
 
 // Zod schema for Warp Route config validation validation
