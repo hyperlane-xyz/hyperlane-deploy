@@ -36,7 +36,7 @@ export const warpRouteConfig: WarpRouteConfig = {
       name: 'Zebec',
       symbol: 'ZBC',
       decimals: 9,
-      foreignDeployment: '0xd6d38f335e9f8bc4c7339d52275a502fc42caeaaf9370b9d47aa92de4bb2adcc',
+      foreignDeployment: '0xc5ba229fa2822fe65ac2bd0a93d8371d75292c3415dd381923c1088a3308528b',
     }
   ],
 };
