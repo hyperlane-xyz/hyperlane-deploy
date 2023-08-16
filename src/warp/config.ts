@@ -46,7 +46,6 @@ export type RemoteWarpTokenConfig = SyntheticNativeTokenConfig | SyntheticCollat
 
 export interface WarpRouteConfig {
   base: WarpBaseTokenConfig;
-  // TODO rename?
   synthetics: RemoteWarpTokenConfig[];
 }
 
