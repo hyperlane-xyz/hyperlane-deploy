@@ -141,7 +141,7 @@ export class WarpRouteDeployer {
       const sChainName = synthetic.chainName;
 
       configMap[sChainName] = {
-        type: synthetic.type,
+        type: synthetic.type || TokenType.synthetic,
         name: synthetic.name || baseTokenMetadata.name,
         symbol: synthetic.symbol || baseTokenMetadata.symbol,
         totalSupply:
