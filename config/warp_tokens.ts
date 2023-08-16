@@ -21,7 +21,7 @@ export const warpRouteConfig: WarpRouteConfig = {
     {
       chainName: 'nautilus',
       type: TokenType.native,
-      scale: 10**9,
+      scale: 10 ** 9,
 
       // Optionally specify a name, symbol, and totalSupply
       // If not specified, the base token's properties will be used
@@ -36,7 +36,8 @@ export const warpRouteConfig: WarpRouteConfig = {
       name: 'Zebec',
       symbol: 'ZBC',
       decimals: 9,
-      foreignDeployment: '0xc5ba229fa2822fe65ac2bd0a93d8371d75292c3415dd381923c1088a3308528b',
-    }
+      foreignDeployment:
+        '0xc5ba229fa2822fe65ac2bd0a93d8371d75292c3415dd381923c1088a3308528b',
+    },
   ],
 };

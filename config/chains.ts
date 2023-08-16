@@ -48,7 +48,7 @@ export const chains: ChainMap<ChainMetadata> = {
       reorgPeriod: 0,
       estimateBlockTime: 0.4,
     },
-  }
+  },
 
   // --------------------------------------------------
   // You can also override the default chain metadata (completely)

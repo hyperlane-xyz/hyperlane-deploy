@@ -19,6 +19,7 @@ export interface WarpCollateralTokenConfig extends WarpBaseToken {
 }
 
 export type WarpSyntheticTokenConfig = {
+  type: TokenType.synthetic;
   chainName: string;
   totalSupply?: number;
 } & Partial<RouterConfig> &
@@ -28,25 +29,13 @@ export type WarpBaseTokenConfig =
   | WarpNativeTokenConfig
   | WarpCollateralTokenConfig;
 
-export interface SyntheticNativeTokenConfig extends WarpSyntheticTokenConfig {
-  type: TokenType.native;
-}
-
-export interface SyntheticCollateralTokenConfig extends WarpSyntheticTokenConfig {
-  type: TokenType.collateral;
-  address: string;
-  isNft?: boolean;
-}
-
-export interface SyntheticTokenConfig extends WarpSyntheticTokenConfig {
-  type: TokenType.synthetic;
-}
-
-export type RemoteWarpTokenConfig = SyntheticNativeTokenConfig | SyntheticCollateralTokenConfig | SyntheticTokenConfig;
-
 export interface WarpRouteConfig {
   base: WarpBaseTokenConfig;
-  synthetics: RemoteWarpTokenConfig[];
+  synthetics: (
+    | WarpNativeTokenConfig
+    | WarpCollateralTokenConfig
+    | WarpSyntheticTokenConfig
+  )[];
 }
 
 // Zod schema for Warp Route config validation validation

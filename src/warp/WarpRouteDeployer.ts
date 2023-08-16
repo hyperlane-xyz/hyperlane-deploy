@@ -144,8 +144,14 @@ export class WarpRouteDeployer {
         type: synthetic.type,
         name: synthetic.name || baseTokenMetadata.name,
         symbol: synthetic.symbol || baseTokenMetadata.symbol,
-        totalSupply: synthetic.totalSupply || 0,
-        token: (synthetic.type == TokenType.collateral ? synthetic.address : baseTokenAddr),
+        totalSupply:
+          (synthetic.type === TokenType.synthetic
+            ? synthetic.totalSupply
+            : undefined) || 0,
+        token:
+          synthetic.type === TokenType.collateral
+            ? synthetic.address
+            : baseTokenAddr,
         owner,
         mailbox:
           synthetic.mailbox || mergedContractAddresses[sChainName].mailbox,
