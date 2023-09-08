@@ -154,7 +154,10 @@ run('Warp transfer test', async () => {
     case TokenType.collateral: {
       const router = app.getContracts(origin).router as HypERC20Collateral;
       const tokenAddress = await router.wrappedToken();
-      const token = ERC20__factory.connect(tokenAddress, signer);
+      const token = ERC20__factory.connect(
+        tokenAddress,
+        multiProvider.getSigner(origin),
+      );
       const approval = await token.allowance(
         await signer.getAddress(),
         router.address,
