@@ -139,11 +139,19 @@ export class WarpRouteDeployer {
 
     for (const synthetic of synthetics) {
       const sChainName = synthetic.chainName;
+
       configMap[sChainName] = {
-        type: TokenType.synthetic,
+        type: synthetic.type || TokenType.synthetic,
         name: synthetic.name || baseTokenMetadata.name,
         symbol: synthetic.symbol || baseTokenMetadata.symbol,
-        totalSupply: synthetic.totalSupply || 0,
+        totalSupply:
+          (synthetic.type === TokenType.synthetic
+            ? synthetic.totalSupply
+            : undefined) || 0,
+        token:
+          synthetic.type === TokenType.collateral
+            ? synthetic.address
+            : baseTokenAddr,
         owner,
         mailbox:
           synthetic.mailbox || mergedContractAddresses[sChainName].mailbox,
@@ -155,6 +163,8 @@ export class WarpRouteDeployer {
           synthetic.interchainGasPaymaster ||
           mergedContractAddresses[sChainName].defaultIsmInterchainGasPaymaster,
         foreignDeployment: synthetic.foreignDeployment,
+        decimals: synthetic.decimals || baseTokenMetadata.decimals,
+        scale: synthetic.scale,
       };
       this.logger(
         `Hyp token config on synthetic chain ${sChainName}:`,

@@ -20,6 +20,7 @@ export const warpRouteConfig: WarpRouteConfig = {
   synthetics: [
     {
       chainName: 'anvil2',
+      type: TokenType.synthetic, // or TokenType.native or TokenType.collateral
 
       // Optionally specify a name, symbol, and totalSupply
       // If not specified, the base token's properties will be used
