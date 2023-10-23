@@ -55,7 +55,7 @@ yarn ts-node scripts/test-messages.ts \
 
 ## Deploying Warp Routes
 
-Warp Routes are Hyperlane's unique take on the concept of token bridging, allowing you to permissionlessly bridge any ERC20-like asset to any chain. You can combine Warp Routes with a Hyperlane deployment to create economic trade routes between any chains already connected through Hyperlane.
+Warp Routes are Hyperlane's unique take on the concept of token bridging, allowing you to permissionlessly bridge any ERC20 or ERC721 asset to any chain. You can combine Warp Routes with a Hyperlane deployment to create economic trade routes between any chains already connected through Hyperlane.
 
 See below for instructions on using the scripts in this repo to deploy Hyperlane Warp Routes. For more details see the [warp route documentation](https://docs.hyperlane.xyz/docs/deploy/deploy-warp-route).
 
