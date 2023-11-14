@@ -1,3 +1,9 @@
+# DEPRECATED
+
+**The tooling in this repository is deprecated and won't work with Hyperlane V3 or later**
+
+**The [Hyperlane CLI](https://www.npmjs.com/package/@hyperlane-xyz/cli) is the recommend tool for new deployments**
+
 # Hyperlane Deploy
 
 This repository contains scripts and tools to deploy Hyperlane and its popular extensions to any EVM-compatible chain.
