@@ -3,39 +3,53 @@ import { ChainMap, ChainMetadata, ProtocolType } from '@hyperlane-xyz/sdk';
 // import { chainMetadata } from '@hyperlane-xyz/sdk';
 // A map of chain names to ChainMetadata
 export const chains: ChainMap<ChainMetadata> = {
-  // ----------- Add your chains here -----------------
-  anvil1: {
-    name: 'anvil1',
+  nautilus: {
+    chainId: 22222,
+    domainId: 22222,
+    name: 'nautilus',
     protocol: ProtocolType.Ethereum,
-    // anvil default chain id
-    chainId: 31337,
-    // Used to configure a Warp Route to bridge anvil1 ETH
-    // to anvil2 in CI tests.
+    displayName: 'Nautilus',
     nativeToken: {
-      name: 'ether',
-      symbol: 'ETH',
+      name: 'Zebec',
+      symbol: 'ZBC',
       decimals: 18,
     },
     rpcUrls: [
       {
-        http: 'http://127.0.0.1:8545',
+        http: 'https://api.nautilus.nautchain.xyz',
       },
     ],
-    // You can set overrides for transaction fields here
-    // transactionOverrides: {
-    //   gasLimit: 1000000
-    // },
+    blocks: {
+      confirmations: 1,
+      reorgPeriod: 1,
+      estimateBlockTime: 1,
+    },
   },
-  anvil2: {
-    name: 'anvil2',
-    protocol: ProtocolType.Ethereum,
-    chainId: 31338,
-    rpcUrls: [
-      {
-        http: 'http://127.0.0.1:8555',
-      },
-    ],
+
+  solana: {
+    protocol: ProtocolType.Sealevel,
+    // Uses the same ChainId as https://www.alchemy.com/chain-connect/chain/solana
+    chainId: 1399811149,
+    domainId: 1399811149,
+    name: 'solana',
+    displayName: 'Solana',
+    nativeToken: { name: 'Sol', symbol: 'SOL', decimals: 9 },
+    rpcUrls: [{ http: 'https://api.mainnet-beta.solana.com' }],
+    // blockExplorers: [
+    //   {
+    //     name: 'SolScan',
+    //     url: 'https://solscan.io',
+    //     apiUrl: 'https://public-api.solscan.io',
+    //     family: ExplorerFamily.Other,
+    //   },
+    // ],
+    blocks: {
+      confirmations: 1,
+      reorgPeriod: 0,
+      estimateBlockTime: 0.4,
+    },
   },
+
   // --------------------------------------------------
   // You can also override the default chain metadata (completely)
   // ethereum: {
